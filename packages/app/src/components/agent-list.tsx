@@ -22,8 +22,8 @@ import { getProviderIcon } from "@/components/provider-icons";
 import { navigateToAgent } from "@/utils/navigate-to-agent";
 import { useArchiveAgent } from "@/hooks/use-archive-agent";
 import { HighlightedText } from "@/components/ui/highlighted-text";
-import type { AgentSearchMatch } from "@getpaseo/protocol/messages";
-import type { MatchRange } from "@getpaseo/protocol/search/text-match";
+import type { AgentSearchMatch } from "@yemu/protocol/messages";
+import type { MatchRange } from "@yemu/protocol/search/text-match";
 
 interface AgentListProps {
   agents: AggregatedAgent[];

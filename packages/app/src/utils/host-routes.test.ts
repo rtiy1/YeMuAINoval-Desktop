@@ -250,9 +250,9 @@ describe("host settings section slugs", () => {
     expect(normalizeHostSectionSlug("agents")).toBe("agents");
     expect(normalizeHostSectionSlug("workspaces")).toBe("workspaces");
     expect(normalizeHostSectionSlug("projects")).toBe("projects");
-    expect(normalizeHostSectionSlug("providers")).toBe("providers");
-    expect(normalizeHostSectionSlug("usage")).toBe("usage");
     expect(normalizeHostSectionSlug("host")).toBe("host");
+    expect(normalizeHostSectionSlug("providers")).toBeNull();
+    expect(normalizeHostSectionSlug("usage")).toBeNull();
   });
 
   it("maps old host settings sections to their new names", () => {

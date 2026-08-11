@@ -81,7 +81,7 @@ function createGitRepo(): { tempDir: string; repoDir: string } {
   const repoDir = path.join(tempDir, "repo");
   mkdirSync(repoDir, { recursive: true });
   execFileSync("git", ["init", "-b", "main"], { cwd: repoDir, stdio: "pipe" });
-  execFileSync("git", ["config", "user.email", "test@getpaseo.local"], {
+  execFileSync("git", ["config", "user.email", "test@yemu.local"], {
     cwd: repoDir,
     stdio: "pipe",
   });
@@ -225,7 +225,7 @@ describe("archiveByScope", () => {
       JSON.stringify({
         worktree: {
           teardown: [
-            "node -e \"require('fs').writeFileSync(process.env.PASEO_SOURCE_CHECKOUT_PATH + '/shared-teardown.log', 'ok')\"",
+            "node -e \"require('fs').writeFileSync(process.env.YEMU_SOURCE_CHECKOUT_PATH + '/shared-teardown.log', 'ok')\"",
           ],
         },
       }),
@@ -356,7 +356,7 @@ describe("archiveByScope", () => {
       JSON.stringify({
         worktree: {
           teardown: [
-            "node -e \"require('fs').writeFileSync(process.env.PASEO_SOURCE_CHECKOUT_PATH + '/nested-teardown.log', process.cwd())\"",
+            "node -e \"require('fs').writeFileSync(process.env.YEMU_SOURCE_CHECKOUT_PATH + '/nested-teardown.log', process.cwd())\"",
           ],
         },
       }),
@@ -413,7 +413,7 @@ describe("archiveByScope", () => {
       JSON.stringify({
         worktree: {
           teardown: [
-            "node -e \"const fs=require('fs');const out=process.env.PASEO_SOURCE_CHECKOUT_PATH+'/root-scope-teardown.log';if(fs.existsSync(out))process.exit(2);fs.writeFileSync(out,'ok')\"",
+            "node -e \"const fs=require('fs');const out=process.env.YEMU_SOURCE_CHECKOUT_PATH+'/root-scope-teardown.log';if(fs.existsSync(out))process.exit(2);fs.writeFileSync(out,'ok')\"",
           ],
         },
       }),
@@ -423,7 +423,7 @@ describe("archiveByScope", () => {
       JSON.stringify({
         worktree: {
           teardown: [
-            "node -e \"require('fs').writeFileSync(process.env.PASEO_SOURCE_CHECKOUT_PATH+'/nested-scope-teardown.log','ok')\"",
+            "node -e \"require('fs').writeFileSync(process.env.YEMU_SOURCE_CHECKOUT_PATH+'/nested-scope-teardown.log','ok')\"",
           ],
         },
       }),

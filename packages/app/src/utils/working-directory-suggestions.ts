@@ -1,4 +1,4 @@
-import { scoreMatch } from "@getpaseo/protocol/search/text-match";
+import { scoreMatch } from "@yemu/protocol/search/text-match";
 
 export interface BuildWorkingDirectorySuggestionsInput {
   recommendedPaths: string[];

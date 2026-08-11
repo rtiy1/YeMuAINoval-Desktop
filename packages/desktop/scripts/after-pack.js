@@ -127,7 +127,7 @@ exports.default = async function afterPack(context) {
 };
 
 async function smokeUnpackedAppIfRequested(appOutDir) {
-  if (process.env.PASEO_DESKTOP_SMOKE !== "1") {
+  if (process.env.YEMU_DESKTOP_SMOKE !== "1") {
     return;
   }
 

@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const CLIENT_ID_STORAGE_KEY = "@paseo:client-id-v1";
+const CLIENT_ID_STORAGE_KEY = "@yemu:client-id-v1";
 
 export interface ClientIdStorage {
   getItem(key: string): Promise<string | null>;
@@ -38,7 +38,10 @@ export function createClientIdResolver(deps: {
       }
 
       inFlight = (async () => {
-        const stored = await deps.storage.getItem(storageKey);
+        // COMPAT(clientIdKey): legacy key read back once, remove after 2026-11-30.
+        const stored =
+          (await deps.storage.getItem(storageKey)) ??
+          (await deps.storage.getItem("@paseo:client-id-v1"));
         const existing = normalizeStoredClientId(stored);
         if (existing) {
           cached = existing;

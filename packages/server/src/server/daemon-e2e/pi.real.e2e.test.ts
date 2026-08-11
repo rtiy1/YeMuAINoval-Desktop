@@ -20,7 +20,7 @@ import {
   getRealProviderConfig,
 } from "./real-provider-test-config.js";
 
-process.env.PASEO_SUPERVISED = "0";
+process.env.YEMU_SUPERVISED = "0";
 
 const PI_TEST_TIMEOUT_MS = 240_000;
 const PI_REAL_TEST_MODEL = getRealProviderConfig("pi").model;
@@ -149,9 +149,9 @@ test(
       writeFileSync(
         path.join(cwd, ".pi", "APPEND_SYSTEM.md"),
         [
-          "When the user says PASEO_SYSTEM_PROMPT_PROBE, reply with exactly two tokens:",
-          "PROJECT_PROMPT followed by the value of PASEO_PROMPT_TOKEN from later system instructions.",
-          "If no PASEO_PROMPT_TOKEN exists, use MISSING as the second token.",
+          "When the user says YEMU_SYSTEM_PROMPT_PROBE, reply with exactly two tokens:",
+          "PROJECT_PROMPT followed by the value of YEMU_PROMPT_TOKEN from later system instructions.",
+          "If no YEMU_PROMPT_TOKEN exists, use MISSING as the second token.",
         ].join("\n"),
       );
 
@@ -162,10 +162,10 @@ test(
           provider: "pi",
           model: PI_REAL_TEST_MODEL,
           systemPrompt:
-            "PASEO_PROMPT_TOKEN is PASEO_PROMPT. Follow the project instruction for PASEO_SYSTEM_PROMPT_PROBE.",
+            "YEMU_PROMPT_TOKEN is YEMU_PROMPT. Follow the project instruction for YEMU_SYSTEM_PROMPT_PROBE.",
         });
 
-        await client.sendMessage(agent.id, "PASEO_SYSTEM_PROMPT_PROBE");
+        await client.sendMessage(agent.id, "YEMU_SYSTEM_PROMPT_PROBE");
         const finish = await client.waitForFinish(agent.id, PI_TEST_TIMEOUT_MS);
         expect(finish.status).toBe("idle");
 
@@ -175,7 +175,7 @@ test(
           .map((item) => item.text)
           .join("")
           .trim();
-        expect(response).toBe("PROJECT_PROMPT PASEO_PROMPT");
+        expect(response).toBe("PROJECT_PROMPT YEMU_PROMPT");
       });
     } finally {
       rmSync(cwd, { recursive: true, force: true });
@@ -649,8 +649,8 @@ test(
   "resumed Pi prompts retain their exact native entry ids after explicit runtime close",
   async () => {
     const cwd = tmpCwd("pi-resumed-entry-id-");
-    const firstPrompt = "PASEO_PI_ENTRY_ID_FIRST. Reply exactly: first-ok";
-    const secondPrompt = "PASEO_PI_ENTRY_ID_SECOND. Reply exactly: second-ok";
+    const firstPrompt = "YEMU_PI_ENTRY_ID_FIRST. Reply exactly: first-ok";
+    const secondPrompt = "YEMU_PI_ENTRY_ID_SECOND. Reply exactly: second-ok";
 
     try {
       await withConnectedPiDaemon(async ({ client, daemon }) => {

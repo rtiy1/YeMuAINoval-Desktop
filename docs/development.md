@@ -135,7 +135,7 @@ With desktop dev running, verify the real BrowserWindow, titlebar clearance, ful
 transition, and 751-pixel settings split with:
 
 ```bash
-npm run verify:electron-cdp --workspace=@getpaseo/desktop
+npm run verify:electron-cdp --workspace=@yemu/desktop
 ```
 
 The verifier reads the same `EXPO_PORT` and
@@ -195,7 +195,7 @@ web, keep a daemon available, then run:
 PASEO_PROFILE_SERVER_ID=<server-id> \
 PASEO_PROFILE_WORKSPACE_ID=<workspace-path> \
 PASEO_PROFILE_AGENT_ID=<agent-id> \
-  npm run profile:workspace-tabs --workspace=@getpaseo/app
+  npm run profile:workspace-tabs --workspace=@yemu/app
 ```
 
 This script opens the app with `?renderProfile=1`, creates a temporary terminal
@@ -270,7 +270,7 @@ semantics, and environment-variable overrides.
 Measure the MCP `tools/list` payload that YeMu AI Novel injects into agents with:
 
 ```bash
-npm run measure:agent-tools --workspace=@getpaseo/server
+npm run measure:agent-tools --workspace=@yemu/server
 ```
 
 The command reports compact JSON bytes, estimated tokens, field totals, largest
@@ -406,13 +406,13 @@ Measured bundle size for a standard Expo web export:
 - gzip: 2.55 MiB
 - brotli: 1.93 MiB
 
-The desktop-managed daemon disables the bundled web UI by default (`PASEO_WEB_UI_ENABLED=false`) because the desktop app already ships the renderer as `app-dist`. Shipping the same assets again inside `@getpaseo/server` would duplicate the ~10.8 MiB install. Desktop packaging also excludes `node_modules/@getpaseo/server/dist/server/web-ui/**` from the packaged app.
+The desktop-managed daemon disables the bundled web UI by default (`PASEO_WEB_UI_ENABLED=false`) because the desktop app already ships the renderer as `app-dist`. Shipping the same assets again inside `@yemu/server` would duplicate the ~10.8 MiB install. Desktop packaging also excludes `node_modules/@yemu/server/dist/server/web-ui/**` from the packaged app.
 
 ## Built workspace packages
 
 Package imports resolve through package exports to compiled `dist/` output, not sibling `src/` files. This is true in local dev and in published packages: the app, daemon, CLI, and SDK consumers should all exercise the same runtime paths.
 
-`npm run dev:server` builds the server-side workspace packages once, then keeps `@getpaseo/protocol` and `@getpaseo/client` fresh with TypeScript watch builds while the daemon runs. If you change protocol schemas or client code outside that watch workflow, rebuild the producer before trusting runtime behavior.
+`npm run dev:server` builds the server-side workspace packages once, then keeps `@yemu/protocol` and `@yemu/client` fresh with TypeScript watch builds while the daemon runs. If you change protocol schemas or client code outside that watch workflow, rebuild the producer before trusting runtime behavior.
 
 Use the named root build targets instead of remembering workspace dependency chains:
 
@@ -522,7 +522,7 @@ Do NOT use browser history (back/forward). Always navigate by clicking UI elemen
 ## App web deploys
 
 `packages/app` exports a single-page Expo web app and deploys the `dist/`
-directory to Cloudflare Pages with `npm run deploy:web --workspace=@getpaseo/app`.
+directory to Cloudflare Pages with `npm run deploy:web --workspace=@yemu/app`.
 
 PWA install metadata lives in `packages/app/public/manifest.json` and is linked
 from `packages/app/public/index.html`. Keep the install icons in `public/` so

@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next";
 import { View, Text, Pressable } from "react-native";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { useRouter } from "expo-router";
-import { FolderOpen, Inbox, Plug, Smartphone } from "lucide-react-native";
-import { PaseoLogo } from "@/components/icons/paseo-logo";
+import { BookOpen, Bot, FolderOpen, Inbox, Smartphone } from "lucide-react-native";
+import { MCodeLogo } from "@/components/icons/mcode-logo";
 import { CommunityLinks } from "@/components/community-links";
 import { MenuHeader } from "@/components/headers/menu-header";
 import { useOpenAddProject } from "@/hooks/use-open-add-project";
@@ -19,7 +19,11 @@ import {
 import { TitlebarDragRegion } from "@/components/desktop/titlebar-drag-region";
 import { useLocalDaemonServerId } from "@/hooks/use-is-local-daemon";
 import { PairDeviceModal } from "@/desktop/components/pair-device-modal";
-import { buildHostAgentDetailRoute, buildSettingsHostSectionRoute } from "@/utils/host-routes";
+import {
+  buildHostAgentDetailRoute,
+  buildNovelHomeRoute,
+  buildSettingsSectionRoute,
+} from "@/utils/host-routes";
 import { ImportSessionSheet } from "@/components/import-session-sheet";
 import { useHostRuntimeClient } from "@/runtime/host-runtime";
 import { useOpenProject } from "@/hooks/use-open-project";
@@ -77,14 +81,13 @@ export function OpenProjectScreen() {
     [importServerId, openImportedProject, router],
   );
 
-  const handleOpenProviders = useCallback(() => {
-    chooseHost({
-      title: "Choose host",
-      onChooseHost: (serverId) => {
-        router.push(buildSettingsHostSectionRoute(serverId, "providers"));
-      },
-    });
-  }, [chooseHost, router]);
+  const handleOpenAiModels = useCallback(() => {
+    router.push(buildSettingsSectionRoute("aiModels"));
+  }, [router]);
+
+  const handleOpenNovels = useCallback(() => {
+    router.push(buildNovelHomeRoute() as Href);
+  }, [router]);
 
   return (
     <View style={styles.container}>
@@ -92,7 +95,7 @@ export function OpenProjectScreen() {
       <View style={styles.content}>
         <TitlebarDragRegion />
         <View style={styles.logo}>
-          <PaseoLogo size={52} />
+          <MCodeLogo size={52} />
         </View>
         <View style={styles.tiles}>
           <HomeTile
@@ -111,11 +114,18 @@ export function OpenProjectScreen() {
             testID="open-project-import-session"
           />
           <HomeTile
-            icon={Plug}
-            title={t("openProject.tiles.setupProviders.title")}
-            description={t("openProject.tiles.setupProviders.description")}
-            onPress={handleOpenProviders}
-            testID="open-project-setup-providers"
+            icon={BookOpen}
+            title={t("openProject.tiles.novels.title")}
+            description={t("openProject.tiles.novels.description")}
+            onPress={handleOpenNovels}
+            testID="open-project-novels"
+          />
+          <HomeTile
+            icon={Bot}
+            title={t("openProject.tiles.setupAiModels.title")}
+            description={t("openProject.tiles.setupAiModels.description")}
+            onPress={handleOpenAiModels}
+            testID="open-project-setup-ai-models"
           />
           {localServerId ? (
             <HomeTile

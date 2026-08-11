@@ -13,6 +13,7 @@ import { loadPersistedConfig } from "../src/server/persisted-config.js";
 import { runSupervisor } from "./supervisor.js";
 import { resolveSupervisorLogFile } from "./supervisor-log-config.js";
 import { applySherpaLoaderEnv } from "../src/server/speech/providers/local/sherpa/sherpa-runtime-env.js";
+import { applyPaseoEnvCompat } from "../src/server/paseo-env-compat.js";
 
 process.title = "YeMu AI Novel Supervisor";
 
@@ -78,7 +79,7 @@ function resolveWorkerExecArgv(workerEntry: string, devMode: boolean): string[] 
     "--report-on-fatalerror",
     "--report-directory=/tmp/paseo-reports",
   ];
-  const inspectArg = process.env.PASEO_NODE_INSPECT ?? "--inspect";
+  const inspectArg = process.env.YEMU_NODE_INSPECT ?? "--inspect";
   if (inspectArg !== "0" && inspectArg !== "false" && inspectArg !== "off") {
     devArgs.push(inspectArg);
   }
@@ -98,6 +99,7 @@ function resolvePackagedNodeEntrypointRunnerPath(currentScriptPath: string): str
 }
 
 async function main(): Promise<void> {
+  applyPaseoEnvCompat(process.env);
   const config = parseConfig(process.argv.slice(2));
   const workerEntry = config.devMode ? resolveDevWorkerEntry() : resolveWorkerEntry();
   const workerExecArgv = resolveWorkerExecArgv(workerEntry, config.devMode);

@@ -2,12 +2,12 @@ import type {
   AgentStreamEventPayload,
   ProviderSubagentDescriptorPayload,
   SessionOutboundMessage,
-} from "@getpaseo/protocol/messages";
-import type { DaemonClient } from "@getpaseo/client/internal/daemon-client";
+} from "@yemu/protocol/messages";
+import type { DaemonClient } from "@yemu/client/internal/daemon-client";
 import { create } from "zustand";
 import { applyStreamEvent } from "@/types/stream";
 import type { StreamItem } from "@/types/stream";
-import type { AgentLifecycleStatus } from "@getpaseo/protocol/agent-lifecycle";
+import type { AgentLifecycleStatus } from "@yemu/protocol/agent-lifecycle";
 
 type ProviderSubagentTimelineItem = Extract<
   Extract<SessionOutboundMessage, { type: "agent.provider_subagents.update" }>["payload"],

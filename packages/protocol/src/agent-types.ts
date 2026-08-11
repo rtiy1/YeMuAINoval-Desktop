@@ -489,6 +489,8 @@ export interface AgentSessionConfig {
   providerOptions?: ProviderOptions;
   toolPolicy?: ToolPolicy;
   mcpServers?: Record<string, McpServerConfig>;
+  /** AI model profile id resolved by the daemon into ANTHROPIC_* env at launch. */
+  aiModelProfileId?: string;
   /**
    * Internal agents are hidden from listings and don't trigger notifications.
    * They are used for ephemeral system tasks like commit/PR generation.

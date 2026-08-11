@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { AgentMode } from "@getpaseo/protocol/agent-types";
+import type { AgentMode } from "@yemu/protocol/agent-types";
 import { resolveAgentControlsMode, resolveNextAgentModeId } from "./mode";
 
 const PLAN_MODE = { id: "plan", label: "Plan" } satisfies AgentMode;
@@ -20,7 +20,6 @@ describe("resolveAgentControlsMode", () => {
       resolveAgentControlsMode({
         providerDefinitions: [],
         selectedProvider: "codex",
-        onSelectProvider: () => undefined,
         modeOptions: [],
         selectedMode: "",
         onSelectMode: () => undefined,

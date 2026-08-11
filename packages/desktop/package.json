@@ -1,5 +1,5 @@
 {
-  "name": "@getpaseo/desktop",
+  "name": "@yemu/desktop",
   "version": "0.3.1",
   "private": true,
   "description": "YeMu AI Novel Desktop application shell",
@@ -25,8 +25,8 @@
     "typecheck": "tsgo --noEmit -p tsconfig.json"
   },
   "dependencies": {
-    "@getpaseo/cli": "*",
-    "@getpaseo/server": "*",
+    "@yemu/cli": "*",
+    "@yemu/server": "*",
     "electron-log": "^5.4.3",
     "electron-updater": "^6.6.2",
     "ws": "^8.14.2",

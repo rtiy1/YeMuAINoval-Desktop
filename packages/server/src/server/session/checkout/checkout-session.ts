@@ -1,8 +1,8 @@
 import type pino from "pino";
 import { isAbsolute } from "node:path";
-import { getErrorMessage } from "@getpaseo/protocol/error-utils";
-import { getForgeDefinitionOrNeutral } from "@getpaseo/protocol/forge-manifest";
-import { validateBranchSlug } from "@getpaseo/protocol/branch-slug";
+import { getErrorMessage } from "@yemu/protocol/error-utils";
+import { getForgeDefinitionOrNeutral } from "@yemu/protocol/forge-manifest";
+import { validateBranchSlug } from "@yemu/protocol/branch-slug";
 import type {
   BranchSuggestionsRequest,
   CheckoutCommitsListRequest,
@@ -137,7 +137,7 @@ export interface CheckoutSessionOptions {
  * workspace git observer streams branch changes through emitStatusUpdate().
  */
 export class CheckoutSession {
-  private static readonly PASEO_STASH_PREFIX = "paseo-auto-stash:";
+  private static readonly YEMU_STASH_PREFIX = "paseo-auto-stash:";
 
   private readonly host: CheckoutSessionHost;
   private readonly gitMutation: Pick<
@@ -612,8 +612,8 @@ export class CheckoutSession {
     try {
       const branchLabel = msg.branch?.trim() ?? "";
       const message = branchLabel
-        ? `${CheckoutSession.PASEO_STASH_PREFIX} ${branchLabel}`
-        : `${CheckoutSession.PASEO_STASH_PREFIX} unnamed`;
+        ? `${CheckoutSession.YEMU_STASH_PREFIX} ${branchLabel}`
+        : `${CheckoutSession.YEMU_STASH_PREFIX} unnamed`;
       await runGitCommand(["stash", "push", "--include-untracked", "-m", message], {
         cwd,
         timeout: 120_000,

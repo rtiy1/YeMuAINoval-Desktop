@@ -12,8 +12,8 @@ import {
 import { Text, View } from "react-native";
 import { Brain, Folder, GitBranch } from "lucide-react-native";
 import { StyleSheet } from "react-native-unistyles";
-import type { AgentProvider } from "@getpaseo/protocol/agent-types";
-import type { ScheduleCadence, ScheduleSummary } from "@getpaseo/protocol/schedule/types";
+import type { AgentProvider } from "@yemu/protocol/agent-types";
+import type { ScheduleCadence, ScheduleSummary } from "@yemu/protocol/schedule/types";
 import { useStoreWithEqualityFn } from "zustand/traditional";
 import { AdaptiveModalSheet, type SheetHeader } from "@/components/adaptive-modal-sheet";
 import { ComboboxItem } from "@/components/ui/combobox";
@@ -449,7 +449,6 @@ function OpenScheduleFormSheet({
         agentTargetLabel={agentTargetLabel}
         controlSize={controlSize}
         cadenceError={cadenceError}
-        mutationServerId={mutationServerId}
       />
     </AdaptiveModalSheet>
   );
@@ -462,7 +461,6 @@ interface ScheduleFormFieldsProps {
   agentTargetLabel: string | null;
   controlSize: FieldControlSize;
   cadenceError: string | null;
-  mutationServerId: string;
 }
 
 function ScheduleFormFields({
@@ -472,7 +470,6 @@ function ScheduleFormFields({
   agentTargetLabel,
   controlSize,
   cadenceError,
-  mutationServerId,
 }: ScheduleFormFieldsProps): ReactElement {
   if (state.targetKind === "agent") {
     return (
@@ -527,7 +524,6 @@ function ScheduleFormFields({
         providerSnapshot={providerSnapshot}
         agentTargetLabel={null}
         controlSize={controlSize}
-        mutationServerId={mutationServerId}
       />
 
       <CadenceEditor
@@ -561,7 +557,6 @@ interface ScheduleTargetFieldsProps {
   providerSnapshot: ReturnType<typeof useScheduleFormProviderSnapshot>;
   agentTargetLabel: string | null;
   controlSize: FieldControlSize;
-  mutationServerId: string;
 }
 
 function ScheduleTargetFields({
@@ -570,7 +565,6 @@ function ScheduleTargetFields({
   providerSnapshot,
   agentTargetLabel,
   controlSize,
-  mutationServerId,
 }: ScheduleTargetFieldsProps): ReactElement {
   const hostOptions = useMemo<SelectFieldOption<string>[]>(
     () =>
@@ -753,7 +747,6 @@ function ScheduleTargetFields({
             isLoading={providerSnapshot.isLoading || providerSnapshot.isFetching}
             renderTrigger={renderModelTrigger}
             triggerFill
-            serverId={mutationServerId}
             disabled={!state.selectedServerId}
             onOpen={handleModelOpen}
             onRetryProvider={handleRetryProvider}

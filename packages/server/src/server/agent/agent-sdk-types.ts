@@ -1,9 +1,5 @@
-import type {
-  AgentProviderNotice,
-  ProviderOptions,
-  ToolPolicy,
-} from "@getpaseo/protocol/agent-types";
-import type { AgentAttachment } from "@getpaseo/protocol/messages";
+import type { AgentProviderNotice, ProviderOptions, ToolPolicy } from "@yemu/protocol/agent-types";
+import type { AgentAttachment } from "@yemu/protocol/messages";
 import type { PaseoToolCatalog } from "./tools/types.js";
 
 export type { AgentProviderNotice };
@@ -582,6 +578,11 @@ export interface AgentSessionConfig {
   providerOptions?: ProviderOptions;
   toolPolicy?: ToolPolicy;
   mcpServers?: Record<string, McpServerConfig>;
+  /**
+   * AI model profile id resolved by the daemon into ANTHROPIC_* env at launch.
+   * Never persisted as plaintext credential material.
+   */
+  aiModelProfileId?: string;
   /**
    * Internal agents are hidden from listings and don't trigger notifications.
    * They are used for ephemeral system tasks like commit/PR generation.

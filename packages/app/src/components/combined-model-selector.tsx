@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Pressable, Text, View, type PressableStateCallbackType } from "react-native";
 import { useTranslation } from "react-i18next";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
-import type { AgentProvider } from "@getpaseo/protocol/agent-types";
+import type { AgentProvider } from "@yemu/protocol/agent-types";
 import { ComboboxTrigger } from "@/components/ui/combobox-trigger";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { Combobox, type ComboboxOption, type ComboboxProps } from "@/components/ui/combobox";
@@ -42,7 +42,6 @@ interface CombinedModelSelectorProps {
   onRetryProvider?: (provider: AgentProvider) => void;
   isRetryingProvider?: boolean;
   disabled?: boolean;
-  serverId?: string | null;
   desktopPlacement?: ComboboxProps["desktopPlacement"];
   desktopMinWidth?: number;
   /**
@@ -74,7 +73,6 @@ export function CombinedModelSelector({
   onRetryProvider,
   isRetryingProvider = false,
   disabled = false,
-  serverId = null,
   desktopPlacement,
   desktopMinWidth,
   triggerFill = false,
@@ -90,7 +88,6 @@ export function CombinedModelSelector({
     selectedModel,
     isLoading,
     favoriteKeys,
-    serverId,
   });
   const { prepareToOpen, reset } = browser;
 

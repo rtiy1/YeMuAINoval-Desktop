@@ -2,14 +2,14 @@ import pino from "pino";
 import { z } from "zod";
 import { describe, expect, test } from "vitest";
 
-import { CLIENT_CAPS } from "@getpaseo/protocol/client-capabilities";
+import { CLIENT_CAPS } from "@yemu/protocol/client-capabilities";
 import {
   AgentTimelineItemPayloadSchema,
   FetchAgentTimelineResponseMessageSchema,
   SessionInboundMessageSchema,
   SessionOutboundMessageSchema,
   type SessionOutboundMessage,
-} from "@getpaseo/protocol/messages";
+} from "@yemu/protocol/messages";
 import { Session, type SessionOptions } from "./session.js";
 import { createProviderSnapshotManagerStub } from "./test-utils/session-stubs.js";
 import type { AgentTimelineRow } from "./agent/agent-manager.js";
@@ -407,7 +407,7 @@ describe("wire compatibility", () => {
           mimeType: "application/github-issue",
           number: 55,
           title: "Improve startup error details",
-          url: "https://github.com/getpaseo/paseo/issues/55",
+          url: "https://github.com/rtiy1/YeMuAINoval-Desktop/issues/55",
         },
       ],
     });
@@ -425,7 +425,7 @@ describe("wire compatibility", () => {
             mimeType: "application/github-issue",
             number: 55,
             title: "Improve startup error details",
-            url: "https://github.com/getpaseo/paseo/issues/55",
+            url: "https://github.com/rtiy1/YeMuAINoval-Desktop/issues/55",
           },
         ],
       },
@@ -454,7 +454,7 @@ describe("wire compatibility", () => {
             mimeType: "application/github-issue",
             number: 55,
             title: "Improve startup error details",
-            url: "https://github.com/getpaseo/paseo/issues/55",
+            url: "https://github.com/rtiy1/YeMuAINoval-Desktop/issues/55",
           },
         ],
       },

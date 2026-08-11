@@ -89,11 +89,11 @@ const PI_PROVIDER = "pi";
 const DEFAULT_PI_THINKING_LEVEL: PiThinkingLevel = "medium";
 const PI_BINARY_COMMAND = process.env.PI_COMMAND ?? process.env.PI_ACP_PI_COMMAND ?? "pi";
 const PI_CATALOG_REQUEST_TIMEOUT_MS = 120_000;
-const PASEO_PI_TREE_EXTENSION_COMMAND = "paseo_tree";
-const PASEO_PI_CAPTURE_EXTENSION_COMMAND = "paseo_capture_entries";
-const PASEO_PI_ENTRY_CAPTURE_MARKER = "PASEO_ENTRY_CAPTURE";
-const PASEO_PI_SUBMITTED_USER_ENTRY_MARKER = "PASEO_SUBMITTED_USER_ENTRY";
-const PASEO_PI_COMMAND_RESULT_MARKER = "PASEO_COMMAND_RESULT";
+const YEMU_PI_TREE_EXTENSION_COMMAND = "paseo_tree";
+const YEMU_PI_CAPTURE_EXTENSION_COMMAND = "paseo_capture_entries";
+const YEMU_PI_ENTRY_CAPTURE_MARKER = "YEMU_ENTRY_CAPTURE";
+const YEMU_PI_SUBMITTED_USER_ENTRY_MARKER = "YEMU_SUBMITTED_USER_ENTRY";
+const YEMU_PI_COMMAND_RESULT_MARKER = "YEMU_COMMAND_RESULT";
 const DEFAULT_PI_EXTENSION_RESULT_TIMEOUT_MS = 30_000;
 const QUESTION_RESPONSE_HEADER = "Response";
 const QUESTION_COMMENT_HEADER = "Comment";
@@ -623,7 +623,7 @@ function createPiMcpConfigFile(
 
 function createPiPaseoExtensionFile(systemPrompt?: string): PiTempFile {
   const dir = mkdtempSync(join(tmpdir(), "paseo-pi-extension-"));
-  const filePath = join(dir, "paseo-integration.mjs");
+  const filePath = join(dir, "yemu-integration.mjs");
   writeFileSync(
     filePath,
     `
@@ -661,7 +661,7 @@ function createPiPaseoExtensionFile(systemPrompt?: string): PiTempFile {
 
 	function emitEntryCapture(ctx, reason, requestId) {
 	  ctx.ui.notify(
-	    "${PASEO_PI_ENTRY_CAPTURE_MARKER} " +
+	    "${YEMU_PI_ENTRY_CAPTURE_MARKER} " +
 	      JSON.stringify({ reason, requestId, entries: getCapturedUserEntries(ctx) }),
 	    "info",
 	  );
@@ -669,7 +669,7 @@ function createPiPaseoExtensionFile(systemPrompt?: string): PiTempFile {
 
 	function emitCommandResult(ctx, requestId, result) {
 	  ctx.ui.notify(
-	    "${PASEO_PI_COMMAND_RESULT_MARKER} " + JSON.stringify({ requestId, ...result }),
+	    "${YEMU_PI_COMMAND_RESULT_MARKER} " + JSON.stringify({ requestId, ...result }),
 	    result.ok ? "info" : "error",
 	  );
 	}
@@ -692,7 +692,7 @@ function createPiPaseoExtensionFile(systemPrompt?: string): PiTempFile {
 	      submittedUserMessages.splice(index, 1);
 	      index -= 1;
 	      ctx.ui.notify(
-	        "${PASEO_PI_SUBMITTED_USER_ENTRY_MARKER} " +
+	        "${YEMU_PI_SUBMITTED_USER_ENTRY_MARKER} " +
 	          JSON.stringify({ entry: toCapturedUserEntry(entry) }),
 	        "info",
 	      );
@@ -728,7 +728,7 @@ function createPiPaseoExtensionFile(systemPrompt?: string): PiTempFile {
 	    emitEntryCapture(ctx, "turn_end");
 	  });
 
-	  pi.registerCommand("${PASEO_PI_CAPTURE_EXTENSION_COMMAND}", {
+	  pi.registerCommand("${YEMU_PI_CAPTURE_EXTENSION_COMMAND}", {
 	    description: "Internal YeMu AI Novel entry capture bridge",
 	    handler: async (args, ctx) => {
 	      const payload = decodePayload(args.trim());
@@ -736,7 +736,7 @@ function createPiPaseoExtensionFile(systemPrompt?: string): PiTempFile {
 	    },
 	  });
 
-	  pi.registerCommand("${PASEO_PI_TREE_EXTENSION_COMMAND}", {
+	  pi.registerCommand("${YEMU_PI_TREE_EXTENSION_COMMAND}", {
 	    description: "Internal YeMu AI Novel tree navigation bridge",
 	    handler: async (args, ctx) => {
 	      const payload = decodePayload(args.trim());
@@ -1517,7 +1517,7 @@ export class PiRpcAgentSession implements AgentSession {
     const requestId = randomUUID();
     const resultPromise = this.waitForExtensionResult(requestId);
     const payload = Buffer.from(JSON.stringify({ targetId, requestId })).toString("base64url");
-    await this.runtimeSession.prompt(`/${PASEO_PI_TREE_EXTENSION_COMMAND} ${payload}`);
+    await this.runtimeSession.prompt(`/${YEMU_PI_TREE_EXTENSION_COMMAND} ${payload}`);
     return await resultPromise;
   }
 
@@ -1812,7 +1812,7 @@ export class PiRpcAgentSession implements AgentSession {
     const requestId = randomUUID();
     const resultPromise = this.waitForExtensionResult(requestId);
     const payload = Buffer.from(JSON.stringify({ requestId, reason })).toString("base64url");
-    await this.runtimeSession.prompt(`/${PASEO_PI_CAPTURE_EXTENSION_COMMAND} ${payload}`);
+    await this.runtimeSession.prompt(`/${YEMU_PI_CAPTURE_EXTENSION_COMMAND} ${payload}`);
     await resultPromise;
   }
 
@@ -1861,7 +1861,7 @@ export class PiRpcAgentSession implements AgentSession {
   }
 
   private handleSubmittedUserEntryMarker(message: string): boolean {
-    const payload = parseExtensionMarkerPayload(message, PASEO_PI_SUBMITTED_USER_ENTRY_MARKER);
+    const payload = parseExtensionMarkerPayload(message, YEMU_PI_SUBMITTED_USER_ENTRY_MARKER);
     if (!payload) {
       return false;
     }
@@ -1884,7 +1884,7 @@ export class PiRpcAgentSession implements AgentSession {
   }
 
   private handleEntryCaptureMarker(message: string): boolean {
-    const payload = parseExtensionMarkerPayload(message, PASEO_PI_ENTRY_CAPTURE_MARKER);
+    const payload = parseExtensionMarkerPayload(message, YEMU_PI_ENTRY_CAPTURE_MARKER);
     if (!payload) {
       return false;
     }
@@ -1897,7 +1897,7 @@ export class PiRpcAgentSession implements AgentSession {
   }
 
   private handleCommandResultMarker(message: string): boolean {
-    const payload = parseExtensionMarkerPayload(message, PASEO_PI_COMMAND_RESULT_MARKER);
+    const payload = parseExtensionMarkerPayload(message, YEMU_PI_COMMAND_RESULT_MARKER);
     if (!payload) {
       return false;
     }

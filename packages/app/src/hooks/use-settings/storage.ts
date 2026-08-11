@@ -1,4 +1,4 @@
-import { isSyntaxThemeId, type SyntaxThemeId } from "@getpaseo/highlight";
+import { isSyntaxThemeId, type SyntaxThemeId } from "@yemu/highlight";
 import type { QueryClient } from "@tanstack/react-query";
 import type { DesktopSettings } from "@/desktop/settings/desktop-settings";
 import { parseAppLanguage, type AppLanguage } from "@/i18n/locales";
@@ -15,9 +15,11 @@ import {
 } from "@/components/sidebar/display-preferences/row-items";
 import { THEME_TO_UNISTYLES, type ThemeName } from "@/styles/theme";
 
-export const APP_SETTINGS_KEY = "@paseo:app-settings";
+export const APP_SETTINGS_KEY = "@yemu:app-settings";
 export const APP_SETTINGS_QUERY_KEY = ["app-settings"];
 const LEGACY_SETTINGS_KEY = "@paseo:settings";
+// COMPAT(appSettingsKey): legacy key kept for one-migration read-back, remove after 2026-11-30.
+const LEGACY_APP_SETTINGS_KEY = "@paseo:app-settings";
 
 export type SendBehavior = "interrupt" | "queue";
 export type ReleaseChannel = "stable" | "beta";
@@ -149,6 +151,12 @@ export async function loadAppSettingsFromStorage(deps: SettingsDeps): Promise<Ap
     const stored = await deps.storage.getItem(APP_SETTINGS_KEY);
     if (stored) {
       return normalizeAppSettings(JSON.parse(stored));
+    }
+
+    const legacyKeyStored = await deps.storage.getItem(LEGACY_APP_SETTINGS_KEY);
+    if (legacyKeyStored) {
+      await deps.storage.setItem(APP_SETTINGS_KEY, legacyKeyStored);
+      return normalizeAppSettings(JSON.parse(legacyKeyStored));
     }
 
     const legacyStored = await deps.storage.getItem(LEGACY_SETTINGS_KEY);
@@ -424,6 +432,12 @@ async function loadRendererSettingsPayload(
   const current = await storage.getItem(APP_SETTINGS_KEY);
   if (current) {
     return JSON.parse(current) as Record<string, unknown>;
+  }
+
+  const legacyKey = await storage.getItem(LEGACY_APP_SETTINGS_KEY);
+  if (legacyKey) {
+    await storage.setItem(APP_SETTINGS_KEY, legacyKey);
+    return JSON.parse(legacyKey) as Record<string, unknown>;
   }
 
   const legacy = await storage.getItem(LEGACY_SETTINGS_KEY);

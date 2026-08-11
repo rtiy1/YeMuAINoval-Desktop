@@ -1,10 +1,10 @@
 import type pino from "pino";
 import { createHash } from "node:crypto";
-import { getErrorMessage } from "@getpaseo/protocol/error-utils";
+import { getErrorMessage } from "@yemu/protocol/error-utils";
 import {
   compactProviderSnapshot,
   type CompactProviderSnapshot,
-} from "@getpaseo/protocol/provider-snapshot-codec";
+} from "@yemu/protocol/provider-snapshot-codec";
 import type { SessionInboundMessage, SessionOutboundMessage } from "../../messages.js";
 import {
   isGlobalProviderSnapshotKey,
@@ -18,7 +18,6 @@ import {
   type ProviderSnapshotEntry,
 } from "../../agent/agent-sdk-types.js";
 import type { ProviderAvailability } from "../../agent/agent-manager.js";
-import type { ProviderUsageService } from "../../../services/quota-fetcher/service.js";
 import { expandTilde } from "../../../utils/path.js";
 
 // COMPAT(customModeIcons): the only mode icons known to clients before v0.1.84. Any
@@ -53,7 +52,6 @@ export interface ProviderCatalogSessionHost {
 export interface ProviderCatalogSessionOptions {
   host: ProviderCatalogSessionHost;
   providerSnapshotManager: ProviderSnapshotManager;
-  providerUsageService: ProviderUsageService;
   logger: pino.Logger;
 }
 
@@ -80,14 +78,12 @@ function encodeProviderSnapshot(entries: ProviderSnapshotEntry[]): EncodedProvid
 export class ProviderCatalogSession {
   private readonly host: ProviderCatalogSessionHost;
   private readonly providerSnapshotManager: ProviderSnapshotManager;
-  private readonly providerUsageService: ProviderUsageService;
   private readonly logger: pino.Logger;
   private unsubscribeSnapshotEvents: (() => void) | null = null;
 
   constructor(options: ProviderCatalogSessionOptions) {
     this.host = options.host;
     this.providerSnapshotManager = options.providerSnapshotManager;
-    this.providerUsageService = options.providerUsageService;
     this.logger = options.logger;
   }
 
@@ -479,29 +475,16 @@ export class ProviderCatalogSession {
   async handleProviderUsageListRequest(
     msg: Extract<SessionInboundMessage, { type: "provider.usage.list.request" }>,
   ): Promise<void> {
-    try {
-      const usage = await this.providerUsageService.listUsage();
-      this.host.emit({
-        type: "provider.usage.list.response",
-        payload: {
-          requestId: msg.requestId,
-          fetchedAt: usage.fetchedAt,
-          providers: usage.providers,
-        },
-      });
-    } catch (error) {
-      const err = error instanceof Error ? error : new Error(String(error));
-      this.logger.error({ err }, "Failed to list provider usage");
-      this.host.emit({
-        type: "rpc_error",
-        payload: {
-          requestId: msg.requestId,
-          requestType: msg.type,
-          error: `Failed to list provider usage: ${err.message}`,
-          code: "provider_usage_list_failed",
-        },
-      });
-    }
+    // COMPAT(providerUsage): third-party provider usage was removed in v0.4;
+    // the RPC stays for wire compatibility and returns an empty payload.
+    this.host.emit({
+      type: "provider.usage.list.response",
+      payload: {
+        requestId: msg.requestId,
+        fetchedAt: new Date().toISOString(),
+        providers: [],
+      },
+    });
   }
 }
 

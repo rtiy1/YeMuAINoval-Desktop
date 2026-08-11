@@ -1,5 +1,5 @@
 {
-  "name": "@getpaseo/client",
+  "name": "@yemu/client",
   "version": "0.3.1",
   "description": "YeMu AI Novel daemon client SDK",
   "files": [
@@ -30,7 +30,7 @@
   },
   "scripts": {
     "clean": "node ../../scripts/clean-package-dist.mjs",
-    "build": "npm run build --workspace=@getpaseo/protocol && tsc -p tsconfig.json --incremental false",
+    "build": "npm run build --workspace=@yemu/protocol && tsc -p tsconfig.json --incremental false",
     "build:clean": "npm run clean && npm run build",
     "prepack": "npm run build:clean",
     "typecheck": "tsgo --noEmit",
@@ -38,8 +38,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@getpaseo/protocol": "0.3.1",
-    "@getpaseo/relay": "0.3.1",
+    "@yemu/novel-core": "0.1.0",
+    "@yemu/protocol": "0.3.1",
+    "@yemu/relay": "0.3.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {

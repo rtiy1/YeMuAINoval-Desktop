@@ -1,5 +1,5 @@
 import type { Logger } from "pino";
-import type { ProviderOptions, ToolPolicy } from "@getpaseo/protocol/agent-types";
+import type { ProviderOptions, ToolPolicy } from "@yemu/protocol/agent-types";
 import { z } from "zod";
 
 import type {
@@ -43,7 +43,7 @@ import {
   DEV_AGENT_PROVIDER_DEFINITIONS,
   getAgentProviderDefinition,
   type AgentProviderDefinition,
-} from "@getpaseo/protocol/provider-manifest";
+} from "@yemu/protocol/provider-manifest";
 
 export type { AgentProviderDefinition };
 

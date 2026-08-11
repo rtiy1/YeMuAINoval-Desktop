@@ -201,18 +201,6 @@ export const createAgent = async (page: Page, message: string) => {
 };
 
 async function preferFastThinkingOption(page: Page): Promise<void> {
-  const providerTrigger = page
-    .locator(
-      '[data-testid="agent-provider-selector"]:visible, [data-testid="draft-provider-select"]:visible',
-    )
-    .first();
-  if (await providerTrigger.isVisible().catch(() => false)) {
-    const providerText = ((await providerTrigger.innerText().catch(() => "")) ?? "").trim();
-    if (!/codex/i.test(providerText)) {
-      return;
-    }
-  }
-
   const thinkingTrigger = page.getByTestId("agent-thinking-selector").first();
   if (!(await thinkingTrigger.isVisible().catch(() => false))) {
     return;
@@ -272,51 +260,10 @@ async function preferFastThinkingOption(page: Page): Promise<void> {
 
 export interface AgentConfig {
   directory: string;
-  provider?: string;
   model?: string;
   mode?: string;
   prompt: string;
 }
-
-export const selectProvider = async (page: Page, provider: string) => {
-  const normalizedProvider = provider.trim();
-  if (!normalizedProvider) {
-    throw new Error("Provider must be a non-empty string.");
-  }
-
-  const providerTrigger = page
-    .locator(
-      '[data-testid="agent-provider-selector"]:visible, [data-testid="draft-provider-select"]:visible',
-    )
-    .first();
-  if (
-    await providerTrigger
-      .getByText(new RegExp(`^${escapeRegex(normalizedProvider)}$`, "i"))
-      .first()
-      .isVisible()
-      .catch(() => false)
-  ) {
-    return;
-  }
-
-  if (await providerTrigger.isVisible().catch(() => false)) {
-    await providerTrigger.click();
-  } else {
-    const providerLabel = page.getByText("PROVIDER", { exact: true }).first();
-    await expect(providerLabel).toBeVisible();
-    await providerLabel.click();
-  }
-
-  const dialog = page.getByRole("dialog").last();
-  const searchInput = dialog.getByRole("textbox", { name: /search provider/i }).first();
-  if (await searchInput.isVisible().catch(() => false)) {
-    await searchInput.fill(normalizedProvider);
-  }
-
-  const option = dialog.getByText(new RegExp(`^${escapeRegex(normalizedProvider)}$`, "i")).first();
-  await expect(option).toBeVisible();
-  await option.click();
-};
 
 export const selectModel = async (page: Page, model: string) => {
   const normalizedModel = model.trim();
@@ -416,10 +363,6 @@ export const createAgentWithConfig = async (page: Page, config: AgentConfig) => 
   await gotoHome(page);
   await ensureHostSelected(page);
   await setWorkingDirectory(page, config.directory);
-
-  if (config.provider) {
-    await selectProvider(page, config.provider);
-  }
 
   if (config.model) {
     await selectModel(page, config.model);

@@ -17,7 +17,20 @@ import type {
   SendAgentMessageRequest,
   SessionOutboundMessage,
   WorkspaceDescriptorPayload,
-} from "@getpaseo/protocol/messages";
+} from "@yemu/protocol/messages";
+import type {
+  AiCredentialType,
+  AiModelProfile,
+  AiModelProfileWithCredential,
+} from "@yemu/protocol/ai-models/schema";
+import type {
+  NovelDescriptor,
+  NovelEntityKind,
+  NovelRelationshipsPayload,
+  NovelSnapshot,
+  NovelTree,
+} from "@yemu/protocol/messages";
+import type { GraphLayout, NovelMetadata, NovelValidationIssueWire } from "@yemu/novel-core";
 import { DaemonClient } from "./daemon-client.js";
 import type {
   FetchAgentTimelineCursor,
@@ -329,11 +342,158 @@ export interface PaseoConfigActions {
   ): Promise<{ requestId: string; config: MutableDaemonConfig }>;
 }
 
+export interface PaseoAiModelsActions {
+  list(
+    requestId?: string,
+  ): Promise<{ requestId: string; profiles: AiModelProfileWithCredential[] }>;
+  upsert(
+    profile: AiModelProfile,
+    requestId?: string,
+  ): Promise<{ requestId: string; profile: AiModelProfileWithCredential }>;
+  remove(profileId: string, requestId?: string): Promise<{ requestId: string; removed: boolean }>;
+  test(profileId: string, requestId?: string): Promise<AiModelsTestResult>;
+  setCredential(
+    profileId: string,
+    credentialType: AiCredentialType,
+    credentialValue: string,
+    requestId?: string,
+  ): Promise<{
+    requestId: string;
+    credentialId: string;
+    hasCredential: boolean;
+    maskedKey: string;
+  }>;
+  removeCredential(
+    profileId: string,
+    requestId?: string,
+  ): Promise<{ requestId: string; removed: boolean }>;
+}
+
+export interface PaseoNovelActions {
+  list(requestId?: string): Promise<{ requestId: string; novels: NovelDescriptor[] }>;
+  get(
+    projectId: string,
+    requestId?: string,
+  ): Promise<{
+    requestId: string;
+    novel: NovelDescriptor;
+    metadata: NovelMetadata;
+    tree: NovelTree;
+  }>;
+  create(
+    projectId: string,
+    title: string,
+    requestId?: string,
+  ): Promise<{ requestId: string; novel: NovelDescriptor }>;
+  updateMetadata(
+    projectId: string,
+    metadata: NovelMetadata,
+    requestId?: string,
+  ): Promise<{ requestId: string; novel: NovelDescriptor }>;
+  addVolume(
+    projectId: string,
+    requestId?: string,
+  ): Promise<{ requestId: string; number: number; dirName: string }>;
+  addChapter(
+    projectId: string,
+    volume: number,
+    requestId?: string,
+  ): Promise<{ requestId: string; number: number; fileName: string }>;
+  readChapter(
+    projectId: string,
+    volume: number,
+    chapter: number,
+    requestId?: string,
+  ): Promise<{
+    requestId: string;
+    fileName: string;
+    title: string | null;
+    content: string;
+    wordCount: number;
+    modifiedAt: string | null;
+  }>;
+  writeChapter(
+    projectId: string,
+    volume: number,
+    chapter: number,
+    content: string,
+    expectedModifiedAt: string | null,
+    requestId?: string,
+  ): Promise<{
+    requestId: string;
+    result:
+      | { status: "written"; modifiedAt: string }
+      | { status: "conflict"; currentModifiedAt: string | null }
+      | { status: "missing" };
+  }>;
+  listEntities(
+    projectId: string,
+    kind: NovelEntityKind,
+    requestId?: string,
+  ): Promise<{
+    requestId: string;
+    kind: NovelEntityKind;
+    entities: Array<Record<string, unknown>>;
+    issues: NovelValidationIssueWire[];
+  }>;
+  upsertEntity(
+    projectId: string,
+    kind: NovelEntityKind,
+    id: string,
+    data: Record<string, unknown>,
+    requestId?: string,
+  ): Promise<{ requestId: string; id: string }>;
+  removeEntity(
+    projectId: string,
+    kind: NovelEntityKind,
+    id: string,
+    requestId?: string,
+  ): Promise<{ requestId: string; removed: boolean }>;
+  snapshotCreate(
+    projectId: string,
+    label: string | null,
+    requestId?: string,
+  ): Promise<{ requestId: string; snapshot: NovelSnapshot }>;
+  snapshotList(
+    projectId: string,
+    requestId?: string,
+  ): Promise<{ requestId: string; snapshots: NovelSnapshot[] }>;
+  snapshotRestore(
+    projectId: string,
+    snapshotId: string,
+    requestId?: string,
+  ): Promise<{ requestId: string; restored: boolean }>;
+  relationshipsGet(
+    projectId: string,
+    requestId?: string,
+  ): Promise<{ requestId: string; snapshot: NovelRelationshipsPayload }>;
+  graphLayoutGet(
+    projectId: string,
+    requestId?: string,
+  ): Promise<{ requestId: string; layout: GraphLayout | null }>;
+  graphLayoutSet(
+    projectId: string,
+    layout: GraphLayout,
+    requestId?: string,
+  ): Promise<{ requestId: string; saved: boolean }>;
+}
+
+export interface AiModelsTestResult {
+  requestId: string;
+  ok: boolean;
+  latencyMs: number | null;
+  authOk: boolean | null;
+  modelAvailable: boolean | null;
+  message: string | null;
+}
+
 export interface PaseoClient {
   readonly workspaces: PaseoWorkspaceActions;
   readonly agents: PaseoAgentActions;
   readonly providers: PaseoProviderActions;
   readonly config: PaseoConfigActions;
+  readonly aiModels: PaseoAiModelsActions;
+  readonly novels: PaseoNovelActions;
   connect(): Promise<void>;
   close(): Promise<void>;
   ensureConnected(): void;
@@ -397,6 +557,55 @@ export function createPaseoClient(config: PaseoClientConfig): PaseoClient {
     config: {
       get: (requestId) => daemonClient.getDaemonConfig(requestId),
       patch: (patch, requestId) => daemonClient.patchDaemonConfig(patch, requestId),
+    },
+    aiModels: {
+      list: (requestId) => daemonClient.listAiModelProfiles(requestId),
+      upsert: (profile, requestId) => daemonClient.upsertAiModelProfile(profile, requestId),
+      remove: (profileId, requestId) => daemonClient.removeAiModelProfile(profileId, requestId),
+      test: (profileId, requestId) => daemonClient.testAiModelProfile(profileId, requestId),
+      setCredential: (profileId, credentialType, credentialValue, requestId) =>
+        daemonClient.setAiModelCredential(profileId, credentialType, credentialValue, requestId),
+      removeCredential: (profileId, requestId) =>
+        daemonClient.removeAiModelCredential(profileId, requestId),
+    },
+    novels: {
+      list: (requestId) => daemonClient.listNovels(requestId),
+      get: (projectId, requestId) => daemonClient.getNovel(projectId, requestId),
+      create: (projectId, title, requestId) =>
+        daemonClient.createNovel(projectId, title, requestId),
+      updateMetadata: (projectId, metadata, requestId) =>
+        daemonClient.updateNovelMetadata(projectId, metadata, requestId),
+      addVolume: (projectId, requestId) => daemonClient.addNovelVolume(projectId, requestId),
+      addChapter: (projectId, volume, requestId) =>
+        daemonClient.addNovelChapter(projectId, volume, requestId),
+      readChapter: (projectId, volume, chapter, requestId) =>
+        daemonClient.readNovelChapter(projectId, volume, chapter, requestId),
+      writeChapter: (projectId, volume, chapter, content, expectedModifiedAt, requestId) =>
+        daemonClient.writeNovelChapter(
+          projectId,
+          volume,
+          chapter,
+          content,
+          expectedModifiedAt,
+          requestId,
+        ),
+      listEntities: (projectId, kind, requestId) =>
+        daemonClient.listNovelEntities(projectId, kind, requestId),
+      upsertEntity: (projectId, kind, id, data, requestId) =>
+        daemonClient.upsertNovelEntity(projectId, kind, id, data, requestId),
+      removeEntity: (projectId, kind, id, requestId) =>
+        daemonClient.removeNovelEntity(projectId, kind, id, requestId),
+      snapshotCreate: (projectId, label, requestId) =>
+        daemonClient.createNovelSnapshot(projectId, label, requestId),
+      snapshotList: (projectId, requestId) => daemonClient.listNovelSnapshots(projectId, requestId),
+      snapshotRestore: (projectId, snapshotId, requestId) =>
+        daemonClient.restoreNovelSnapshot(projectId, snapshotId, requestId),
+      relationshipsGet: (projectId, requestId) =>
+        daemonClient.getNovelRelationships(projectId, requestId),
+      graphLayoutGet: (projectId, requestId) =>
+        daemonClient.getNovelGraphLayout(projectId, requestId),
+      graphLayoutSet: (projectId, layout, requestId) =>
+        daemonClient.setNovelGraphLayout(projectId, layout, requestId),
     },
     connect: () => daemonClient.connect(),
     close: () => daemonClient.close(),

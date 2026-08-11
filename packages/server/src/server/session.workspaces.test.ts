@@ -14,12 +14,12 @@ import { setImmediate as waitForImmediate } from "node:timers/promises";
 import { afterEach, expect, test, vi } from "vitest";
 import { z } from "zod";
 
-import { CLIENT_CAPS } from "@getpaseo/protocol/client-capabilities";
+import { CLIENT_CAPS } from "@yemu/protocol/client-capabilities";
 import { createTestLogger } from "../test-utils/test-logger.js";
 import { Session } from "./session.js";
 import type { SessionOptions } from "./session.js";
 import type { AgentUpdatesService } from "./session/agent-updates/agent-updates-service.js";
-import type { AgentSnapshotPayload, SessionOutboundMessage } from "@getpaseo/protocol/messages";
+import type { AgentSnapshotPayload, SessionOutboundMessage } from "@yemu/protocol/messages";
 import type { TerminalManager } from "../terminal/terminal-manager.js";
 import { createTerminalManager } from "../terminal/terminal-manager.js";
 import { AgentManager, type AgentManagerEvent, type ManagedAgent } from "./agent/agent-manager.js";
@@ -1029,11 +1029,14 @@ test("create_agent_request launches from an exact subdirectory in a created work
     const child = path.join(parent, "packages", "app");
     mkdirSync(child, { recursive: true });
     execFileSync("git", ["init", "-b", "main"], { cwd: parent, stdio: "pipe" });
-    execFileSync("git", ["config", "user.email", "test@getpaseo.local"], {
+    execFileSync("git", ["config", "user.email", "test@yemu.local"], {
       cwd: parent,
       stdio: "pipe",
     });
-    execFileSync("git", ["config", "user.name", "YeMu AI Novel Test"], { cwd: parent, stdio: "pipe" });
+    execFileSync("git", ["config", "user.name", "YeMu AI Novel Test"], {
+      cwd: parent,
+      stdio: "pipe",
+    });
     writeFileSync(path.join(child, "README.md"), "app\n");
     execFileSync("git", ["add", "."], { cwd: parent, stdio: "pipe" });
     execFileSync("git", ["commit", "-m", "initial"], { cwd: parent, stdio: "pipe" });
@@ -4719,7 +4722,7 @@ test("open_project_request reclassifies an archived directory workspace when git
     cwd,
     isGit: true,
     currentBranch: "feature/desktop-daemon-settings",
-    remoteUrl: "git@github.com:getpaseo/paseo.git",
+    remoteUrl: "git@github.com:rtiy1/YeMuAINoval-Desktop.git",
     worktreeRoot: cwd,
     isPaseoOwnedWorktree: false,
     mainRepoRoot: repoRoot,
@@ -4730,7 +4733,7 @@ test("open_project_request reclassifies an archived directory workspace when git
         isGit: true,
         repoRoot: cwd,
         currentBranch: "feature/desktop-daemon-settings",
-        remoteUrl: "git@github.com:getpaseo/paseo.git",
+        remoteUrl: "git@github.com:rtiy1/YeMuAINoval-Desktop.git",
         isPaseoOwnedWorktree: false,
         mainRepoRoot: repoRoot,
       },
@@ -4835,7 +4838,7 @@ test("open_project_request reclassifies an active directory workspace when git m
     cwd: requestedCwd,
     isGit: true,
     currentBranch: requestedCwd === repoRoot ? "main" : "feature/desktop-daemon-settings",
-    remoteUrl: "git@github.com:getpaseo/paseo.git",
+    remoteUrl: "git@github.com:rtiy1/YeMuAINoval-Desktop.git",
     worktreeRoot: requestedCwd,
     isPaseoOwnedWorktree: false,
     mainRepoRoot: requestedCwd === repoRoot ? null : repoRoot,
@@ -4846,7 +4849,7 @@ test("open_project_request reclassifies an active directory workspace when git m
         isGit: true,
         repoRoot: requestedCwd,
         currentBranch: requestedCwd === repoRoot ? "main" : "feature/desktop-daemon-settings",
-        remoteUrl: "git@github.com:getpaseo/paseo.git",
+        remoteUrl: "git@github.com:rtiy1/YeMuAINoval-Desktop.git",
         isPaseoOwnedWorktree: false,
         mainRepoRoot: requestedCwd === repoRoot ? null : repoRoot,
       },
@@ -4925,7 +4928,7 @@ test("open_project_request gives a plain git worktree its own exact-root project
     cwd: requestedCwd,
     isGit: true,
     currentBranch: requestedCwd === repoRoot ? "main" : "feature/desktop-daemon-settings",
-    remoteUrl: "git@github.com:getpaseo/paseo.git",
+    remoteUrl: "git@github.com:rtiy1/YeMuAINoval-Desktop.git",
     worktreeRoot: requestedCwd,
     isPaseoOwnedWorktree: false,
     mainRepoRoot: requestedCwd === repoRoot ? null : repoRoot,
@@ -4936,7 +4939,7 @@ test("open_project_request gives a plain git worktree its own exact-root project
         isGit: true,
         repoRoot: requestedCwd,
         currentBranch: requestedCwd === repoRoot ? "main" : "feature/desktop-daemon-settings",
-        remoteUrl: "git@github.com:getpaseo/paseo.git",
+        remoteUrl: "git@github.com:rtiy1/YeMuAINoval-Desktop.git",
         isPaseoOwnedWorktree: false,
         mainRepoRoot: requestedCwd === repoRoot ? null : repoRoot,
       },
@@ -5537,11 +5540,14 @@ function createRecreateWorktreeRepo(): { tempDir: string; repoDir: string } {
   const tempDir = realpathSync(mkdtempSync(path.join(tmpdir(), "paseo-recreate-worktree-")));
   const repoDir = path.join(tempDir, "repo");
   execFileSync("git", ["init", "-b", "main", repoDir], { stdio: "pipe" });
-  execFileSync("git", ["config", "user.email", "test@getpaseo.local"], {
+  execFileSync("git", ["config", "user.email", "test@yemu.local"], {
     cwd: repoDir,
     stdio: "pipe",
   });
-  execFileSync("git", ["config", "user.name", "YeMu AI Novel Test"], { cwd: repoDir, stdio: "pipe" });
+  execFileSync("git", ["config", "user.name", "YeMu AI Novel Test"], {
+    cwd: repoDir,
+    stdio: "pipe",
+  });
   execFileSync("git", ["config", "commit.gpgsign", "false"], { cwd: repoDir, stdio: "pipe" });
   writeFileSync(path.join(repoDir, "README.md"), "main\n");
   execFileSync("git", ["add", "README.md"], { cwd: repoDir, stdio: "pipe" });
@@ -5789,11 +5795,14 @@ test("archive_workspace_request archives a worktree-kind workspace and removes t
   const repoDir = path.join(tempDir, "repo");
   mkdirSync(repoDir, { recursive: true });
   execFileSync("git", ["init", "-b", "main"], { cwd: repoDir, stdio: "pipe" });
-  execFileSync("git", ["config", "user.email", "test@getpaseo.local"], {
+  execFileSync("git", ["config", "user.email", "test@yemu.local"], {
     cwd: repoDir,
     stdio: "pipe",
   });
-  execFileSync("git", ["config", "user.name", "YeMu AI Novel Test"], { cwd: repoDir, stdio: "pipe" });
+  execFileSync("git", ["config", "user.name", "YeMu AI Novel Test"], {
+    cwd: repoDir,
+    stdio: "pipe",
+  });
   execFileSync("git", ["-c", "commit.gpgsign=false", "commit", "--allow-empty", "-m", "initial"], {
     cwd: repoDir,
     stdio: "pipe",
@@ -8735,11 +8744,14 @@ function createWorkspaceCreatePrRepo(): WorkspaceCreatePrRepoFixture {
   const prFileName = "pr-123.txt";
 
   execFileSync("git", ["init", "-b", "main", repoDir], { stdio: "pipe" });
-  execFileSync("git", ["config", "user.email", "test@getpaseo.local"], {
+  execFileSync("git", ["config", "user.email", "test@yemu.local"], {
     cwd: repoDir,
     stdio: "pipe",
   });
-  execFileSync("git", ["config", "user.name", "YeMu AI Novel Test"], { cwd: repoDir, stdio: "pipe" });
+  execFileSync("git", ["config", "user.name", "YeMu AI Novel Test"], {
+    cwd: repoDir,
+    stdio: "pipe",
+  });
   execFileSync("git", ["config", "commit.gpgsign", "false"], { cwd: repoDir, stdio: "pipe" });
   writeFileSync(path.join(repoDir, "README.md"), "main\n");
   execFileSync("git", ["add", "README.md"], { cwd: repoDir, stdio: "pipe" });
@@ -9070,11 +9082,14 @@ test("workspace auto-name uses the backing root for a nested worktree", async ()
   const repoDir = path.join(tempDir, "repo");
   mkdirSync(repoDir);
   execFileSync("git", ["init", repoDir], { stdio: "pipe" });
-  execFileSync("git", ["config", "user.email", "test@getpaseo.local"], {
+  execFileSync("git", ["config", "user.email", "test@yemu.local"], {
     cwd: repoDir,
     stdio: "pipe",
   });
-  execFileSync("git", ["config", "user.name", "YeMu AI Novel Test"], { cwd: repoDir, stdio: "pipe" });
+  execFileSync("git", ["config", "user.name", "YeMu AI Novel Test"], {
+    cwd: repoDir,
+    stdio: "pipe",
+  });
   execFileSync("git", ["config", "commit.gpgsign", "false"], { cwd: repoDir, stdio: "pipe" });
   writeFileSync(path.join(repoDir, "README.md"), "hello\n");
   execFileSync("git", ["add", "README.md"], { cwd: repoDir, stdio: "pipe" });

@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, expect, test } from "vitest";
-import { CLIENT_CAPS } from "@getpaseo/protocol/client-capabilities";
-import type { SessionOutboundMessage } from "@getpaseo/protocol/messages";
+import { CLIENT_CAPS } from "@yemu/protocol/client-capabilities";
+import type { SessionOutboundMessage } from "@yemu/protocol/messages";
 import { DaemonClient } from "./test-utils/daemon-client.js";
 import { createTestPaseoDaemon, type TestPaseoDaemon } from "./test-utils/paseo-daemon.js";
 

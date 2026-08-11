@@ -14,10 +14,10 @@ $PythonVenvScripts = Join-Path $PythonVenv "Scripts"
 
 New-Item -ItemType Directory -Force -Path $YeMuHome, $MCodeHome, $ModelsHome | Out-Null
 
-# PASEO_HOME remains the internal compatibility variable until the daemon rename migration.
-$env:PASEO_HOME = $YeMuHome
+# YEMU_HOME remains the internal compatibility variable until the daemon rename migration.
+$env:YEMU_HOME = $YeMuHome
 $env:MCODE_CONFIG_DIR = $MCodeHome
-$env:PASEO_LOCAL_MODELS_DIR = $ModelsHome
+$env:YEMU_LOCAL_MODELS_DIR = $ModelsHome
 $env:VIRTUAL_ENV = $PythonVenv
 $env:PATH = "$PythonVenvScripts;$(Join-Path $RepoRoot 'node_modules\.bin');$env:PATH"
 

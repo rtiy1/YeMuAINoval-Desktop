@@ -99,7 +99,7 @@ import { createMessageSubmissionWriter } from "@/composer/submission/writer";
 import { ComposerKeyboardScopeProvider } from "@/composer/keyboard-scope";
 import { useAppSettings } from "@/hooks/use-settings";
 import { isWeb, isNative } from "@/constants/platform";
-import type { ForgeSearchItem } from "@getpaseo/protocol/messages";
+import type { ForgeSearchItem } from "@yemu/protocol/messages";
 import type {
   AttachmentMetadata,
   ComposerAttachment,
@@ -258,8 +258,6 @@ function renderContextWindowMeter(
   contextWindowUsedTokens: number | null,
   totalCostUsd: number | null,
   showPercentage: boolean,
-  serverId: string,
-  provider: string | null,
   pending: boolean,
   glyphSize: number,
 ): ReactElement | null {
@@ -273,8 +271,6 @@ function renderContextWindowMeter(
       usedTokens={contextWindowUsedTokens}
       totalCostUsd={totalCostUsd}
       showPercentage={showPercentage}
-      serverId={serverId}
-      provider={provider}
       pending={pending}
       glyphSize={glyphSize}
     />
@@ -1821,8 +1817,6 @@ export function Composer({
         contextWindowUsedTokens,
         agentState.totalCostUsd,
         false,
-        serverId,
-        agentState.provider,
         contextWindowPending,
         contextWindowMeterGlyphSize,
       ),
@@ -1830,8 +1824,6 @@ export function Composer({
       contextWindowMaxTokens,
       contextWindowUsedTokens,
       agentState.totalCostUsd,
-      serverId,
-      agentState.provider,
       contextWindowPending,
       contextWindowMeterGlyphSize,
     ],

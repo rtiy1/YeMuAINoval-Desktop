@@ -4,11 +4,14 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 type EditorTargetId = string;
 
-const PREFERRED_EDITOR_STORAGE_KEY = "@paseo:preferred-editor";
+const PREFERRED_EDITOR_STORAGE_KEY = "@yemu:preferred-editor";
 const PREFERRED_EDITOR_QUERY_KEY = ["preferred-editor"];
 
 async function loadPreferredEditor(): Promise<EditorTargetId | null> {
-  const stored = await AsyncStorage.getItem(PREFERRED_EDITOR_STORAGE_KEY);
+  // COMPAT(preferredEditorKey): legacy key read back once, remove after 2026-11-30.
+  const stored =
+    (await AsyncStorage.getItem(PREFERRED_EDITOR_STORAGE_KEY)) ??
+    (await AsyncStorage.getItem("@paseo:preferred-editor"));
   if (!stored) {
     return null;
   }

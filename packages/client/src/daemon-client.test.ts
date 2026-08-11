@@ -6,13 +6,13 @@ import {
   type DaemonTransport,
   type Logger,
 } from "./daemon-client";
-import { CLIENT_CAPS } from "@getpaseo/protocol/client-capabilities";
-import { BROWSER_AUTOMATION_COMMAND_NAMES } from "@getpaseo/protocol/browser-automation/rpc-schemas";
+import { CLIENT_CAPS } from "@yemu/protocol/client-capabilities";
+import { BROWSER_AUTOMATION_COMMAND_NAMES } from "@yemu/protocol/browser-automation/rpc-schemas";
 import {
   decodeFileTransferFrame,
   encodeFileTransferFrame,
   FileTransferOpcode,
-} from "@getpaseo/protocol/binary-frames/index";
+} from "@yemu/protocol/binary-frames/index";
 import {
   asUint8Array,
   decodeTerminalResizePayload,
@@ -20,7 +20,7 @@ import {
   encodeTerminalSnapshotPayload,
   encodeTerminalStreamFrame,
   TerminalStreamOpcode,
-} from "@getpaseo/protocol/terminal-stream-protocol";
+} from "@yemu/protocol/terminal-stream-protocol";
 
 expectTypeOf<"getGitDiff" extends keyof DaemonClient ? true : false>().toEqualTypeOf<false>();
 expectTypeOf<
@@ -2243,7 +2243,7 @@ test("sends structured attachments with create_agent_request", async () => {
         mimeType: "application/github-pr",
         number: 123,
         title: "Fix race in worktree setup",
-        url: "https://github.com/getpaseo/paseo/pull/123",
+        url: "https://github.com/rtiy1/YeMuAINoval-Desktop/pull/123",
         baseRefName: "main",
         headRefName: "fix/worktree-race",
       },
@@ -2258,7 +2258,7 @@ test("sends structured attachments with create_agent_request", async () => {
       mimeType: "application/github-pr",
       number: 123,
       title: "Fix race in worktree setup",
-      url: "https://github.com/getpaseo/paseo/pull/123",
+      url: "https://github.com/rtiy1/YeMuAINoval-Desktop/pull/123",
       baseRefName: "main",
       headRefName: "fix/worktree-race",
     },
@@ -2419,7 +2419,7 @@ test("sends structured first-agent context attachments with create_paseo_worktre
           mimeType: "application/github-pr",
           number: 123,
           title: "Fix race in worktree setup",
-          url: "https://github.com/getpaseo/paseo/pull/123",
+          url: "https://github.com/rtiy1/YeMuAINoval-Desktop/pull/123",
         },
       ],
     },
@@ -2436,7 +2436,7 @@ test("sends structured first-agent context attachments with create_paseo_worktre
       mimeType: "application/github-pr",
       number: 123,
       title: "Fix race in worktree setup",
-      url: "https://github.com/getpaseo/paseo/pull/123",
+      url: "https://github.com/rtiy1/YeMuAINoval-Desktop/pull/123",
     },
   ]);
 
@@ -2553,11 +2553,11 @@ test("searches GitHub repositories through the dotted RPC", async () => {
           {
             id: "R_paseo",
             name: "paseo",
-            nameWithOwner: "getpaseo/paseo",
+            nameWithOwner: "rtiy1/YeMuAINoval-Desktop",
             description: "Development environment in your pocket",
             visibility: "public",
             updatedAt: "2026-07-15T10:00:00Z",
-            cloneUrl: "git@github.com:getpaseo/paseo.git",
+            cloneUrl: "git@github.com:rtiy1/YeMuAINoval-Desktop.git",
           },
         ],
         available: true,
@@ -2573,11 +2573,11 @@ test("searches GitHub repositories through the dotted RPC", async () => {
       {
         id: "R_paseo",
         name: "paseo",
-        nameWithOwner: "getpaseo/paseo",
+        nameWithOwner: "rtiy1/YeMuAINoval-Desktop",
         description: "Development environment in your pocket",
         visibility: "public",
         updatedAt: "2026-07-15T10:00:00Z",
-        cloneUrl: "git@github.com:getpaseo/paseo.git",
+        cloneUrl: "git@github.com:rtiy1/YeMuAINoval-Desktop.git",
       },
     ],
     available: true,
@@ -3616,7 +3616,7 @@ test("requests GitHub check details via namespaced RPC", async () => {
   const promise = client.checkoutGithubGetCheckDetails(
     {
       cwd: "/tmp/project",
-      repoOwner: "getpaseo",
+      repoOwner: "rtiy1",
       repoName: "paseo",
       checkRunId: 12345,
       workflowRunId: 456,
@@ -3629,7 +3629,7 @@ test("requests GitHub check details via namespaced RPC", async () => {
   expect(request).toMatchObject({
     type: "checkout.github.get_check_details.request",
     cwd: "/tmp/project",
-    repoOwner: "getpaseo",
+    repoOwner: "rtiy1",
     repoName: "paseo",
     checkRunId: 12345,
     workflowRunId: 456,

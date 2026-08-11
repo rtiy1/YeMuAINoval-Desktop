@@ -9,14 +9,14 @@ import { fileURLToPath } from "node:url";
 import { createExternalProcessEnv } from "../server/paseo-env.js";
 import { writePrivateFileAtomicSync } from "../server/private-files.js";
 import { findExecutable } from "../executable-resolution/executable-resolution.js";
-import type { TerminalCell, TerminalState } from "@getpaseo/protocol/messages";
-import { TerminalInputModeTracker } from "@getpaseo/protocol/terminal-input-mode";
+import type { TerminalCell, TerminalState } from "@yemu/protocol/messages";
+import { TerminalInputModeTracker } from "@yemu/protocol/terminal-input-mode";
 import { TerminalActivityTracker } from "./activity/terminal-activity-tracker.js";
-import type { TerminalActivity, TerminalActivityState } from "@getpaseo/protocol/terminal-activity";
+import type { TerminalActivity, TerminalActivityState } from "@yemu/protocol/terminal-activity";
 
 const { Terminal } = xterm;
 const require = createRequire(import.meta.url);
-const PASEO_CLI_BIN_ENTRY = "@getpaseo/cli/bin/paseo";
+const YEMU_CLI_BIN_ENTRY = "@yemu/cli/bin/yemu";
 let nodePtySpawnHelperChecked = false;
 const TERMINAL_TITLE_DEBOUNCE_MS = 150;
 const TERMINAL_EXIT_OUTPUT_LINE_LIMIT = 12;
@@ -399,7 +399,7 @@ export function resolvePaseoCliBinDir(): string | null {
 }
 
 export function resolvePaseoCliExecutablePath(): string | null {
-  const configuredCli = process.env.PASEO_CLI?.trim();
+  const configuredCli = process.env.YEMU_CLI?.trim();
   if (configuredCli) {
     return resolvePath(configuredCli);
   }
@@ -423,7 +423,7 @@ export function resolvePaseoCliExecutablePath(): string | null {
 
 function resolvePaseoCliBinEntrypoint(): string | null {
   try {
-    return require.resolve(PASEO_CLI_BIN_ENTRY);
+    return require.resolve(YEMU_CLI_BIN_ENTRY);
   } catch {
     return null;
   }
@@ -460,7 +460,7 @@ function resolvePaseoCliShim(binDir: string): string | null {
 }
 
 function paseoCliShimNames(): string[] {
-  return process.platform === "win32" ? ["paseo.cmd", "paseo.exe", "paseo"] : ["paseo"];
+  return process.platform === "win32" ? ["yemu.cmd", "yemu.exe", "yemu"] : ["yemu"];
 }
 
 function resolveZshShellIntegrationRuntimeDir(): string {
@@ -470,7 +470,7 @@ function resolveZshShellIntegrationRuntimeDir(): string {
   } catch {
     // keep fallback
   }
-  return join(tmpdir(), `${username}-paseo-zsh-${process.pid}`);
+  return join(tmpdir(), `${username}-yemu-zsh-${process.pid}`);
 }
 
 function prepareZshShellIntegrationRuntimeDir(sourceDir = resolveZshShellIntegrationDir()): string {
@@ -483,8 +483,8 @@ function prepareZshShellIntegrationRuntimeDir(sourceDir = resolveZshShellIntegra
     readFileSync(join(readableSourceDir, ".zshenv")),
   );
   writePrivateFileAtomicSync(
-    join(runtimeDir, "paseo-integration.zsh"),
-    readFileSync(join(readableSourceDir, "paseo-integration.zsh")),
+    join(runtimeDir, "yemu-integration.zsh"),
+    readFileSync(join(readableSourceDir, "yemu-integration.zsh")),
   );
   return runtimeDir;
 }
@@ -512,7 +512,7 @@ export function buildTerminalEnvironment(
   const originalZdotdir = envWithHookCli.ZDOTDIR ?? "";
   return {
     ...envWithHookCli,
-    PASEO_ZSH_ZDOTDIR: originalZdotdir,
+    YEMU_ZSH_ZDOTDIR: originalZdotdir,
     ZDOTDIR: prepareZshShellIntegrationRuntimeDir(input.zshShellIntegrationDir),
   };
 }
@@ -527,7 +527,7 @@ function injectPaseoHookCli(
 
   return {
     ...env,
-    PASEO_HOOK_CLI: resolvePath(resolveExternalProcessPath(cliPath)),
+    YEMU_HOOK_CLI: resolvePath(resolveExternalProcessPath(cliPath)),
   };
 }
 
@@ -951,7 +951,7 @@ export async function createTerminal(options: CreateTerminalOptions): Promise<Te
       env: {
         ...env,
         ...activityEnv,
-        PASEO_WORKSPACE_ID: workspaceId,
+        YEMU_WORKSPACE_ID: workspaceId,
       },
     }),
   });

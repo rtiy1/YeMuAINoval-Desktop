@@ -6,15 +6,15 @@ import {
   type PaseoConfigRaw,
   type PaseoConfigRevision,
   type ProjectConfigRpcError,
-} from "@getpaseo/protocol/paseo-config-schema";
+} from "@yemu/protocol/paseo-config-schema";
 export {
   PaseoConfigRevisionSchema,
   ProjectConfigRpcErrorSchema,
   type PaseoConfigRevision,
   type ProjectConfigRpcError,
-} from "@getpaseo/protocol/paseo-config-schema";
+} from "@yemu/protocol/paseo-config-schema";
 
-export const PASEO_CONFIG_FILE_NAME = "paseo.json";
+export const YEMU_CONFIG_FILE_NAME = "paseo.json";
 
 export type ReadPaseoConfigForEditResult =
   | { ok: true; config: PaseoConfigRaw | null; revision: PaseoConfigRevision | null }
@@ -31,7 +31,7 @@ export interface WritePaseoConfigForEditInput {
 }
 
 export function resolvePaseoConfigPath(repoRoot: string): string {
-  return join(repoRoot, PASEO_CONFIG_FILE_NAME);
+  return join(repoRoot, YEMU_CONFIG_FILE_NAME);
 }
 
 export function statPaseoConfigPath(repoRoot: string): PaseoConfigRevision | null {
@@ -84,7 +84,7 @@ export function writePaseoConfigForEdit(
   const configPath = resolvePaseoConfigPath(input.repoRoot);
   const tempPath = join(
     input.repoRoot,
-    `.${PASEO_CONFIG_FILE_NAME}.${process.pid}.${randomUUID()}.tmp`,
+    `.${YEMU_CONFIG_FILE_NAME}.${process.pid}.${randomUUID()}.tmp`,
   );
 
   try {

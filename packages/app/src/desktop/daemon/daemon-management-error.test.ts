@@ -23,7 +23,8 @@ describe("getDaemonManagementErrorPresentation", () => {
     const presentation = getDaemonManagementErrorPresentation(new Error("stop failed"), true);
 
     expect(presentation).toEqual({
-      message: "Built-in daemon management was paused, but YeMu AI Novel could not stop the daemon.",
+      message:
+        "Built-in daemon management was paused, but YeMu AI Novel could not stop the daemon.",
       refreshStatus: false,
     });
   });
@@ -35,7 +36,8 @@ describe("getDaemonManagementErrorPresentation", () => {
     );
 
     expect(presentation).toEqual({
-      message: "Built-in daemon management was paused, but YeMu AI Novel could not stop the daemon.",
+      message:
+        "Built-in daemon management was paused, but YeMu AI Novel could not stop the daemon.",
       refreshStatus: false,
     });
   });

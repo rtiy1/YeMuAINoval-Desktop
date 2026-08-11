@@ -1,11 +1,8 @@
-import {
-  normalizeHostPort,
-  normalizeLoopbackToLocalhost,
-} from "@getpaseo/protocol/daemon-endpoints";
+import { normalizeHostPort, normalizeLoopbackToLocalhost } from "@yemu/protocol/daemon-endpoints";
 import {
   DirectTcpHostConnectionSchema,
   type DirectTcpHostConnection,
-} from "@getpaseo/protocol/host-connection-schema";
+} from "@yemu/protocol/host-connection-schema";
 import {
   type HostAppearance,
   defaultHostAppearance,

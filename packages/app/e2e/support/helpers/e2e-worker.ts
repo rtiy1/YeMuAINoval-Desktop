@@ -27,7 +27,7 @@ async function createFakeEditorBin(): Promise<string> {
   const fakeEditorSource = `#!/usr/bin/env node
 const fs = require("fs");
 const path = require("path");
-const recordPath = process.env.PASEO_E2E_EDITOR_RECORD_PATH;
+const recordPath = process.env.YEMU_E2E_EDITOR_RECORD_PATH;
 if (recordPath) {
   fs.appendFileSync(recordPath, JSON.stringify({
     command: path.basename(process.argv[1]),
@@ -110,11 +110,11 @@ process.exit(result.status ?? 1);
 }
 
 async function applyMetadataFork(targetHome: string, providerIds: string[]): Promise<void> {
-  const sourceHome = resolveOptionalHome(process.env.E2E_FORK_PASEO_HOME_FROM);
+  const sourceHome = resolveOptionalHome(process.env.E2E_FORK_YEMU_HOME_FROM);
   if (!sourceHome) return;
   const result = await forkPaseoHomeMetadata({ sourceHome, targetHome });
-  process.env.E2E_FORK_SOURCE_PASEO_HOME = result.sourceHome;
-  process.env.E2E_FORK_TARGET_PASEO_HOME = result.targetHome;
+  process.env.E2E_FORK_SOURCE_YEMU_HOME = result.sourceHome;
+  process.env.E2E_FORK_TARGET_YEMU_HOME = result.targetHome;
   process.env.E2E_FORK_COPIED_FILES = String(result.copiedFiles);
   process.env.E2E_FORK_COPIED_BYTES = String(result.copiedBytes);
 
@@ -143,11 +143,11 @@ export async function startE2EWorker(
   workerIndex: number,
   options: { forkProviders?: string[] } = {},
 ): Promise<E2EWorker> {
-  const requestedRoot = resolveOptionalHome(process.env.E2E_PASEO_HOME);
+  const requestedRoot = resolveOptionalHome(process.env.E2E_YEMU_HOME);
   const paseoHome = requestedRoot
     ? path.join(requestedRoot, `worker-${workerIndex}`)
     : await mkdtemp(path.join(tmpdir(), `paseo-e2e-worker-${workerIndex}-`));
-  const preserveHome = Boolean(requestedRoot) || process.env.E2E_KEEP_PASEO_HOME === "1";
+  const preserveHome = Boolean(requestedRoot) || process.env.E2E_KEEP_YEMU_HOME === "1";
   const fakeEditorBin = await createFakeEditorBin();
   const editorRecordPath = path.join(paseoHome, "editor-open-records.jsonl");
   const serverId = `srv_e2e_worker_${workerIndex}`;
@@ -160,13 +160,13 @@ export async function startE2EWorker(
       environment: {
         NODE_ENV: "development",
         PATH: `${fakeEditorBin}${path.delimiter}${process.env.PATH ?? ""}`,
-        PASEO_E2E_EDITOR_RECORD_PATH: editorRecordPath,
+        YEMU_E2E_EDITOR_RECORD_PATH: editorRecordPath,
       },
     });
 
     process.env.E2E_DAEMON_PORT = String(daemon.port);
     process.env.E2E_SERVER_ID = daemon.serverId;
-    process.env.E2E_PASEO_HOME = daemon.paseoHome;
+    process.env.E2E_YEMU_HOME = daemon.paseoHome;
     process.env.E2E_EDITOR_RECORD_PATH = editorRecordPath;
     delete process.env.E2E_RELAY_PORT;
     delete process.env.E2E_RELAY_DAEMON_PUBLIC_KEY;

@@ -191,7 +191,7 @@ import {
   resolveTerminalProfileLaunch,
   getTerminalProfileIcon,
   resolveTerminalProfiles,
-} from "@getpaseo/protocol/terminal-profiles";
+} from "@yemu/protocol/terminal-profiles";
 import { getProviderIcon } from "@/components/provider-icons";
 import {
   createWorkspaceFileTabTarget,

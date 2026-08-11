@@ -1,9 +1,5 @@
 import { useRef } from "react";
-import type {
-  AgentCapabilityFlags,
-  AgentFeature,
-  AgentProvider,
-} from "@getpaseo/protocol/agent-types";
+import type { AgentCapabilityFlags, AgentFeature, AgentProvider } from "@yemu/protocol/agent-types";
 
 export interface AgentScreenAgent {
   serverId: string;

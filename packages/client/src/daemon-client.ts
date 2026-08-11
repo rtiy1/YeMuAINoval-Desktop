@@ -1,6 +1,6 @@
 import type { z } from "zod";
-import { CLIENT_CAPS, type ClientCapability } from "@getpaseo/protocol/client-capabilities";
-import type { AgentAttentionNotificationPayload } from "@getpaseo/protocol/agent-attention-notification";
+import { CLIENT_CAPS, type ClientCapability } from "@yemu/protocol/client-capabilities";
+import type { AgentAttentionNotificationPayload } from "@yemu/protocol/agent-attention-notification";
 import {
   AgentCreateFailedStatusPayloadSchema,
   AgentCreatedStatusPayloadSchema,
@@ -14,8 +14,8 @@ import {
   DaemonUpdateResponseSchema,
   SessionInboundMessageSchema,
   type ServerInfoStatusPayload,
-} from "@getpaseo/protocol/messages";
-import { validateWSOutboundMessage } from "@getpaseo/protocol/validation/ws-outbound";
+} from "@yemu/protocol/messages";
+import { validateWSOutboundMessage } from "@yemu/protocol/validation/ws-outbound";
 import type {
   AgentStreamEventPayload,
   AgentSnapshotPayload,
@@ -101,7 +101,7 @@ import type {
   PaseoConfigRevision,
   WorkspaceCreateRequest,
   WorkspaceRecoveryState,
-} from "@getpaseo/protocol/messages";
+} from "@yemu/protocol/messages";
 import type {
   AgentPermissionRequest,
   AgentPermissionResponse,
@@ -109,10 +109,23 @@ import type {
   AgentProviderNotice,
   AgentProvider,
   AgentSessionConfig,
-} from "@getpaseo/protocol/agent-types";
-import type { MutableDaemonConfig, MutableDaemonConfigPatch } from "@getpaseo/protocol/messages";
-import { isRelayClientWebSocketUrl } from "@getpaseo/protocol/daemon-endpoints";
-import { terminalSubscriptionKey } from "@getpaseo/protocol/terminal-subscription-key";
+} from "@yemu/protocol/agent-types";
+import type { MutableDaemonConfig, MutableDaemonConfigPatch } from "@yemu/protocol/messages";
+import type {
+  AiCredentialType,
+  AiModelProfile,
+  AiModelProfileWithCredential,
+} from "@yemu/protocol/ai-models/schema";
+import type {
+  NovelDescriptor,
+  NovelEntityKind,
+  NovelRelationshipsPayload,
+  NovelSnapshot,
+  NovelTree,
+} from "@yemu/protocol/messages";
+import type { GraphLayout, NovelMetadata, NovelValidationIssueWire } from "@yemu/novel-core";
+import { isRelayClientWebSocketUrl } from "@yemu/protocol/daemon-endpoints";
+import { terminalSubscriptionKey } from "@yemu/protocol/terminal-subscription-key";
 import {
   asUint8Array,
   decodeFileTransferFrame,
@@ -121,7 +134,7 @@ import {
   FileTransferOpcode,
   TerminalStreamOpcode,
   type FileTransferFrame,
-} from "@getpaseo/protocol/binary-frames/index";
+} from "@yemu/protocol/binary-frames/index";
 import {
   createRelayE2eeTransportFactory,
   createWebSocketTransportFactory,
@@ -143,7 +156,7 @@ import { TerminalStreamRouter, type TerminalStreamEvent } from "./terminal-strea
 import type {
   BrowserAutomationExecuteRequest,
   BrowserAutomationExecuteResponse,
-} from "@getpaseo/protocol/browser-automation/rpc-schemas";
+} from "@yemu/protocol/browser-automation/rpc-schemas";
 
 export interface Logger {
   debug(obj: object, msg?: string): void;
@@ -4516,6 +4529,322 @@ export class DaemonClient {
         type: "get_daemon_config_request",
       },
       responseType: "get_daemon_config_response",
+    });
+  }
+
+  async listAiModelProfiles(
+    requestId?: string,
+  ): Promise<{ requestId: string; profiles: AiModelProfileWithCredential[] }> {
+    return this.sendCorrelatedSessionRequest({
+      requestId,
+      message: { type: "ai.models.list.request" },
+      responseType: "ai.models.list.response",
+    });
+  }
+
+  async upsertAiModelProfile(
+    profile: AiModelProfile,
+    requestId?: string,
+  ): Promise<{ requestId: string; profile: AiModelProfileWithCredential }> {
+    return this.sendCorrelatedSessionRequest({
+      requestId,
+      message: { type: "ai.models.upsert.request", profile },
+      responseType: "ai.models.upsert.response",
+    });
+  }
+
+  async removeAiModelProfile(
+    profileId: string,
+    requestId?: string,
+  ): Promise<{ requestId: string; removed: boolean }> {
+    return this.sendCorrelatedSessionRequest({
+      requestId,
+      message: { type: "ai.models.remove.request", profileId },
+      responseType: "ai.models.remove.response",
+    });
+  }
+
+  async testAiModelProfile(
+    profileId: string,
+    requestId?: string,
+  ): Promise<{
+    requestId: string;
+    ok: boolean;
+    latencyMs: number | null;
+    authOk: boolean | null;
+    modelAvailable: boolean | null;
+    message: string | null;
+  }> {
+    return this.sendCorrelatedSessionRequest({
+      requestId,
+      message: { type: "ai.models.test.request", profileId },
+      responseType: "ai.models.test.response",
+      timeout: 30_000,
+    });
+  }
+
+  async setAiModelCredential(
+    profileId: string,
+    credentialType: AiCredentialType,
+    credentialValue: string,
+    requestId?: string,
+  ): Promise<{
+    requestId: string;
+    credentialId: string;
+    hasCredential: boolean;
+    maskedKey: string;
+  }> {
+    return this.sendCorrelatedSessionRequest({
+      requestId,
+      message: { type: "ai.credentials.set.request", profileId, credentialType, credentialValue },
+      responseType: "ai.credentials.set.response",
+    });
+  }
+
+  async removeAiModelCredential(
+    profileId: string,
+    requestId?: string,
+  ): Promise<{ requestId: string; removed: boolean }> {
+    return this.sendCorrelatedSessionRequest({
+      requestId,
+      message: { type: "ai.credentials.remove.request", profileId },
+      responseType: "ai.credentials.remove.response",
+    });
+  }
+
+  // -------------------------------------------------------------------------
+  // Novel domain
+  // -------------------------------------------------------------------------
+
+  async listNovels(requestId?: string): Promise<{ requestId: string; novels: NovelDescriptor[] }> {
+    return this.sendCorrelatedSessionRequest({
+      requestId,
+      message: { type: "novel.list.request" },
+      responseType: "novel.list.response",
+    });
+  }
+
+  async getNovel(
+    projectId: string,
+    requestId?: string,
+  ): Promise<{
+    requestId: string;
+    novel: NovelDescriptor;
+    metadata: NovelMetadata;
+    tree: NovelTree;
+  }> {
+    return this.sendCorrelatedSessionRequest({
+      requestId,
+      message: { type: "novel.get.request", projectId },
+      responseType: "novel.get.response",
+    });
+  }
+
+  async createNovel(
+    projectId: string,
+    title: string,
+    requestId?: string,
+  ): Promise<{ requestId: string; novel: NovelDescriptor }> {
+    return this.sendCorrelatedSessionRequest({
+      requestId,
+      message: { type: "novel.create.request", projectId, title },
+      responseType: "novel.create.response",
+    });
+  }
+
+  async updateNovelMetadata(
+    projectId: string,
+    metadata: NovelMetadata,
+    requestId?: string,
+  ): Promise<{ requestId: string; novel: NovelDescriptor }> {
+    return this.sendCorrelatedSessionRequest({
+      requestId,
+      message: { type: "novel.update_metadata.request", projectId, metadata },
+      responseType: "novel.update_metadata.response",
+    });
+  }
+
+  async addNovelVolume(
+    projectId: string,
+    requestId?: string,
+  ): Promise<{ requestId: string; number: number; dirName: string }> {
+    return this.sendCorrelatedSessionRequest({
+      requestId,
+      message: { type: "novel.add_volume.request", projectId },
+      responseType: "novel.add_volume.response",
+    });
+  }
+
+  async addNovelChapter(
+    projectId: string,
+    volume: number,
+    requestId?: string,
+  ): Promise<{ requestId: string; number: number; fileName: string }> {
+    return this.sendCorrelatedSessionRequest({
+      requestId,
+      message: { type: "novel.add_chapter.request", projectId, volume },
+      responseType: "novel.add_chapter.response",
+    });
+  }
+
+  async readNovelChapter(
+    projectId: string,
+    volume: number,
+    chapter: number,
+    requestId?: string,
+  ): Promise<{
+    requestId: string;
+    fileName: string;
+    title: string | null;
+    content: string;
+    wordCount: number;
+    modifiedAt: string | null;
+  }> {
+    return this.sendCorrelatedSessionRequest({
+      requestId,
+      message: { type: "novel.read_chapter.request", projectId, volume, chapter },
+      responseType: "novel.read_chapter.response",
+    });
+  }
+
+  async writeNovelChapter(
+    projectId: string,
+    volume: number,
+    chapter: number,
+    content: string,
+    expectedModifiedAt: string | null,
+    requestId?: string,
+  ): Promise<{
+    requestId: string;
+    result:
+      | { status: "written"; modifiedAt: string }
+      | { status: "conflict"; currentModifiedAt: string | null }
+      | { status: "missing" };
+  }> {
+    return this.sendCorrelatedSessionRequest({
+      requestId,
+      message: {
+        type: "novel.write_chapter.request",
+        projectId,
+        volume,
+        chapter,
+        content,
+        expectedModifiedAt,
+      },
+      responseType: "novel.write_chapter.response",
+    });
+  }
+
+  async listNovelEntities(
+    projectId: string,
+    kind: NovelEntityKind,
+    requestId?: string,
+  ): Promise<{
+    requestId: string;
+    kind: NovelEntityKind;
+    entities: Array<Record<string, unknown>>;
+    issues: NovelValidationIssueWire[];
+  }> {
+    return this.sendCorrelatedSessionRequest({
+      requestId,
+      message: { type: "novel.list_entities.request", projectId, kind },
+      responseType: "novel.list_entities.response",
+    });
+  }
+
+  async upsertNovelEntity(
+    projectId: string,
+    kind: NovelEntityKind,
+    id: string,
+    data: Record<string, unknown>,
+    requestId?: string,
+  ): Promise<{ requestId: string; id: string }> {
+    return this.sendCorrelatedSessionRequest({
+      requestId,
+      message: { type: "novel.upsert_entity.request", projectId, kind, id, data },
+      responseType: "novel.upsert_entity.response",
+    });
+  }
+
+  async removeNovelEntity(
+    projectId: string,
+    kind: NovelEntityKind,
+    id: string,
+    requestId?: string,
+  ): Promise<{ requestId: string; removed: boolean }> {
+    return this.sendCorrelatedSessionRequest({
+      requestId,
+      message: { type: "novel.remove_entity.request", projectId, kind, id },
+      responseType: "novel.remove_entity.response",
+    });
+  }
+
+  async createNovelSnapshot(
+    projectId: string,
+    label: string | null,
+    requestId?: string,
+  ): Promise<{ requestId: string; snapshot: NovelSnapshot }> {
+    return this.sendCorrelatedSessionRequest({
+      requestId,
+      message: { type: "novel.snapshot.create.request", projectId, label },
+      responseType: "novel.snapshot.create.response",
+    });
+  }
+
+  async listNovelSnapshots(
+    projectId: string,
+    requestId?: string,
+  ): Promise<{ requestId: string; snapshots: NovelSnapshot[] }> {
+    return this.sendCorrelatedSessionRequest({
+      requestId,
+      message: { type: "novel.snapshot.list.request", projectId },
+      responseType: "novel.snapshot.list.response",
+    });
+  }
+
+  async restoreNovelSnapshot(
+    projectId: string,
+    snapshotId: string,
+    requestId?: string,
+  ): Promise<{ requestId: string; restored: boolean }> {
+    return this.sendCorrelatedSessionRequest({
+      requestId,
+      message: { type: "novel.snapshot.restore.request", projectId, snapshotId },
+      responseType: "novel.snapshot.restore.response",
+    });
+  }
+
+  async getNovelRelationships(
+    projectId: string,
+    requestId?: string,
+  ): Promise<{ requestId: string; snapshot: NovelRelationshipsPayload }> {
+    return this.sendCorrelatedSessionRequest({
+      requestId,
+      message: { type: "novel.relationships.get.request", projectId },
+      responseType: "novel.relationships.get.response",
+    });
+  }
+
+  async getNovelGraphLayout(
+    projectId: string,
+    requestId?: string,
+  ): Promise<{ requestId: string; layout: GraphLayout | null }> {
+    return this.sendCorrelatedSessionRequest({
+      requestId,
+      message: { type: "novel.graph_layout.get.request", projectId },
+      responseType: "novel.graph_layout.get.response",
+    });
+  }
+
+  async setNovelGraphLayout(
+    projectId: string,
+    layout: GraphLayout,
+    requestId?: string,
+  ): Promise<{ requestId: string; saved: boolean }> {
+    return this.sendCorrelatedSessionRequest({
+      requestId,
+      message: { type: "novel.graph_layout.set.request", projectId, layout },
+      responseType: "novel.graph_layout.set.response",
     });
   }
 

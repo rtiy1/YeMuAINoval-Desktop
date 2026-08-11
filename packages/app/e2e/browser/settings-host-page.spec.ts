@@ -13,7 +13,6 @@ import {
   expectHostConnectionsCard,
   expectHostInjectMcpCard,
   expectHostActionCards,
-  expectHostProvidersCard,
   expectHostNoDaemonLifecycleRow,
   expectRetiredSidebarSectionsAbsent,
   expectHostPageVisible,
@@ -45,15 +44,15 @@ test.describe("Settings host page", () => {
     await expectHostInjectMcpCard(page);
   });
 
-  test("providers section shows the providers card", async ({ page }) => {
+  test("providers section is removed from the host settings", async ({ page }) => {
     const serverId = getServerId();
 
     await gotoAppShell(page);
     await openSettings(page);
     await openSettingsHost(page, serverId);
 
-    await expectHostProvidersCard(page, serverId);
-    await expectSettingsHeader(page, "Providers");
+    await expect(page.getByTestId("settings-host-section-providers")).toHaveCount(0);
+    await expect(page.getByTestId("settings-host-section-usage")).toHaveCount(0);
   });
 
   test("host section shows the host label and restart/remove action cards", async ({ page }) => {

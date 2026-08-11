@@ -6,26 +6,26 @@ export PATH="$SCRIPT_DIR/../node_modules/.bin:$PATH"
 
 source "$SCRIPT_DIR/dev-home.sh"
 
-export PASEO_LISTEN="${PASEO_LISTEN:-127.0.0.1:6768}"
-configure_dev_paseo_home
+export YEMU_LISTEN="${YEMU_LISTEN:-127.0.0.1:6768}"
+configure_dev_yemu_home
 
-if [ -z "${PASEO_LOCAL_MODELS_DIR}" ]; then
-  export PASEO_LOCAL_MODELS_DIR="$HOME/.paseo/models/local-speech"
-  mkdir -p "$PASEO_LOCAL_MODELS_DIR"
+if [ -z "${YEMU_LOCAL_MODELS_DIR}" ]; then
+  export YEMU_LOCAL_MODELS_DIR="$HOME/.paseo/models/local-speech"
+  mkdir -p "$YEMU_LOCAL_MODELS_DIR"
 fi
 
 echo "══════════════════════════════════════════════════════"
 echo "  YeMu AI Novel Dev Daemon"
 echo "══════════════════════════════════════════════════════"
-echo "  Home:    ${PASEO_HOME}"
-echo "  Models:  ${PASEO_LOCAL_MODELS_DIR}"
-echo "  Listen:  ${PASEO_LISTEN}"
+echo "  Home:    ${YEMU_HOME}"
+echo "  Models:  ${YEMU_LOCAL_MODELS_DIR}"
+echo "  Listen:  ${YEMU_LISTEN}"
 echo "══════════════════════════════════════════════════════"
 
-export PASEO_CORS_ORIGINS="${PASEO_CORS_ORIGINS:-*}"
-export PASEO_NODE_INSPECT="${PASEO_NODE_INSPECT:---inspect=0}"
+export YEMU_CORS_ORIGINS="${YEMU_CORS_ORIGINS:-*}"
+export YEMU_NODE_INSPECT="${YEMU_NODE_INSPECT:---inspect=0}"
 
-if [ "${PASEO_SKIP_DEV_SERVER_BUILD:-0}" = "1" ]; then
+if [ "${YEMU_SKIP_DEV_SERVER_BUILD:-0}" = "1" ]; then
   exec npm run dev:server:watch
 fi
 

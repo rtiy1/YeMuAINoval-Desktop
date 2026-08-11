@@ -14,7 +14,7 @@ describe("voice MCP stdio config", () => {
       socketPath: "/tmp/paseo-voice.sock",
       env: {
         ELECTRON_RUN_AS_NODE: "1",
-        PASEO_HOME: "/tmp/paseo-home",
+        YEMU_HOME: "/tmp/paseo-home",
       },
     });
 
@@ -27,7 +27,7 @@ describe("voice MCP stdio config", () => {
     ]);
     expect(config.env).toEqual({
       ELECTRON_RUN_AS_NODE: "1",
-      PASEO_HOME: "/tmp/paseo-home",
+      YEMU_HOME: "/tmp/paseo-home",
     });
   });
 });
@@ -55,7 +55,9 @@ describe("voice mode prompt instructions", () => {
 
     expect(prompt).toContain("Base system prompt");
     expect(prompt).toContain("YeMu AI Novel voice mode is now off.");
-    expect(prompt).toContain("Ignore any earlier YeMu AI Novel voice mode instructions in this thread.");
+    expect(prompt).toContain(
+      "Ignore any earlier YeMu AI Novel voice mode instructions in this thread.",
+    );
     expect(prompt.match(/<paseo_voice_mode>/g)?.length ?? 0).toBe(1);
     expect(prompt).not.toContain("legacy voice instruction");
   });

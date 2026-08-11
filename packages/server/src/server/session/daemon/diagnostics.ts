@@ -545,7 +545,7 @@ export function redactDiagnostic(
   }
 
   return redacted
-    .replace(/paseo:\/\/\S+/gi, "paseo://[redacted]")
+    .replace(/paseo:\/\/\S+/gi, "yemu-novel://[redacted]")
     .replace(
       /([?&](?:password|token|secret|key|publicKey|daemonPublicKeyB64)=)[^&\s"']+/gi,
       "$1[redacted]",

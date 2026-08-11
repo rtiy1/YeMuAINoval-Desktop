@@ -51,7 +51,7 @@ vi.mock("electron-log/main", () => ({
   },
 }));
 
-vi.mock("@getpaseo/server", () => ({
+vi.mock("@yemu/server", () => ({
   resolvePaseoHome: vi.fn(() => mocks.paseoHome),
   spawnProcess: mocks.spawnProcess,
 }));
@@ -453,8 +453,8 @@ describe("daemon-manager commands", () => {
         detached: true,
         stdio: ["ignore", "ignore", "ignore"],
         envOverlay: expect.objectContaining({
-          PASEO_CLI: getBundledCliShimPath(),
-          PASEO_WEB_UI_ENABLED: "false",
+          YEMU_CLI: getBundledCliShimPath(),
+          YEMU_WEB_UI_ENABLED: "false",
         }),
       }),
     );

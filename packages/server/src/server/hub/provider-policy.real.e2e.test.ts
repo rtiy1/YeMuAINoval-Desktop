@@ -3,8 +3,8 @@ import { mkdtemp } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 
-import type { AgentStreamEvent } from "@getpaseo/protocol/agent-types";
-import type { HubExecutionAgentCreateResponse } from "@getpaseo/protocol/messages";
+import type { AgentStreamEvent } from "@yemu/protocol/agent-types";
+import type { HubExecutionAgentCreateResponse } from "@yemu/protocol/messages";
 import pino from "pino";
 import { afterAll, beforeAll, describe, expect, test } from "vitest";
 
@@ -13,7 +13,7 @@ import { CodexAppServerAgentClient } from "../agent/providers/codex-app-server-a
 import { startHubActionSink, type HubActionSink } from "./test-utils/hub-action-sink.js";
 import { HubRelationshipHarness } from "./test-utils/relationship-harness.js";
 
-const RUN_REAL_HUB_POLICY = process.env.PASEO_REAL_HUB_POLICY === "1";
+const RUN_REAL_HUB_POLICY = process.env.YEMU_REAL_HUB_POLICY === "1";
 const REAL_TURN_TIMEOUT_MS = 180_000;
 const HUB_MCP_SERVER = "hub_execution";
 

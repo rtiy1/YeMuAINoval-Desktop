@@ -18,15 +18,17 @@ import type {
   ProviderOverride,
 } from "./agent/provider-launch-config.js";
 import { ProviderOverrideSchema } from "./agent/provider-launch-config.js";
-import { AgentProviderSchema } from "@getpaseo/protocol/provider-manifest";
+import { AgentProviderSchema } from "@yemu/protocol/provider-manifest";
 import { hashDaemonPassword } from "./auth.js";
 import { resolveSpeechConfig } from "./speech/speech-config-resolver.js";
 import { mergeHostnames, parseHostnamesEnv, type HostnamesConfig } from "./hostnames.js";
 import { resolveGitProcessPolicy } from "../utils/git-process-scheduler.js";
 
 const DEFAULT_PORT = 6767;
-const DEFAULT_RELAY_ENDPOINT = "relay.paseo.sh:443";
-const DEFAULT_APP_BASE_URL = "https://app.paseo.sh";
+// COMPAT(cloudDefaults): legacy hosted relay/app no longer exist for YeMu; both
+// must be configured explicitly. Remove after 2026-11-30.
+const DEFAULT_RELAY_ENDPOINT = "";
+const DEFAULT_APP_BASE_URL = "";
 const DEFAULT_TRUSTED_PROXIES = ["loopback"];
 
 interface ResolveBundledWebUiDistDirInput {
@@ -114,8 +116,8 @@ function resolveLogConfigFromEnv(
   env: NodeJS.ProcessEnv,
   persisted: ReturnType<typeof loadPersistedConfig>,
 ): PersistedConfig["log"] {
-  const envLogLevel = LogLevelSchema.safeParse(normalizeLogEnv(env.PASEO_LOG_LEVEL));
-  const envLogFormat = LogFormatSchema.safeParse(normalizeLogEnv(env.PASEO_LOG_FORMAT));
+  const envLogLevel = LogLevelSchema.safeParse(normalizeLogEnv(env.YEMU_LOG_LEVEL));
+  const envLogFormat = LogFormatSchema.safeParse(normalizeLogEnv(env.YEMU_LOG_FORMAT));
 
   if (!envLogLevel.success && !envLogFormat.success) {
     return persisted.log;
@@ -222,28 +224,28 @@ function resolveTlsFromEnv(
 }
 
 function resolveRelayConfig(input: ResolveRelayInput): ResolvedRelay {
-  const environmentEnabled = parseBooleanEnv(input.env.PASEO_RELAY_ENABLED);
+  const environmentEnabled = parseBooleanEnv(input.env.YEMU_RELAY_ENABLED);
   // COMPAT(relayOptInDefault): configs created before v0.2.6 may omit this field.
   // Preserve their relay-on behavior until 2027-01-31; new homes materialize false.
   const enabled =
     input.cliRelayEnabled ?? environmentEnabled ?? input.persisted.daemon?.relay?.enabled ?? true;
   const endpoint =
-    input.env.PASEO_RELAY_ENDPOINT ??
+    input.env.YEMU_RELAY_ENDPOINT ??
     input.persisted.daemon?.relay?.endpoint ??
     DEFAULT_RELAY_ENDPOINT;
   const publicEndpoint =
-    input.env.PASEO_RELAY_PUBLIC_ENDPOINT ??
+    input.env.YEMU_RELAY_PUBLIC_ENDPOINT ??
     input.persisted.daemon?.relay?.publicEndpoint ??
     endpoint;
   const useTls =
     input.cliRelayUseTls ??
     resolveTlsFromEnv(
-      input.env.PASEO_RELAY_USE_TLS,
+      input.env.YEMU_RELAY_USE_TLS,
       input.persisted.daemon?.relay?.useTls,
       endpoint === DEFAULT_RELAY_ENDPOINT,
     );
   const publicUseTls = resolveTlsFromEnv(
-    input.env.PASEO_RELAY_PUBLIC_USE_TLS,
+    input.env.YEMU_RELAY_PUBLIC_USE_TLS,
     input.persisted.daemon?.relay?.publicUseTls,
     useTls,
   );
@@ -270,7 +272,7 @@ function resolveServiceProxyPublicBaseUrl(value: string | null): string | null {
   try {
     return new URL(value).toString().replace(/\/$/, "");
   } catch {
-    throw new Error(`Invalid PASEO_SERVICE_PROXY_PUBLIC_BASE_URL: ${value}`);
+    throw new Error(`Invalid YEMU_SERVICE_PROXY_PUBLIC_BASE_URL: ${value}`);
   }
 }
 
@@ -279,20 +281,20 @@ function resolveServiceProxyConfig(
   persisted: ReturnType<typeof loadPersistedConfig>,
 ): ResolvedServiceProxy {
   const enabledShim =
-    parseBooleanEnv(env.PASEO_SERVICE_PROXY_ENABLED) ?? persisted.daemon?.serviceProxy?.enabled;
+    parseBooleanEnv(env.YEMU_SERVICE_PROXY_ENABLED) ?? persisted.daemon?.serviceProxy?.enabled;
   // COMPAT(serviceProxyEnabled): added 2026-06-02, remove after 2026-12-02.
   // `enabled=false` used to disable the separate service proxy listener. Localhost
   // service proxying is now always enabled; this only suppresses optional layers.
   const optionalLayersEnabled = enabledShim !== false;
   const publicBaseUrl = optionalLayersEnabled
     ? resolveServiceProxyPublicBaseUrl(
-        env.PASEO_SERVICE_PROXY_PUBLIC_BASE_URL ??
+        env.YEMU_SERVICE_PROXY_PUBLIC_BASE_URL ??
           persisted.daemon?.serviceProxy?.publicBaseUrl ??
           null,
       )
     : null;
   const standaloneListen = optionalLayersEnabled
-    ? (env.PASEO_SERVICE_PROXY_LISTEN ?? persisted.daemon?.serviceProxy?.listen ?? null)
+    ? (env.YEMU_SERVICE_PROXY_LISTEN ?? persisted.daemon?.serviceProxy?.listen ?? null)
     : null;
 
   return { publicBaseUrl, standaloneListen };
@@ -311,10 +313,10 @@ function resolveWebUiConfig(
 ): ResolvedWebUi {
   const enabled =
     cli?.webUiEnabled ??
-    parseBooleanEnv(env.PASEO_WEB_UI_ENABLED) ??
+    parseBooleanEnv(env.YEMU_WEB_UI_ENABLED) ??
     persisted.features?.webUi?.enabled ??
     false;
-  const rawDistDir = env.PASEO_WEB_UI_DIST_DIR ?? persisted.features?.webUi?.distDir;
+  const rawDistDir = env.YEMU_WEB_UI_DIST_DIR ?? persisted.features?.webUi?.distDir;
   const trimmedDistDir = rawDistDir?.trim();
   const distDir = trimmedDistDir
     ? path.resolve(path.isAbsolute(trimmedDistDir) ? trimmedDistDir : paseoHome, trimmedDistDir)
@@ -329,7 +331,7 @@ function resolveVoiceLlmConfig(
   env: NodeJS.ProcessEnv,
   persisted: ReturnType<typeof loadPersistedConfig>,
 ): ResolvedVoiceLlm {
-  const envVoiceLlmProvider = parseOptionalVoiceLlmProvider(env.PASEO_VOICE_LLM_PROVIDER);
+  const envVoiceLlmProvider = parseOptionalVoiceLlmProvider(env.YEMU_VOICE_LLM_PROVIDER);
   const persistedVoiceLlmProvider = parseOptionalVoiceLlmProvider(
     persisted.features?.voiceMode?.llm?.provider,
   );
@@ -344,8 +346,8 @@ function resolveCorsAllowedOrigins(
   env: NodeJS.ProcessEnv,
   persisted: ReturnType<typeof loadPersistedConfig>,
 ): string[] {
-  const envCorsOrigins = env.PASEO_CORS_ORIGINS
-    ? env.PASEO_CORS_ORIGINS.split(",").map((s) => s.trim())
+  const envCorsOrigins = env.YEMU_CORS_ORIGINS
+    ? env.YEMU_CORS_ORIGINS.split(",").map((s) => s.trim())
     : [];
   const persistedCorsOrigins = persisted.daemon?.cors?.allowedOrigins ?? [];
   return Array.from(
@@ -378,13 +380,13 @@ function resolveTrustedProxiesConfig(
   persisted: ReturnType<typeof loadPersistedConfig>,
 ): TrustedProxiesConfig {
   return (
-    parseTrustedProxiesEnv(env.PASEO_TRUSTED_PROXIES) ??
+    parseTrustedProxiesEnv(env.YEMU_TRUSTED_PROXIES) ??
     persisted.daemon?.trustedProxies ??
     DEFAULT_TRUSTED_PROXIES
   );
 }
 
-// PASEO_LISTEN can be:
+// YEMU_LISTEN can be:
 // - host:port (TCP)
 // - /path/to/socket (Unix socket)
 // - unix:///path/to/socket (Unix socket)
@@ -396,7 +398,7 @@ function resolveListenAddress(
 ): string {
   return (
     cli?.listen ??
-    env.PASEO_LISTEN ??
+    env.YEMU_LISTEN ??
     persisted.daemon?.listen ??
     `127.0.0.1:${env.PORT ?? DEFAULT_PORT}`
   );
@@ -406,7 +408,7 @@ function resolveAuthConfig(
   env: NodeJS.ProcessEnv,
   persisted: ReturnType<typeof loadPersistedConfig>,
 ): PaseoDaemonConfig["auth"] {
-  const envPassword = env.PASEO_PASSWORD?.trim();
+  const envPassword = env.YEMU_PASSWORD?.trim();
   if (envPassword) {
     return { password: hashDaemonPassword(envPassword) };
   }
@@ -453,11 +455,11 @@ function resolveStaticLoadConfigSettings(
     terminalProfiles: persisted.daemon?.terminalProfiles,
     hostnames: mergeHostnames([
       persisted.daemon?.hostnames,
-      parseHostnamesEnv(env.PASEO_HOSTNAMES ?? env.PASEO_ALLOWED_HOSTS),
+      parseHostnamesEnv(env.YEMU_HOSTNAMES ?? env.YEMU_ALLOWED_HOSTS),
       cli?.hostnames,
     ]),
     trustedProxies: resolveTrustedProxiesConfig(env, persisted),
-    appBaseUrl: env.PASEO_APP_BASE_URL ?? persisted.app?.baseUrl ?? DEFAULT_APP_BASE_URL,
+    appBaseUrl: env.YEMU_APP_BASE_URL ?? persisted.app?.baseUrl ?? DEFAULT_APP_BASE_URL,
   };
 }
 
@@ -507,7 +509,7 @@ export function loadConfig(
   return {
     listen,
     paseoHome,
-    desktopManaged: env.PASEO_DESKTOP_MANAGED === "1",
+    desktopManaged: env.YEMU_DESKTOP_MANAGED === "1",
     worktreesRoot: resolveWorktreesRoot(paseoHome, persisted),
     corsAllowedOrigins: resolveCorsAllowedOrigins(env, persisted),
     hostnames,

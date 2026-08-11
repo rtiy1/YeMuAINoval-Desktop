@@ -9,7 +9,8 @@ interface WorkspaceServiceRoutePreferencesState {
 }
 
 function isWorkspaceScriptLinkKind(value: unknown): value is WorkspaceScriptLinkKind {
-  return value === "public" || value === "paseo" || value === "direct";
+  // COMPAT(routeKindPaseo): legacy "paseo" route kind migrated to "memorable", remove after 2026-11-30.
+  return value === "public" || value === "memorable" || value === "paseo" || value === "direct";
 }
 
 function sanitizePreferences(value: unknown): Record<string, WorkspaceScriptLinkKind> {

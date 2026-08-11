@@ -754,17 +754,17 @@ describe("relative typed-entry configuration", () => {
       "packages",
       "server",
       "src",
-      "services",
-      "quota-fetcher",
-      "providers",
-      "local.ts",
+      "server",
+      "session",
+      "ai-models",
+      "ai-model-service.ts",
     );
     mkdirSync(path.dirname(targetPath), { recursive: true });
     writeFileSync(targetPath, "");
 
     const results = await searchRelativeDirectoryEntries({
       cwd: workspaceDir,
-      query: "packages/server/src/services/quota-fetcher/providers/local.ts",
+      query: "packages/server/src/server/session/ai-models/ai-model-service.ts",
       limit: 20,
       includeFiles: true,
       includeDirectories: false,
@@ -774,7 +774,7 @@ describe("relative typed-entry configuration", () => {
 
     expect(results).toEqual([
       {
-        path: "packages/server/src/services/quota-fetcher/providers/local.ts",
+        path: "packages/server/src/server/session/ai-models/ai-model-service.ts",
         kind: "file",
       },
     ]);

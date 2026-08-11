@@ -18,7 +18,7 @@ import type { ForgeService } from "../../../services/forge-service.js";
 import type { StoredAgentRecord } from "../agent/agent-storage.js";
 
 const CWD = "/tmp/paseo/worktrees/repo/branch";
-const PASEO_HOME = "/tmp/paseo";
+const YEMU_HOME = "/tmp/paseo";
 const WORKTREES_ROOT = "/tmp/paseo/worktrees/repo";
 
 function createPullRequest(
@@ -95,7 +95,7 @@ function createHarness(overrides?: {
     getSnapshot,
   } as unknown as AutoArchiveArchiveOptions["workspaceGitService"];
   const options: AutoArchiveArchiveOptions = {
-    paseoHome: PASEO_HOME,
+    paseoHome: YEMU_HOME,
     daemonConfigStore: {
       get: getConfig,
     } as unknown as AutoArchiveArchiveOptions["daemonConfigStore"],
@@ -182,7 +182,7 @@ function createGitRepo(): { tempDir: string; repoDir: string } {
   const repoDir = path.join(tempDir, "repo");
   mkdirSync(repoDir, { recursive: true });
   execFileSync("git", ["init", "-b", "main"], { cwd: repoDir, stdio: "pipe" });
-  execFileSync("git", ["config", "user.email", "test@getpaseo.local"], {
+  execFileSync("git", ["config", "user.email", "test@yemu.local"], {
     cwd: repoDir,
     stdio: "pipe",
   });
@@ -449,7 +449,7 @@ describe("archiveIfSafe", () => {
     await runArchiveIfSafe(harness);
 
     expect(harness.deps.isPaseoOwnedWorktreeCwd).toHaveBeenCalledWith(CWD, {
-      paseoHome: PASEO_HOME,
+      paseoHome: YEMU_HOME,
     });
     expect(harness.deps.archiveByScope).not.toHaveBeenCalled();
   });
@@ -486,7 +486,7 @@ describe("archiveIfSafe", () => {
     expect(harness.deps.archiveByScope).toHaveBeenCalledTimes(1);
     expect(harness.deps.archiveByScope).toHaveBeenCalledWith(
       expect.objectContaining({
-        paseoHome: PASEO_HOME,
+        paseoHome: YEMU_HOME,
         workspaceGitService: harness.options.workspaceGitService,
       }),
       {

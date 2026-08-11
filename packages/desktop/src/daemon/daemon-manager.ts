@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import path from "node:path";
 import { app, ipcMain, powerMonitor } from "electron";
 import log from "electron-log/main";
-import { resolvePaseoHome, spawnProcess } from "@getpaseo/server";
+import { resolvePaseoHome, spawnProcess } from "@yemu/server";
 import {
   copyAttachmentFileToManagedStorage,
   deleteManagedAttachmentFile,
@@ -395,9 +395,9 @@ async function startDaemon(): Promise<DesktopDaemonStatus> {
     envMode: "internal",
     env: invocation.env,
     envOverlay: {
-      PASEO_DESKTOP_MANAGED: "1",
-      PASEO_CLI: getBundledCliShimPath(),
-      PASEO_WEB_UI_ENABLED: "false",
+      YEMU_DESKTOP_MANAGED: "1",
+      YEMU_CLI: getBundledCliShimPath(),
+      YEMU_WEB_UI_ENABLED: "false",
     },
     stdio: ["ignore", "ignore", "ignore"],
   });

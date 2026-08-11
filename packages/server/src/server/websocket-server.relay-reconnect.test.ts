@@ -17,8 +17,8 @@ import {
   decodeTerminalStreamFrame,
   encodeTerminalStreamFrame,
   TerminalStreamOpcode,
-} from "@getpaseo/protocol/terminal-stream-protocol";
-import { CLIENT_CAPS } from "@getpaseo/protocol/client-capabilities";
+} from "@yemu/protocol/terminal-stream-protocol";
+import { CLIENT_CAPS } from "@yemu/protocol/client-capabilities";
 
 type SocketListener = (...args: unknown[]) => void;
 

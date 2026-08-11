@@ -4,8 +4,6 @@ import { defineConfig, devices } from "@playwright/test";
 // This allows multiple test runs in parallel across different worktrees
 const baseURL =
   process.env.E2E_BASE_URL ?? `http://localhost:${process.env.E2E_METRO_PORT ?? "8081"}`;
-const relayDeploymentSpec = "**/relay-deployment-reconnect.real.spec.ts";
-
 export default defineConfig({
   testDir: "./e2e/browser",
   globalSetup: "./e2e/support/global-setup.ts",
@@ -34,12 +32,6 @@ export default defineConfig({
     {
       name: "real-provider",
       testMatch: ["**/*.real.spec.ts"],
-      testIgnore: [relayDeploymentSpec],
-      use: { ...devices["Desktop Chrome"] },
-    },
-    {
-      name: "relay-deployment",
-      testMatch: [relayDeploymentSpec],
       use: { ...devices["Desktop Chrome"] },
     },
   ],

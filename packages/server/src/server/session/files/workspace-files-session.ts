@@ -1,10 +1,10 @@
 import type pino from "pino";
-import { getErrorMessage } from "@getpaseo/protocol/error-utils";
+import { getErrorMessage } from "@yemu/protocol/error-utils";
 import {
   encodeFileTransferFrame,
   FileTransferOpcode,
   type FileTransferFrame,
-} from "@getpaseo/protocol/binary-frames/index";
+} from "@yemu/protocol/binary-frames/index";
 import type {
   FileDownloadTokenRequest,
   FileExplorerRequest,

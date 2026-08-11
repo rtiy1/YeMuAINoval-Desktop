@@ -1,6 +1,6 @@
-import type { AgentSnapshotPayload } from "@getpaseo/protocol/messages";
-import type { AgentPermissionRequest } from "@getpaseo/protocol/agent-types";
-import { getParentAgentIdFromLabels } from "@getpaseo/protocol/agent-labels";
+import type { AgentSnapshotPayload } from "@yemu/protocol/messages";
+import type { AgentPermissionRequest } from "@yemu/protocol/agent-types";
+import { getParentAgentIdFromLabels } from "@yemu/protocol/agent-labels";
 import type { ActiveTurnIdentity } from "@/timeline/turn-liveness";
 
 function normalizeActiveTurn(

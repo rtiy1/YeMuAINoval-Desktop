@@ -37,7 +37,6 @@ import { WindowSidebarMenuToggle } from "@/components/headers/menu-header";
 import { SidebarModelProvider } from "@/components/sidebar/sidebar-model";
 import { WorkspacePinShortcutHandler } from "@/components/workspace-pin-shortcut-handler";
 import { CompactExplorerSidebarHost } from "@/components/compact-explorer-sidebar-host";
-import { ProviderSettingsHost } from "@/components/provider-settings-host";
 import { RootErrorBoundary } from "@/components/root-error-boundary";
 import { WorkspaceSetupDialog } from "@/components/workspace-setup-dialog";
 import { WorkspaceShortcutTargetsSubscriber } from "@/components/workspace-shortcut-targets-subscriber";
@@ -570,7 +569,6 @@ function AppContainer({ children, chromeEnabled: chromeEnabledOverride }: AppCon
       <CommandCenter />
       <AddProjectFlowHost />
       <HostChooserModal />
-      <ProviderSettingsHost />
       <WorkspaceSetupDialog />
       <KeyboardShortcutsDialog />
       <AppDiagnosticHost />
@@ -901,6 +899,9 @@ function RootStack() {
         <Stack.Screen name="sessions" />
         <Stack.Screen name="schedules" />
         <Stack.Screen name="pair-scan" />
+        <Stack.Screen name="novels" />
+        <Stack.Screen name="novels/new" />
+        <Stack.Screen name="novels/[projectId]" />
       </Stack.Protected>
       <Stack.Screen name="h/[serverId]" />
       <Stack.Screen name="settings/hosts/[serverId]/index" />

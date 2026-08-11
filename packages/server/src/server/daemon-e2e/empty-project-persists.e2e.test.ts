@@ -33,8 +33,8 @@ afterEach(async () => {
 });
 
 test("project.add creates a project without creating a workspace", async () => {
-  const previousSupervised = process.env.PASEO_SUPERVISED;
-  process.env.PASEO_SUPERVISED = "0";
+  const previousSupervised = process.env.YEMU_SUPERVISED;
+  process.env.YEMU_SUPERVISED = "0";
   try {
     const repoRoot = realpathSync(mkdtempSync(path.join(os.tmpdir(), "paseo-add-project-repo-")));
     const paseoHomeRoot = realpathSync(
@@ -44,7 +44,7 @@ test("project.add creates a project without creating a workspace", async () => {
     cleanupPaths.add(paseoHomeRoot);
 
     execSync("git init -b main", { cwd: repoRoot, stdio: "pipe" });
-    execSync("git config user.email 'test@getpaseo.dev'", { cwd: repoRoot, stdio: "pipe" });
+    execSync("git config user.email 'test@yemu.dev'", { cwd: repoRoot, stdio: "pipe" });
     execSync("git config user.name 'YeMu AI Novel Test'", { cwd: repoRoot, stdio: "pipe" });
     writeFileSync(path.join(repoRoot, "README.md"), "# repo\n", "utf8");
     execSync("git add README.md", { cwd: repoRoot, stdio: "pipe" });
@@ -78,13 +78,13 @@ test("project.add creates a project without creating a workspace", async () => {
       }),
     ]);
   } finally {
-    restoreEnv("PASEO_SUPERVISED", previousSupervised);
+    restoreEnv("YEMU_SUPERVISED", previousSupervised);
   }
 }, 30_000);
 
 test("archiving the last workspace leaves the project parent with no workspaces", async () => {
-  const previousSupervised = process.env.PASEO_SUPERVISED;
-  process.env.PASEO_SUPERVISED = "0";
+  const previousSupervised = process.env.YEMU_SUPERVISED;
+  process.env.YEMU_SUPERVISED = "0";
   try {
     const repoRoot = realpathSync(mkdtempSync(path.join(os.tmpdir(), "paseo-empty-project-repo-")));
     const paseoHomeRoot = realpathSync(
@@ -94,7 +94,7 @@ test("archiving the last workspace leaves the project parent with no workspaces"
     cleanupPaths.add(paseoHomeRoot);
 
     execSync("git init -b main", { cwd: repoRoot, stdio: "pipe" });
-    execSync("git config user.email 'test@getpaseo.dev'", { cwd: repoRoot, stdio: "pipe" });
+    execSync("git config user.email 'test@yemu.dev'", { cwd: repoRoot, stdio: "pipe" });
     execSync("git config user.name 'YeMu AI Novel Test'", { cwd: repoRoot, stdio: "pipe" });
     writeFileSync(path.join(repoRoot, "README.md"), "# repo\n", "utf8");
     execSync("git add README.md", { cwd: repoRoot, stdio: "pipe" });
@@ -137,6 +137,6 @@ test("archiving the last workspace leaves the project parent with no workspaces"
       persistedProjects.find((project) => project.projectId === projectId)?.archivedAt,
     ).toBeNull();
   } finally {
-    restoreEnv("PASEO_SUPERVISED", previousSupervised);
+    restoreEnv("YEMU_SUPERVISED", previousSupervised);
   }
 }, 30_000);

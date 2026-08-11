@@ -30,8 +30,8 @@ afterEach(async () => {
 });
 
 test("openProject preserves a worktree's exact-root project without rehoming it", async () => {
-  const previousSupervised = process.env.PASEO_SUPERVISED;
-  process.env.PASEO_SUPERVISED = "0";
+  const previousSupervised = process.env.YEMU_SUPERVISED;
+  process.env.YEMU_SUPERVISED = "0";
   try {
     const repoRoot = realpathSync(mkdtempSync(path.join(os.tmpdir(), "paseo-open-project-repo-")));
     const worktreeRoot = realpathSync(
@@ -45,7 +45,7 @@ test("openProject preserves a worktree's exact-root project without rehoming it"
     cleanupPaths.add(paseoHomeRoot);
 
     execSync("git init -b main", { cwd: repoRoot, stdio: "pipe" });
-    execSync("git config user.email 'test@getpaseo.dev'", { cwd: repoRoot, stdio: "pipe" });
+    execSync("git config user.email 'test@yemu.dev'", { cwd: repoRoot, stdio: "pipe" });
     execSync("git config user.name 'YeMu AI Novel Test'", { cwd: repoRoot, stdio: "pipe" });
     writeFileSync(path.join(repoRoot, "README.md"), "# repo\n", "utf8");
     execSync("git add README.md", { cwd: repoRoot, stdio: "pipe" });
@@ -121,7 +121,7 @@ test("openProject preserves a worktree's exact-root project without rehoming it"
       persistedWorkspaces.find((workspace) => workspace.workspaceId === worktreeRoot)?.projectId,
     ).toBe(worktreeRoot);
   } finally {
-    process.env.PASEO_SUPERVISED = previousSupervised;
+    process.env.YEMU_SUPERVISED = previousSupervised;
   }
 }, 30_000);
 

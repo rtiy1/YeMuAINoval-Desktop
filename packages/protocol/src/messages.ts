@@ -57,7 +57,75 @@ import {
   BrowserAutomationExecuteRequestSchema,
   BrowserAutomationExecuteResponseSchema,
 } from "./browser-automation/rpc-schemas.js";
+import {
+  AiCredentialsRemoveRequestSchema,
+  AiCredentialsRemoveResponseSchema,
+  AiCredentialsSetRequestSchema,
+  AiCredentialsSetResponseSchema,
+  AiModelsListRequestSchema,
+  AiModelsListResponseSchema,
+  AiModelsRemoveRequestSchema,
+  AiModelsRemoveResponseSchema,
+  AiModelsTestRequestSchema,
+  AiModelsTestResponseSchema,
+  AiModelsUpsertRequestSchema,
+  AiModelsUpsertResponseSchema,
+} from "./ai-models/rpc-schemas.js";
+import {
+  NovelAddChapterRequestSchema,
+  NovelAddChapterResponseSchema,
+  NovelAddVolumeRequestSchema,
+  NovelAddVolumeResponseSchema,
+  NovelCreateRequestSchema,
+  NovelCreateResponseSchema,
+  NovelGetRequestSchema,
+  NovelGetResponseSchema,
+  NovelGraphLayoutGetRequestSchema,
+  NovelGraphLayoutGetResponseSchema,
+  NovelGraphLayoutSetRequestSchema,
+  NovelGraphLayoutSetResponseSchema,
+  NovelListEntitiesRequestSchema,
+  NovelListEntitiesResponseSchema,
+  NovelListRequestSchema,
+  NovelListResponseSchema,
+  NovelReadChapterRequestSchema,
+  NovelReadChapterResponseSchema,
+  NovelRelationshipsGetRequestSchema,
+  NovelRelationshipsGetResponseSchema,
+  NovelRemoveEntityRequestSchema,
+  NovelRemoveEntityResponseSchema,
+  NovelSnapshotCreateRequestSchema,
+  NovelSnapshotCreateResponseSchema,
+  NovelSnapshotListRequestSchema,
+  NovelSnapshotListResponseSchema,
+  NovelSnapshotRestoreRequestSchema,
+  NovelSnapshotRestoreResponseSchema,
+  NovelUpdateMetadataRequestSchema,
+  NovelUpdateMetadataResponseSchema,
+  NovelUpsertEntityRequestSchema,
+  NovelUpsertEntityResponseSchema,
+  NovelWriteChapterRequestSchema,
+  NovelWriteChapterResponseSchema,
+} from "./novel/rpc-schemas.js";
+export {
+  type NovelChapterEntry,
+  type NovelDescriptor,
+  type NovelEntityEntry,
+  type NovelEntityKind,
+  type NovelRelationshipsPayload,
+  type NovelSnapshot,
+  type NovelTree,
+  type NovelVolumeEntry,
+} from "./novel/payload-schemas.js";
 import { BrowserAutomationHostCapabilitySchema } from "./browser-automation/capabilities.js";
+export {
+  AiCredentialTypeSchema,
+  AiModelProfileSchema,
+  type AiCredentialStatus,
+  type AiCredentialType,
+  type AiModelProfile,
+  type AiModelProfileWithCredential,
+} from "./ai-models/schema.js";
 import {
   PaseoConfigRawSchema,
   PaseoLifecycleCommandRawSchema,
@@ -390,6 +458,8 @@ const AgentSessionConfigSchema = z.object({
   toolPolicy: ToolPolicySchema.optional(),
   systemPrompt: z.string().optional(),
   mcpServers: z.record(z.string(), McpServerConfigSchema).optional(),
+  // COMPAT(aiModelProfileId): added in v0.4; old daemons ignore unknown fields.
+  aiModelProfileId: z.string().optional(),
 });
 
 const AgentPermissionUpdateSchema = z.record(z.string(), z.unknown());
@@ -2608,6 +2678,29 @@ export const SessionInboundMessageSchema = z.discriminatedUnion("type", [
   DictationStreamChunkMessageSchema,
   DictationStreamFinishMessageSchema,
   DictationStreamCancelMessageSchema,
+  AiModelsListRequestSchema,
+  AiModelsUpsertRequestSchema,
+  AiModelsRemoveRequestSchema,
+  AiModelsTestRequestSchema,
+  AiCredentialsSetRequestSchema,
+  AiCredentialsRemoveRequestSchema,
+  NovelListRequestSchema,
+  NovelGetRequestSchema,
+  NovelCreateRequestSchema,
+  NovelUpdateMetadataRequestSchema,
+  NovelAddVolumeRequestSchema,
+  NovelAddChapterRequestSchema,
+  NovelReadChapterRequestSchema,
+  NovelWriteChapterRequestSchema,
+  NovelListEntitiesRequestSchema,
+  NovelUpsertEntityRequestSchema,
+  NovelRemoveEntityRequestSchema,
+  NovelSnapshotCreateRequestSchema,
+  NovelSnapshotListRequestSchema,
+  NovelSnapshotRestoreRequestSchema,
+  NovelRelationshipsGetRequestSchema,
+  NovelGraphLayoutGetRequestSchema,
+  NovelGraphLayoutSetRequestSchema,
   CreateAgentRequestMessageSchema,
   ListProviderModelsRequestMessageSchema,
   ListProviderModesRequestMessageSchema,
@@ -5423,6 +5516,29 @@ export const SessionOutboundMessageSchema = z.discriminatedUnion("type", [
   DictationStreamPartialMessageSchema,
   DictationStreamFinalMessageSchema,
   DictationStreamErrorMessageSchema,
+  AiModelsListResponseSchema,
+  AiModelsUpsertResponseSchema,
+  AiModelsRemoveResponseSchema,
+  AiModelsTestResponseSchema,
+  AiCredentialsSetResponseSchema,
+  AiCredentialsRemoveResponseSchema,
+  NovelListResponseSchema,
+  NovelGetResponseSchema,
+  NovelCreateResponseSchema,
+  NovelUpdateMetadataResponseSchema,
+  NovelAddVolumeResponseSchema,
+  NovelAddChapterResponseSchema,
+  NovelReadChapterResponseSchema,
+  NovelWriteChapterResponseSchema,
+  NovelListEntitiesResponseSchema,
+  NovelUpsertEntityResponseSchema,
+  NovelRemoveEntityResponseSchema,
+  NovelSnapshotCreateResponseSchema,
+  NovelSnapshotListResponseSchema,
+  NovelSnapshotRestoreResponseSchema,
+  NovelRelationshipsGetResponseSchema,
+  NovelGraphLayoutGetResponseSchema,
+  NovelGraphLayoutSetResponseSchema,
   StatusMessageSchema,
   PongMessageSchema,
   RpcErrorMessageSchema,
@@ -5814,6 +5930,58 @@ export type ScheduleDeleteRequest = z.infer<typeof ScheduleDeleteRequestSchema>;
 export type ScheduleRunOnceRequest = z.infer<typeof ScheduleRunOnceRequestSchema>;
 export type ScheduleUpdateRequest = z.infer<typeof ScheduleUpdateRequestSchema>;
 export type LoopRunRequest = z.infer<typeof LoopRunRequestSchema>;
+export type AiModelsListRequestMessage = z.infer<typeof AiModelsListRequestSchema>;
+export type AiModelsUpsertRequestMessage = z.infer<typeof AiModelsUpsertRequestSchema>;
+export type AiModelsRemoveRequestMessage = z.infer<typeof AiModelsRemoveRequestSchema>;
+export type AiModelsTestRequestMessage = z.infer<typeof AiModelsTestRequestSchema>;
+export type AiCredentialsSetRequestMessage = z.infer<typeof AiCredentialsSetRequestSchema>;
+export type AiCredentialsRemoveRequestMessage = z.infer<typeof AiCredentialsRemoveRequestSchema>;
+export type NovelListRequestMessage = z.infer<typeof NovelListRequestSchema>;
+export type NovelListResponseMessage = z.infer<typeof NovelListResponseSchema>;
+export type NovelGetRequestMessage = z.infer<typeof NovelGetRequestSchema>;
+export type NovelGetResponseMessage = z.infer<typeof NovelGetResponseSchema>;
+export type NovelCreateRequestMessage = z.infer<typeof NovelCreateRequestSchema>;
+export type NovelCreateResponseMessage = z.infer<typeof NovelCreateResponseSchema>;
+export type NovelUpdateMetadataRequestMessage = z.infer<typeof NovelUpdateMetadataRequestSchema>;
+export type NovelUpdateMetadataResponseMessage = z.infer<typeof NovelUpdateMetadataResponseSchema>;
+export type NovelAddVolumeRequestMessage = z.infer<typeof NovelAddVolumeRequestSchema>;
+export type NovelAddVolumeResponseMessage = z.infer<typeof NovelAddVolumeResponseSchema>;
+export type NovelAddChapterRequestMessage = z.infer<typeof NovelAddChapterRequestSchema>;
+export type NovelAddChapterResponseMessage = z.infer<typeof NovelAddChapterResponseSchema>;
+export type NovelReadChapterRequestMessage = z.infer<typeof NovelReadChapterRequestSchema>;
+export type NovelReadChapterResponseMessage = z.infer<typeof NovelReadChapterResponseSchema>;
+export type NovelWriteChapterRequestMessage = z.infer<typeof NovelWriteChapterRequestSchema>;
+export type NovelWriteChapterResponseMessage = z.infer<typeof NovelWriteChapterResponseSchema>;
+export type NovelListEntitiesRequestMessage = z.infer<typeof NovelListEntitiesRequestSchema>;
+export type NovelListEntitiesResponseMessage = z.infer<typeof NovelListEntitiesResponseSchema>;
+export type NovelUpsertEntityRequestMessage = z.infer<typeof NovelUpsertEntityRequestSchema>;
+export type NovelUpsertEntityResponseMessage = z.infer<typeof NovelUpsertEntityResponseSchema>;
+export type NovelRemoveEntityRequestMessage = z.infer<typeof NovelRemoveEntityRequestSchema>;
+export type NovelRemoveEntityResponseMessage = z.infer<typeof NovelRemoveEntityResponseSchema>;
+export type NovelSnapshotCreateRequestMessage = z.infer<typeof NovelSnapshotCreateRequestSchema>;
+export type NovelSnapshotCreateResponseMessage = z.infer<typeof NovelSnapshotCreateResponseSchema>;
+export type NovelSnapshotListRequestMessage = z.infer<typeof NovelSnapshotListRequestSchema>;
+export type NovelSnapshotListResponseMessage = z.infer<typeof NovelSnapshotListResponseSchema>;
+export type NovelSnapshotRestoreRequestMessage = z.infer<typeof NovelSnapshotRestoreRequestSchema>;
+export type NovelSnapshotRestoreResponseMessage = z.infer<
+  typeof NovelSnapshotRestoreResponseSchema
+>;
+export type NovelRelationshipsGetRequestMessage = z.infer<
+  typeof NovelRelationshipsGetRequestSchema
+>;
+export type NovelRelationshipsGetResponseMessage = z.infer<
+  typeof NovelRelationshipsGetResponseSchema
+>;
+export type NovelGraphLayoutGetRequestMessage = z.infer<typeof NovelGraphLayoutGetRequestSchema>;
+export type NovelGraphLayoutGetResponseMessage = z.infer<typeof NovelGraphLayoutGetResponseSchema>;
+export type NovelGraphLayoutSetRequestMessage = z.infer<typeof NovelGraphLayoutSetRequestSchema>;
+export type NovelGraphLayoutSetResponseMessage = z.infer<typeof NovelGraphLayoutSetResponseSchema>;
+export type AiModelsListResponseMessage = z.infer<typeof AiModelsListResponseSchema>;
+export type AiModelsUpsertResponseMessage = z.infer<typeof AiModelsUpsertResponseSchema>;
+export type AiModelsRemoveResponseMessage = z.infer<typeof AiModelsRemoveResponseSchema>;
+export type AiModelsTestResponseMessage = z.infer<typeof AiModelsTestResponseSchema>;
+export type AiCredentialsSetResponseMessage = z.infer<typeof AiCredentialsSetResponseSchema>;
+export type AiCredentialsRemoveResponseMessage = z.infer<typeof AiCredentialsRemoveResponseSchema>;
 export type LoopListRequest = z.infer<typeof LoopListRequestSchema>;
 export type LoopInspectRequest = z.infer<typeof LoopInspectRequestSchema>;
 export type LoopLogsRequest = z.infer<typeof LoopLogsRequestSchema>;

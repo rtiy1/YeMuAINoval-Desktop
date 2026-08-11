@@ -7,8 +7,8 @@
  * public types referenced by the source are preserved here.
  */
 export declare type PermissionMode =
-  | 'default'
-  | 'acceptEdits'
-  | 'bypassPermissions'
-  | 'plan'
-  | 'dontAsk'
+  | "default"
+  | "acceptEdits"
+  | "bypassPermissions"
+  | "plan"
+  | "dontAsk";

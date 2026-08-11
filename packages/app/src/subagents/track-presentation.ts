@@ -4,7 +4,7 @@ import type { SubagentRow } from "./select";
 import { providerSubagentLifecycleStatus } from "./provider-store";
 
 function presentationStatus(row: SubagentRow) {
-  if (row.kind === "paseo") return row.status;
+  if (row.kind === "managed") return row.status;
   return providerSubagentLifecycleStatus(row.status);
 }
 
@@ -27,7 +27,7 @@ export function buildSubagentRowPresentationData(row: SubagentRow): SubagentRowP
   const subtitle = providerSubtitle ?? (description ? title : null);
   const status = presentationStatus(row);
   return {
-    key: `${row.kind}_subagent_${row.id}`,
+    key: `${row.kind === "managed" ? "yemu" : "provider"}_subagent_${row.id}`,
     kind: "agent",
     label: label ?? "",
     subtitle: subtitle ?? "",

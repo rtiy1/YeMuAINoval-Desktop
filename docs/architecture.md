@@ -83,15 +83,15 @@ not retain non-Git directories.
 
 The source of truth for WebSocket messages, binary frame codecs, endpoint parsing,
 agent timeline types, provider config schemas, and other values shared by daemon
-and clients. Server, app, CLI, and `@getpaseo/client` all depend on this package;
+and clients. Server, app, CLI, and `@yemu/client` all depend on this package;
 it does not depend on the server.
 
 ### `packages/client` — Daemon client library and SDK facade
 
 Owns the low-level daemon WebSocket driver plus the higher-level SDK facade.
 App and CLI may import the low-level driver from
-`@getpaseo/client/internal/daemon-client` during migration, while new SDK-shaped
-code imports from `@getpaseo/client`.
+`@yemu/client/internal/daemon-client` during migration, while new SDK-shaped
+code imports from `@yemu/client`.
 
 ### `packages/app` — Mobile + web client (Expo)
 

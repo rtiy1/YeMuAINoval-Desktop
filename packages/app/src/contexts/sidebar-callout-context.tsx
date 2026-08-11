@@ -33,7 +33,7 @@ export interface SidebarCalloutsApi {
   clear: () => void;
 }
 
-const DISMISSED_CALLOUTS_STORAGE_KEY = "@paseo:sidebar-callout-dismissals";
+const DISMISSED_CALLOUTS_STORAGE_KEY = "@yemu:sidebar-callout-dismissals";
 
 const SidebarCalloutApiContext = createContext<SidebarCalloutsApi | null>(null);
 const SidebarCalloutStateContext = createContext<SidebarCalloutEntry | null>(null);
@@ -62,7 +62,10 @@ export function SidebarCalloutProvider({ children }: { children: ReactNode }) {
     async function loadDismissedKeys(): Promise<void> {
       let dismissedKeys: ReadonlySet<string>;
       try {
-        const value = await AsyncStorage.getItem(DISMISSED_CALLOUTS_STORAGE_KEY);
+        // COMPAT(sidebarCalloutKey): legacy key read back once, remove after 2026-11-30.
+        const value =
+          (await AsyncStorage.getItem(DISMISSED_CALLOUTS_STORAGE_KEY)) ??
+          (await AsyncStorage.getItem("@paseo:sidebar-callout-dismissals"));
         dismissedKeys = parseDismissedCalloutKeys(value);
       } catch (error) {
         console.error("[SidebarCallouts] Failed to load dismissed callouts", error);

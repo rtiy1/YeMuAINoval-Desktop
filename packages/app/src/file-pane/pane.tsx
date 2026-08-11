@@ -8,14 +8,14 @@ import React, {
   useState,
   useSyncExternalStore,
 } from "react";
-import type { DaemonClient, FileReadResult } from "@getpaseo/client/internal/daemon-client";
+import type { DaemonClient, FileReadResult } from "@yemu/client/internal/daemon-client";
 import { Image as RNImage, ScrollView as RNScrollView, Text, View } from "react-native";
 import { StyleSheet, UnistylesRuntime, withUnistyles } from "react-native-unistyles";
 import { useTranslation } from "react-i18next";
 import { MarkdownRenderer } from "@/components/markdown/renderer";
 import { useIsCompactFormFactor } from "@/constants/layout";
 import { useSessionStore, type ExplorerFile } from "@/stores/session-store";
-import { highlightCode, type HighlightToken } from "@getpaseo/highlight";
+import { highlightCode, type HighlightToken } from "@yemu/highlight";
 import { syntaxTokenStyleFor } from "@/styles/syntax-token-styles";
 import { inlineUnistylesStyle } from "@/styles/unistyles-inline-style";
 import { lineNumberGutterWidth } from "@/components/code-insets";

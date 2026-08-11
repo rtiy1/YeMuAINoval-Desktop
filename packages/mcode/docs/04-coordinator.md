@@ -12,12 +12,13 @@
 
 Coordinator 模式将 MCode 分成两个角色：
 
-| 角色 | 职责 | 可用工具 |
-|------|------|---------|
+| 角色                      | 职责                         | 可用工具                        |
+| ------------------------- | ---------------------------- | ------------------------------- |
 | **Coordinator**（指挥官） | 理解目标、拆解任务、综合结果 | 仅 Agent、SendMessage、TaskStop |
-| **Worker**（执行者） | 具体代码操作 | 完整工具集（过滤掉内部工具） |
+| **Worker**（执行者）      | 具体代码操作                 | 完整工具集（过滤掉内部工具）    |
 
 Coordinator **不直接操作代码**，只负责：
+
 - 理解用户目标，拆解任务
 - 通过 `Agent` 工具派生 Worker
 - 通过 `SendMessage` 向已有 Worker 发送后续指令
@@ -31,14 +32,15 @@ Coordinator **不直接操作代码**，只负责：
 ```typescript
 // src/coordinator/coordinatorMode.ts
 export function isCoordinatorMode(): boolean {
-  if (feature('COORDINATOR_MODE')) {
-    return isEnvTruthy(process.env.MCODE_CODE_COORDINATOR_MODE)
+  if (feature("COORDINATOR_MODE")) {
+    return isEnvTruthy(process.env.MCODE_CODE_COORDINATOR_MODE);
   }
-  return false
+  return false;
 }
 ```
 
 需要同时满足：
+
 1. 编译时 `COORDINATOR_MODE` flag 启用
 2. 运行时 `MCODE_CODE_COORDINATOR_MODE` 环境变量为真
 
@@ -46,12 +48,12 @@ export function isCoordinatorMode(): boolean {
 
 ## 标准任务流程（四阶段）
 
-| 阶段 | 执行者 | 目的 |
-|------|--------|------|
-| **Research** | Worker（并行） | 调查代码库，查找文件，理解问题 |
-| **Synthesis** | Coordinator 自身 | 阅读发现，理解问题，编写实施规格 |
-| **Implementation** | Worker | 按规格做精准改动 |
-| **Verification** | Worker | 测试改动是否生效 |
+| 阶段               | 执行者           | 目的                             |
+| ------------------ | ---------------- | -------------------------------- |
+| **Research**       | Worker（并行）   | 调查代码库，查找文件，理解问题   |
+| **Synthesis**      | Coordinator 自身 | 阅读发现，理解问题，编写实施规格 |
+| **Implementation** | Worker           | 按规格做精准改动                 |
+| **Verification**   | Worker           | 测试改动是否生效                 |
 
 ---
 
@@ -73,11 +75,11 @@ Worker 的执行结果以 XML 格式注入回 Coordinator 的对话流：
 
 ## 并发管理规则
 
-| 任务类型 | 并行策略 |
-|----------|---------|
-| 只读任务（研究） | 自由并行 |
-| 写操作任务（实施） | 同一组文件同时只能一个 Worker |
-| 验证任务 | 可以与实施任务在不同文件区域并行 |
+| 任务类型           | 并行策略                         |
+| ------------------ | -------------------------------- |
+| 只读任务（研究）   | 自由并行                         |
+| 写操作任务（实施） | 同一组文件同时只能一个 Worker    |
+| 验证任务           | 可以与实施任务在不同文件区域并行 |
 
 ---
 
@@ -85,13 +87,13 @@ Worker 的执行结果以 XML 格式注入回 Coordinator 的对话流：
 
 Coordinator 根据上下文重叠度决定继续已有 Worker 还是创建新 Worker：
 
-| 场景 | 决策 | 方式 |
-|------|------|------|
-| 研究的文件就是要编辑的文件 | Continue | `SendMessage` |
-| 研究范围广但实施范围窄 | Spawn fresh | `Agent` |
-| 修正失败或扩展近期工作 | Continue | `SendMessage` |
-| 验证另一个 Worker 刚写的代码 | Spawn fresh | 独立视角 |
-| 第一次方案完全错误 | Spawn fresh | 避免锚定效应 |
+| 场景                         | 决策        | 方式          |
+| ---------------------------- | ----------- | ------------- |
+| 研究的文件就是要编辑的文件   | Continue    | `SendMessage` |
+| 研究范围广但实施范围窄       | Spawn fresh | `Agent`       |
+| 修正失败或扩展近期工作       | Continue    | `SendMessage` |
+| 验证另一个 Worker 刚写的代码 | Spawn fresh | 独立视角      |
+| 第一次方案完全错误           | Spawn fresh | 避免锚定效应  |
 
 ---
 
@@ -128,7 +130,7 @@ Coordinator 根据上下文重叠度决定继续已有 Worker 还是创建新 Wo
 
 ## 关键源码文件
 
-| 文件 | 职责 |
-|------|------|
+| 文件                                 | 职责                                                         |
+| ------------------------------------ | ------------------------------------------------------------ |
 | `src/coordinator/coordinatorMode.ts` | 核心逻辑（~370 行）：模式检查、工具过滤、提示词、Worker 管理 |
-| `src/coordinator/workerAgent.ts` | Worker Agent 常量定义 |
+| `src/coordinator/workerAgent.ts`     | Worker Agent 常量定义                                        |

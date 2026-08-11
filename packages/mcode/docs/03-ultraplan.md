@@ -60,9 +60,9 @@ Ultraplan 依赖的底层传送机制，实现本地 ↔ 远程会话的双向�
 
 ### 核心能力
 
-| 方向 | 方式 | 说明 |
-|------|------|------|
-| 本地 → 远程 | `--remote [description]` | 创建远程 CCR 会话 |
+| 方向        | 方式                      | 说明               |
+| ----------- | ------------------------- | ------------------ |
+| 本地 → 远程 | `--remote [description]`  | 创建远程 CCR 会话  |
 | 远程 → 本地 | `--teleport [session-id]` | 恢复远程会话到本地 |
 
 ### Git Bundle 打包
@@ -71,13 +71,13 @@ Ultraplan 依赖的底层传送机制，实现本地 ↔ 远程会话的双向�
 
 ### UI 组件
 
-| 组件 | 说明 |
-|------|------|
-| `src/components/TeleportProgress.tsx` | 传送进度条 |
-| `src/components/TeleportError.tsx` | 传送错误提示 |
-| `src/components/TeleportStash.tsx` | Stash 管理 |
-| `src/components/TeleportResumeWrapper.tsx` | 恢复包装器 |
-| `src/hooks/useTeleportResume.tsx` | 恢复状态 Hook |
+| 组件                                       | 说明          |
+| ------------------------------------------ | ------------- |
+| `src/components/TeleportProgress.tsx`      | 传送进度条    |
+| `src/components/TeleportError.tsx`         | 传送错误提示  |
+| `src/components/TeleportStash.tsx`         | Stash 管理    |
+| `src/components/TeleportResumeWrapper.tsx` | 恢复包装器    |
+| `src/hooks/useTeleportResume.tsx`          | 恢复状态 Hook |
 
 ---
 
@@ -86,7 +86,7 @@ Ultraplan 依赖的底层传送机制，实现本地 ↔ 远程会话的双向�
 Ultraplan 在外部版本中**完全不可用**：
 
 ```typescript
-isEnabled: () => "external" === 'ant'  // 永远为 false
+isEnabled: () => "external" === "ant"; // 永远为 false
 ```
 
 只有 Anthropic 内部员工（`USER_TYPE === 'ant'`）能使用此功能。外部构建中相关代码被编译时 DCE（Dead Code Elimination）移除。
@@ -98,18 +98,19 @@ isEnabled: () => "external" === 'ant'  // 永远为 false
 使用的模型通过 GrowthBook `tengu_ultraplan_model` 远程控制，支持动态切换。
 
 内部用户还可以通过环境变量覆盖：
+
 - `ULTRAPLAN_PROMPT_FILE`：自定义提示文件路径
 
 ---
 
 ## 关键源码文件
 
-| 文件 | 职责 |
-|------|------|
-| `src/commands/ultraplan.tsx` | Ultraplan 命令入口 |
-| `src/utils/ultraplan/ccrSession.ts` | CCR 远程会话管理 |
-| `src/utils/ultraplan/prompt.txt` | 提示模板（sourcemap 中为占位符） |
-| `src/utils/ultraplan/keyword.ts` | 关键词触发检测 |
-| `src/utils/teleport.tsx` | 核心传送逻辑 |
-| `src/utils/teleport/api.ts` | 传送 API 层 |
-| `src/utils/teleport/gitBundle.ts` | Git Bundle 打包 |
+| 文件                                | 职责                             |
+| ----------------------------------- | -------------------------------- |
+| `src/commands/ultraplan.tsx`        | Ultraplan 命令入口               |
+| `src/utils/ultraplan/ccrSession.ts` | CCR 远程会话管理                 |
+| `src/utils/ultraplan/prompt.txt`    | 提示模板（sourcemap 中为占位符） |
+| `src/utils/ultraplan/keyword.ts`    | 关键词触发检测                   |
+| `src/utils/teleport.tsx`            | 核心传送逻辑                     |
+| `src/utils/teleport/api.ts`         | 传送 API 层                      |
+| `src/utils/teleport/gitBundle.ts`   | Git Bundle 打包                  |

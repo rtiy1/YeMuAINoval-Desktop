@@ -1,4 +1,4 @@
-import { parseGitHubRemoteUrl } from "@getpaseo/protocol/git-remote";
+import { parseGitHubRemoteUrl } from "@yemu/protocol/git-remote";
 
 export type GithubRefKind = "pull" | "issues";
 

@@ -4,15 +4,12 @@ import {
   type PersistedConfig,
 } from "./persisted-config.js";
 import { ProviderOverrideSchema } from "./agent/provider-launch-config.js";
-import {
-  MutableDaemonConfigSchema,
-  MutableDaemonConfigPatchSchema,
-} from "@getpaseo/protocol/messages";
+import { MutableDaemonConfigSchema, MutableDaemonConfigPatchSchema } from "@yemu/protocol/messages";
 
-export type { MutableDaemonConfig, MutableDaemonConfigPatch } from "@getpaseo/protocol/messages";
+export type { MutableDaemonConfig, MutableDaemonConfigPatch } from "@yemu/protocol/messages";
 
-type MutableDaemonConfig = import("@getpaseo/protocol/messages").MutableDaemonConfig;
-type MutableDaemonConfigPatch = import("@getpaseo/protocol/messages").MutableDaemonConfigPatch;
+type MutableDaemonConfig = import("@yemu/protocol/messages").MutableDaemonConfig;
+type MutableDaemonConfigPatch = import("@yemu/protocol/messages").MutableDaemonConfigPatch;
 type ProviderOverride = import("./agent/provider-launch-config.js").ProviderOverride;
 
 interface LoggerLike {
@@ -192,7 +189,7 @@ export class DaemonConfigStore {
     const parsedPatch = MutableDaemonConfigPatchSchema.parse(partial);
     if (parsedPatch.relay?.enabled !== undefined && !this.relayEnabledMutable) {
       throw new Error(
-        "Relay is controlled by a daemon launch override. Remove PASEO_RELAY_ENABLED or the relay CLI flag before changing it here.",
+        "Relay is controlled by a daemon launch override. Remove YEMU_RELAY_ENABLED or the relay CLI flag before changing it here.",
       );
     }
     const { removeProviders = [], ...configPatch } = parsedPatch;

@@ -1,5 +1,5 @@
 {
-  "name": "@getpaseo/protocol",
+  "name": "@yemu/protocol",
   "version": "0.3.1",
   "description": "YeMu AI Novel shared protocol schemas and wire types",
   "files": [
@@ -30,6 +30,7 @@
     "pretest": "npm run generate:validators"
   },
   "dependencies": {
+    "@yemu/novel-core": "0.1.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {

@@ -35,6 +35,7 @@ KAIROS 让 MCode 从"一次性对话工具"变成"持久运行的 AI 助手"：
 `--assistant` CLI 参数可跳过远程开关检查（用于 Agent SDK daemon 模式）。
 
 全局状态存储在 `src/bootstrap/state.ts`：
+
 - `kairosActive: boolean`（默认 `false`）
 - `getKairosActive()` / `setKairosActive(true)`
 
@@ -80,12 +81,12 @@ KAIROS 最精巧的子系统——后台运行的子代理，将分散的会话�
 
 定义在 `src/services/autoDream/consolidationPrompt.ts`：
 
-| 阶段 | 动作 |
-|------|------|
-| **Orient** | 列出记忆目录、读取 `MEMORY.md` 索引、浏览已有主题文件 |
-| **Gather** | 从每日日志、已有记忆、JSONL transcript 中搜集新信号 |
+| 阶段            | 动作                                                       |
+| --------------- | ---------------------------------------------------------- |
+| **Orient**      | 列出记忆目录、读取 `MEMORY.md` 索引、浏览已有主题文件      |
+| **Gather**      | 从每日日志、已有记忆、JSONL transcript 中搜集新信号        |
 | **Consolidate** | 合并新信号到主题文件，转换相对日期为绝对日期，删除过时事实 |
-| **Prune** | 更新 `MEMORY.md` 索引，保持在行数和大小限制内 |
+| **Prune**       | 更新 `MEMORY.md` 索引，保持在行数和大小限制内              |
 
 ### 锁机制
 
@@ -122,10 +123,10 @@ KAIROS 最精巧的子系统——后台运行的子代理，将分散的会话�
 
 `src/proactive/index.ts` 维护三个状态：
 
-| 状态 | 说明 |
-|------|------|
-| `active` | 是否激活 |
-| `paused` | 是否暂停（用户按 Esc 取消时暂停，下次输入恢复） |
+| 状态             | 说明                                             |
+| ---------------- | ------------------------------------------------ |
+| `active`         | 是否激活                                         |
+| `paused`         | 是否暂停（用户按 Esc 取消时暂停，下次输入恢复）  |
 | `contextBlocked` | API 错误时阻塞 tick，防止 tick-error-tick 死循环 |
 
 ### 激活方式
@@ -169,12 +170,12 @@ seems most useful, or call Sleep if there's nothing to do.
 
 ### 任务类型
 
-| 类型 | 说明 |
-|------|------|
+| 类型                         | 说明                             |
+| ---------------------------- | -------------------------------- |
 | 一次性（`recurring: false`） | 触发后自动删除，支持错过任务检测 |
-| 循环（`recurring: true`） | 触发后重新调度，默认 7 天过期 |
-| 永久（`permanent: true`） | 不受过期限制（KAIROS 专用） |
-| 会话级（`durable: false`） | 仅内存中，进程退出即消失 |
+| 循环（`recurring: true`）    | 触发后重新调度，默认 7 天过期    |
+| 永久（`permanent: true`）    | 不受过期限制（KAIROS 专用）      |
+| 会话级（`durable: false`）   | 仅内存中，进程退出即消失         |
 
 ### Jitter 防雷群机制
 
@@ -188,17 +189,17 @@ seems most useful, or call Sleep if there's nothing to do.
 
 ## 关键源码文件
 
-| 文件 | 职责 |
-|------|------|
-| `src/bootstrap/state.ts` | KAIROS 全局状态 |
-| `src/assistant/index.ts` | 助手模式入口 |
-| `src/assistant/sessionHistory.ts` | 远程会话历史 API |
-| `src/proactive/index.ts` | 主动模式状态管理 |
-| `src/services/autoDream/autoDream.ts` | Auto-Dream 引擎 |
-| `src/services/autoDream/consolidationPrompt.ts` | 整合提示（四阶段） |
-| `src/services/autoDream/consolidationLock.ts` | 整合锁 |
-| `src/services/autoDream/config.ts` | Dream 配置 |
-| `src/tasks/DreamTask/DreamTask.ts` | Dream 任务定义 |
-| `src/utils/cronScheduler.ts` | Cron 调度器 |
-| `src/utils/cronTasks.ts` | Cron 任务持久化 |
-| `src/skills/bundled/dream.ts` | `/dream` Skill（存根） |
+| 文件                                            | 职责                   |
+| ----------------------------------------------- | ---------------------- |
+| `src/bootstrap/state.ts`                        | KAIROS 全局状态        |
+| `src/assistant/index.ts`                        | 助手模式入口           |
+| `src/assistant/sessionHistory.ts`               | 远程会话历史 API       |
+| `src/proactive/index.ts`                        | 主动模式状态管理       |
+| `src/services/autoDream/autoDream.ts`           | Auto-Dream 引擎        |
+| `src/services/autoDream/consolidationPrompt.ts` | 整合提示（四阶段）     |
+| `src/services/autoDream/consolidationLock.ts`   | 整合锁                 |
+| `src/services/autoDream/config.ts`              | Dream 配置             |
+| `src/tasks/DreamTask/DreamTask.ts`              | Dream 任务定义         |
+| `src/utils/cronScheduler.ts`                    | Cron 调度器            |
+| `src/utils/cronTasks.ts`                        | Cron 任务持久化        |
+| `src/skills/bundled/dream.ts`                   | `/dream` Skill（存根） |

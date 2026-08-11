@@ -15,9 +15,9 @@ import {
   upsertUserMessage,
   upsertUserMessageAcrossStream,
 } from "./stream";
-import type { AgentProvider, ToolCallDetail } from "@getpaseo/protocol/agent-types";
-import type { AgentStreamEventPayload } from "@getpaseo/protocol/messages";
-import { buildToolCallDisplayModel } from "@getpaseo/protocol/tool-call-display";
+import type { AgentProvider, ToolCallDetail } from "@yemu/protocol/agent-types";
+import type { AgentStreamEventPayload } from "@yemu/protocol/messages";
+import { buildToolCallDisplayModel } from "@yemu/protocol/tool-call-display";
 
 type CanonicalToolStatus = "running" | "completed" | "failed" | "canceled";
 

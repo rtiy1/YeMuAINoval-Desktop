@@ -1,7 +1,7 @@
 import { useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { useQueries, useQuery } from "@tanstack/react-query";
-import type { ProjectIcon } from "@getpaseo/protocol/messages";
+import type { ProjectIcon } from "@yemu/protocol/messages";
 import { useHostFeatureMap } from "@/runtime/host-features";
 import {
   getHostRuntimeStore,

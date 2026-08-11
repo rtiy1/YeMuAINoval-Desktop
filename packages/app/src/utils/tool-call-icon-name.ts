@@ -1,7 +1,7 @@
-import type { ToolCallDetail, ToolCallIconName } from "@getpaseo/protocol/agent-types";
-import { isPaseoToolName } from "@getpaseo/protocol/tool-name-normalization";
+import type { ToolCallDetail, ToolCallIconName } from "@yemu/protocol/agent-types";
+import { isPaseoToolName } from "@yemu/protocol/tool-name-normalization";
 
-export type ToolCallIcon = ToolCallIconName | "paseo";
+export type ToolCallIcon = ToolCallIconName | "yemu";
 
 const TOOL_DETAIL_ICON_NAMES: Record<ToolCallDetail["type"], ToolCallIcon> = {
   shell: "square_terminal",
@@ -32,7 +32,7 @@ export function resolveToolCallIconName(toolName: string, detail?: ToolCallDetai
     return "mic_vocal";
   }
   if (isPaseoToolName(lowerName)) {
-    return "paseo";
+    return "yemu";
   }
   if (lowerName === "task") {
     return "bot";

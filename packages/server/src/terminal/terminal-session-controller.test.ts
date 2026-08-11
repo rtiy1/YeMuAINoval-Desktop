@@ -6,8 +6,8 @@ import {
   TerminalStreamOpcode,
   decodeTerminalStreamFrame,
   type TerminalStreamFrame,
-} from "@getpaseo/protocol/binary-frames/index";
-import type { TerminalCell, TerminalState } from "@getpaseo/protocol/messages";
+} from "@yemu/protocol/binary-frames/index";
+import type { TerminalCell, TerminalState } from "@yemu/protocol/messages";
 import type { ServerMessage, TerminalSession, TerminalStateSnapshot } from "./terminal.js";
 import { TerminalSessionController } from "./terminal-session-controller.js";
 import type { TerminalManager, TerminalsChangedEvent } from "./terminal-manager.js";

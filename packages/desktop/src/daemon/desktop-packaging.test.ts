@@ -52,7 +52,7 @@ function createFakeMacBundle(options: { includeHelper: boolean }): {
       helperPath,
       [
         "#!/bin/sh",
-        'printf "helper env=%s/%s cli=%s\\n" "$ELECTRON_RUN_AS_NODE" "$PASEO_NODE_ENV" "$PASEO_CLI"',
+        'printf "helper env=%s/%s cli=%s\\n" "$ELECTRON_RUN_AS_NODE" "$YEMU_NODE_ENV" "$YEMU_CLI"',
         'printf "args=%s\\n" "$*"',
         "",
       ].join("\n"),
@@ -67,10 +67,10 @@ describe("desktop packaging", () => {
     const config = readFileSync(join(packageRoot, "electron-builder.yml"), "utf8");
 
     expect(config).toContain(
-      "node_modules/@getpaseo/server/dist/server/terminal/shell-integration/**/*",
+      "node_modules/@yemu/server/dist/server/terminal/shell-integration/**/*",
     );
     expect(config).not.toContain(
-      "node_modules/@getpaseo/server/dist/src/terminal/shell-integration/**/*",
+      "node_modules/@yemu/server/dist/src/terminal/shell-integration/**/*",
     );
   });
 
@@ -78,15 +78,15 @@ describe("desktop packaging", () => {
     const config = readFileSync(join(packageRoot, "electron-builder.yml"), "utf8");
 
     expect(config).toContain("!**/*.map");
-    expect(config).toContain("!node_modules/@getpaseo/*/src/**");
-    expect(config).toContain("!node_modules/@getpaseo/**/*.test.*");
-    expect(config).toContain("!node_modules/@getpaseo/**/*.spec.*");
+    expect(config).toContain("!node_modules/@yemu/*/src/**");
+    expect(config).toContain("!node_modules/@yemu/**/*.test.*");
+    expect(config).toContain("!node_modules/@yemu/**/*.spec.*");
   });
 
   it("excludes the bundled daemon web UI from the packaged app", () => {
     const config = readFileSync(join(packageRoot, "electron-builder.yml"), "utf8");
 
-    expect(config).toContain("!node_modules/@getpaseo/server/dist/server/web-ui/**");
+    expect(config).toContain("!node_modules/@yemu/server/dist/server/web-ui/**");
   });
 
   it("registers YeMu AI Novel agent links with the operating system", () => {
@@ -108,7 +108,7 @@ describe("desktop packaging", () => {
     };
     const deps = pkg.dependencies ?? {};
 
-    for (const required of ["@getpaseo/cli", "@getpaseo/server"]) {
+    for (const required of ["@yemu/cli", "@yemu/server"]) {
       expect(deps[required], `${required} must be declared in dependencies`).toBe("*");
     }
   });
@@ -124,7 +124,7 @@ describe("desktop packaging", () => {
       expect(result.stdout).toContain(`helper env=1/production cli=${bundle.shimPath}`);
       expect(result.stdout).toContain("node-entrypoint-runner.js");
       expect(result.stdout).toContain("node-script");
-      expect(result.stdout).toContain("@getpaseo/cli/dist/index.js");
+      expect(result.stdout).toContain("@yemu/cli/dist/index.js");
       expect(result.stdout).toContain("--version");
       expect(result.stdout).not.toContain("main-executable");
     } finally {

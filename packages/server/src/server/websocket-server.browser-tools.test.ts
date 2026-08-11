@@ -5,9 +5,9 @@ import type {
   BrowserAutomationCommandName,
   BrowserAutomationExecuteRequest,
   BrowserAutomationExecuteResponse,
-} from "@getpaseo/protocol/browser-automation/rpc-schemas";
-import { BROWSER_AUTOMATION_COMMAND_NAMES } from "@getpaseo/protocol/browser-automation/rpc-schemas";
-import { CLIENT_CAPS } from "@getpaseo/protocol/client-capabilities";
+} from "@yemu/protocol/browser-automation/rpc-schemas";
+import { BROWSER_AUTOMATION_COMMAND_NAMES } from "@yemu/protocol/browser-automation/rpc-schemas";
+import { CLIENT_CAPS } from "@yemu/protocol/client-capabilities";
 import type pino from "pino";
 import { afterEach, describe, expect, it } from "vitest";
 

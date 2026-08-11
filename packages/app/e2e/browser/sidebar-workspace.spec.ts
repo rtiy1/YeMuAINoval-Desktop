@@ -199,7 +199,9 @@ test.describe("Sidebar workspace list", () => {
     }
   });
 
-  test("YeMu AI Novel-owned worktree hover card shows the worktree directory name", async ({ page }) => {
+  test("YeMu AI Novel-owned worktree hover card shows the worktree directory name", async ({
+    page,
+  }) => {
     await withPaseoOwnedWorktree(async ({ projectName, workspaceId, worktreeSlug }) => {
       await gotoAppShell(page);
       await waitForSidebarProject(page, projectName);

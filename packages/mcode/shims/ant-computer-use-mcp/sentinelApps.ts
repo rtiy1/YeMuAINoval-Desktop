@@ -1,3 +1,3 @@
 export function getSentinelCategory() {
-  return null
+  return null;
 }

@@ -19,8 +19,8 @@ export {
   PaseoConfigSchema,
   type PaseoConfig,
   type PaseoConfigRaw,
-} from "@getpaseo/protocol/paseo-config-schema";
-import { PaseoConfigSchema, type PaseoConfig } from "@getpaseo/protocol/paseo-config-schema";
+} from "@yemu/protocol/paseo-config-schema";
+import { PaseoConfigSchema, type PaseoConfig } from "@yemu/protocol/paseo-config-schema";
 import {
   createPaseoWorktreeChangeRequestHint,
   normalizeBaseRefName,
@@ -35,11 +35,11 @@ import { spawnProcess } from "./spawn.js";
 import { resolvePaseoHome } from "../server/paseo-home.js";
 import { createExternalProcessEnv } from "../server/paseo-env.js";
 import { parseGitRevParsePath, resolveGitRevParsePath } from "./git-rev-parse-path.js";
-import { validateBranchSlug } from "@getpaseo/protocol/branch-slug";
+import { validateBranchSlug } from "@yemu/protocol/branch-slug";
 import { expandTilde, getRealpathAwareRelativePath, isPathInsideRoot } from "./path.js";
 import { terminateWithTreeKill } from "./tree-kill.js";
 
-export { slugify, validateBranchSlug } from "@getpaseo/protocol/branch-slug";
+export { slugify, validateBranchSlug } from "@yemu/protocol/branch-slug";
 
 const execFileAsync = promisify(execFile);
 const READ_ONLY_GIT_ENV = {
@@ -53,11 +53,11 @@ export interface WorktreeConfig {
 
 export interface WorktreeRuntimeEnv {
   [key: string]: string;
-  PASEO_SOURCE_CHECKOUT_PATH: string;
-  PASEO_ROOT_PATH: string;
-  PASEO_WORKTREE_PATH: string;
-  PASEO_BRANCH_NAME: string;
-  PASEO_WORKTREE_PORT: string;
+  YEMU_SOURCE_CHECKOUT_PATH: string;
+  YEMU_ROOT_PATH: string;
+  YEMU_WORKTREE_PATH: string;
+  YEMU_BRANCH_NAME: string;
+  YEMU_WORKTREE_PORT: string;
 }
 
 export interface WorktreeSetupCommandResult {
@@ -737,12 +737,12 @@ export async function resolveWorktreeRuntimeEnv(options: {
     // Source checkout path is the original git repo root (shared across worktrees), not the
     // worktree itself. This allows setup scripts to copy local files (e.g. .env) from the
     // source checkout.
-    PASEO_SOURCE_CHECKOUT_PATH: repoRootPath,
+    YEMU_SOURCE_CHECKOUT_PATH: repoRootPath,
     // Backward-compatible alias.
-    PASEO_ROOT_PATH: repoRootPath,
-    PASEO_WORKTREE_PATH: options.worktreePath,
-    PASEO_BRANCH_NAME: branchName,
-    PASEO_WORKTREE_PORT: String(worktreePort),
+    YEMU_ROOT_PATH: repoRootPath,
+    YEMU_WORKTREE_PATH: options.worktreePath,
+    YEMU_BRANCH_NAME: branchName,
+    YEMU_WORKTREE_PORT: String(worktreePort),
   };
 }
 
@@ -772,12 +772,12 @@ export async function runWorktreeTeardownCommands(options: {
       // Source checkout path is the original git repo root (shared across worktrees), not the
       // worktree itself. This allows lifecycle scripts to copy or clean resources using paths
       // from the source checkout.
-      PASEO_SOURCE_CHECKOUT_PATH: repoRootPath,
+      YEMU_SOURCE_CHECKOUT_PATH: repoRootPath,
       // Backward-compatible alias.
-      PASEO_ROOT_PATH: repoRootPath,
-      PASEO_WORKTREE_PATH: options.worktreePath,
-      PASEO_BRANCH_NAME: branchName,
-      ...(worktreePort !== null ? { PASEO_WORKTREE_PORT: String(worktreePort) } : {}),
+      YEMU_ROOT_PATH: repoRootPath,
+      YEMU_WORKTREE_PATH: options.worktreePath,
+      YEMU_BRANCH_NAME: branchName,
+      ...(worktreePort !== null ? { YEMU_WORKTREE_PORT: String(worktreePort) } : {}),
     }),
   );
 

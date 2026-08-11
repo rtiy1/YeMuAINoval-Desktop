@@ -6,7 +6,7 @@ import {
   type ShortcutOverrideStore,
 } from "@/keyboard/shortcut-override-store";
 
-const STORAGE_KEY = "@paseo:keyboard-shortcut-overrides";
+const STORAGE_KEY = "@yemu:keyboard-shortcut-overrides";
 const QUERY_KEY = ["keyboard-shortcut-overrides"];
 
 const EMPTY_OVERRIDES: ShortcutOverrides = {};
@@ -76,7 +76,10 @@ function getStore(queryClient: QueryClient): ShortcutOverrideStore {
 
 async function loadOverridesFromStorage(): Promise<ShortcutOverrides> {
   try {
-    const stored = await AsyncStorage.getItem(STORAGE_KEY);
+    // COMPAT(shortcutOverridesKey): legacy key read back once, remove after 2026-11-30.
+    const stored =
+      (await AsyncStorage.getItem(STORAGE_KEY)) ??
+      (await AsyncStorage.getItem("@paseo:keyboard-shortcut-overrides"));
     if (stored) {
       return JSON.parse(stored) as ShortcutOverrides;
     }

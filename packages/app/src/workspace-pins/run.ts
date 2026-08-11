@@ -1,5 +1,5 @@
-import { resolveTerminalProfileLaunch } from "@getpaseo/protocol/terminal-profiles";
-import type { TerminalProfile } from "@getpaseo/protocol/messages";
+import { resolveTerminalProfileLaunch } from "@yemu/protocol/terminal-profiles";
+import type { TerminalProfile } from "@yemu/protocol/messages";
 import type { TerminalProfileInput } from "@/screens/workspace/terminals/use-workspace-terminals";
 import type { PinnedTabTarget } from "@/workspace-pins/target";
 

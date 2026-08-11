@@ -23,8 +23,6 @@ import {
   Server,
   Network,
   Bot,
-  Boxes,
-  Gauge,
   Keyboard,
   Stethoscope,
   Info,
@@ -73,6 +71,7 @@ import { AddHostModal } from "@/components/add-host-modal";
 import { PairLinkModal } from "@/components/pair-link-modal";
 import { KeyboardShortcutsSection } from "@/screens/settings/keyboard-shortcuts-section";
 import { EditorSection } from "@/screens/settings/editor-section";
+import { AiModelsScreen } from "@/features/ai-models/ai-models-screen";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { CommunityLinks } from "@/components/community-links";
@@ -102,8 +101,6 @@ import {
   HostPairDevicePage,
   HostAgentsPage,
   HostSettingsPage,
-  HostProvidersPage,
-  HostUsagePage,
   HostWorkspacesPage,
   HostTerminalsPage,
 } from "@/screens/settings/host-page";
@@ -149,6 +146,7 @@ const SIDEBAR_SECTION_ITEMS: SidebarSectionItem[] = [
   { id: "general", labelKey: "settings.sections.general", icon: Settings },
   { id: "appearance", labelKey: "settings.sections.appearance", icon: Palette },
   { id: "editor", labelKey: "settings.sections.editor", icon: Code2 },
+  { id: "aiModels", labelKey: "settings.sections.aiModels", icon: Bot },
   { id: "shortcuts", labelKey: "settings.sections.shortcuts", icon: Keyboard, desktopOnly: true },
   {
     id: "integrations",
@@ -185,8 +183,6 @@ const HOST_SECTION_ITEMS: HostSectionItem[] = [
   { id: "pair-device", labelKey: "openProject.tiles.pairDevice.title", icon: Smartphone },
   { id: "agents", labelKey: "settings.hostSections.agents", icon: Bot },
   { id: "workspaces", labelKey: "settings.hostSections.workspaces", icon: FolderGit2 },
-  { id: "providers", labelKey: "settings.hostSections.providers", icon: Boxes },
-  { id: "usage", labelKey: "settings.hostSections.usage", icon: Gauge },
   { id: "terminals", labelKey: "settings.hostSections.terminals", icon: SquareTerminal },
 ];
 
@@ -205,10 +201,6 @@ function renderHostSettingsContent(
       return <HostAgentsPage serverId={view.serverId} />;
     case "workspaces":
       return <HostWorkspacesPage serverId={view.serverId} />;
-    case "providers":
-      return <HostProvidersPage serverId={view.serverId} />;
-    case "usage":
-      return <HostUsagePage serverId={view.serverId} />;
     case "terminals":
       return <HostTerminalsPage serverId={view.serverId} />;
     case "host":
@@ -1431,6 +1423,8 @@ export default function SettingsScreen({ view, openAddHostIntent = null }: Setti
           return <AppearanceSection />;
         case "editor":
           return <EditorSection />;
+        case "aiModels":
+          return <AiModelsScreen />;
         case "shortcuts":
           return isDesktopApp ? <KeyboardShortcutsSection /> : null;
         case "integrations":

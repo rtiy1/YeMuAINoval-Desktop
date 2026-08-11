@@ -5,7 +5,7 @@ import {
   type ClientForgeLogicModule,
   type MergeCapability,
 } from "@/git/client-forge-module";
-import type { CheckoutPrMergeMethod } from "@getpaseo/protocol/messages";
+import type { CheckoutPrMergeMethod } from "@yemu/protocol/messages";
 
 const GithubAutoMergeRequestSchema = z
   .object({

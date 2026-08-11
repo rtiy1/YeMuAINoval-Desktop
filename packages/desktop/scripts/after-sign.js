@@ -5,7 +5,7 @@ const { smokePackagedDesktopApp } = require("../e2e/packaged-app-smoke.js");
 const EXECUTABLE_NAME = "YeMu AI Novel";
 
 exports.default = async function afterSign(context) {
-  if (process.env.PASEO_DESKTOP_SMOKE !== "1") {
+  if (process.env.YEMU_DESKTOP_SMOKE !== "1") {
     return;
   }
 

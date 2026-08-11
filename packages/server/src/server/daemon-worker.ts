@@ -6,6 +6,9 @@ import { resolvePaseoHome } from "./paseo-home.js";
 import { createRootLogger } from "./logger.js";
 import type { DaemonLifecycleIntent } from "./bootstrap.js";
 import { getProcessDiagnostics } from "./process-diagnostics.js";
+import { applyPaseoEnvCompat } from "./paseo-env-compat.js";
+
+applyPaseoEnvCompat(process.env);
 
 process.title = "YeMu AI Novel Daemon";
 

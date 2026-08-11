@@ -18,6 +18,7 @@ import { useDraftAgentCreateFlow, type DraftCreateAttempt } from "@/composer/dra
 import { resolveTurnPresentation, TURN_LIVENESS_IDLE } from "@/timeline/turn-liveness";
 import { useHostRuntimeClient, useHostRuntimeIsConnected } from "@/runtime/host-runtime";
 import { buildWorkspaceDraftAgentConfig } from "@/screens/workspace/workspace-draft-agent-config";
+import { useDefaultAiModelProfile } from "@/features/ai-models/use-default-ai-model-profile";
 import { buildDraftStoreKey } from "@/stores/draft-keys";
 import { usePanelStore } from "@/stores/panel-store";
 import { useCreateFlowStore } from "@/stores/create-flow-store";
@@ -32,9 +33,9 @@ import {
   shouldAllowEmptyDraftText,
   validateDraftSubmission,
 } from "@/composer/draft/workspace-tab-core";
-import type { AgentCapabilityFlags } from "@getpaseo/protocol/agent-types";
-import type { AgentSnapshotPayload } from "@getpaseo/protocol/messages";
-import type { DaemonClient } from "@getpaseo/client/internal/daemon-client";
+import type { AgentCapabilityFlags } from "@yemu/protocol/agent-types";
+import type { AgentSnapshotPayload } from "@yemu/protocol/messages";
+import type { DaemonClient } from "@yemu/client/internal/daemon-client";
 import type { WorkspaceComposerAttachment } from "@/attachments/types";
 import {
   useDraftWorkspaceAttachmentScopeKey,
@@ -100,6 +101,20 @@ function reconcileSelectedMode(modeOptionIds: readonly string[], selectedMode: s
   return modeOptionIds.includes(selectedMode) ? selectedMode : (modeOptionIds[0] ?? "");
 }
 
+function resolveDraftCreateReadiness(input: {
+  provider: string | null;
+  aiModelProfileId: string | null;
+  selectModelMessage: string;
+  aiModelProfileMissingMessage: string;
+}): void {
+  if (!input.provider) {
+    throw new Error(input.selectModelMessage);
+  }
+  if (!input.aiModelProfileId) {
+    throw new Error(input.aiModelProfileMissingMessage);
+  }
+}
+
 function resolveDraftModeIdOverride(input: {
   autoSubmitConfig: AutoSubmitConfig | null;
   modeOptionIds: readonly string[];
@@ -150,8 +165,10 @@ async function submitDraftCreateRequest(input: {
     effectiveThinkingOptionId: string | null;
     featureValues: Record<string, unknown> | undefined;
   };
+  aiModelProfileId?: string | null;
   hostDisconnectedMessage: string;
   selectModelMessage: string;
+  aiModelProfileMissingMessage: string;
 }): Promise<{ agentId: string | null; result: AgentSnapshotPayload }> {
   const {
     attempt,
@@ -164,6 +181,7 @@ async function submitDraftCreateRequest(input: {
     workspaceId,
     autoSubmitConfig,
     composerState,
+    aiModelProfileId,
   } = input;
 
   invariant(workspaceDirectory, "Workspace directory is required");
@@ -173,22 +191,26 @@ async function submitDraftCreateRequest(input: {
   }
 
   const provider = autoSubmitConfig?.provider ?? composerState.selectedProvider;
-  if (!provider) {
-    throw new Error(input.selectModelMessage);
-  }
+  resolveDraftCreateReadiness({
+    provider,
+    aiModelProfileId: aiModelProfileId ?? null,
+    selectModelMessage: input.selectModelMessage,
+    aiModelProfileMissingMessage: input.aiModelProfileMissingMessage,
+  });
   const modeIdOverride = resolveDraftModeIdOverride({
     autoSubmitConfig,
     modeOptionIds: composerState.modeOptions.map((mode) => mode.id),
     selectedMode: composerState.selectedMode,
   });
   const config = buildWorkspaceDraftAgentConfig({
-    provider,
+    provider: provider!,
     cwd,
     ...modeIdOverride,
     model: autoSubmitConfig?.model ?? (composerState.effectiveModelId || undefined),
     thinkingOptionId:
       autoSubmitConfig?.thinkingOptionId ?? (composerState.effectiveThinkingOptionId || undefined),
     featureValues: autoSubmitConfig?.featureValues ?? composerState.featureValues,
+    aiModelProfileId: aiModelProfileId ?? undefined,
   });
 
   const imagesData = await encodeImages(images);
@@ -338,6 +360,7 @@ export function WorkspaceDraftAgentTab({
   const insets = useSafeAreaInsets();
   const client = useHostRuntimeClient(serverId);
   const isConnected = useHostRuntimeIsConnected(serverId);
+  const { profileId: defaultAiModelProfileId } = useDefaultAiModelProfile();
   const workspaceFields = useWorkspaceFields(serverId, workspaceId, (w) => ({
     workspaceDirectory: w.workspaceDirectory,
     id: w.id,
@@ -522,8 +545,10 @@ export function WorkspaceDraftAgentTab({
         workspaceId: workspaceFields?.id ?? null,
         autoSubmitConfig,
         composerState,
+        aiModelProfileId: defaultAiModelProfileId,
         hostDisconnectedMessage: t("workspace.terminal.hostDisconnected"),
         selectModelMessage: t("workspaceSetup.errors.selectModel"),
+        aiModelProfileMissingMessage: t("workspaceSetup.errors.aiModelProfileMissing"),
       }),
     onCreateSuccess: ({ result }) => {
       clearDraftInput("sent");

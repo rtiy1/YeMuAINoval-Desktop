@@ -31,11 +31,11 @@ Bridge（Remote Control）让用户从 **claude.ai 网页端**远程操控运行
 
 支持 3 种 session 分发模式（`SpawnMode`）：
 
-| 模式 | 说明 |
-|------|------|
-| `single-session` | 一个 session，结束后 bridge 关闭 |
-| `worktree` | 持久服务器，每个 session 获得隔离的 git worktree |
-| `same-dir` | 持久服务器，所有 session 共享 cwd |
+| 模式             | 说明                                             |
+| ---------------- | ------------------------------------------------ |
+| `single-session` | 一个 session，结束后 bridge 关闭                 |
+| `worktree`       | 持久服务器，每个 session 获得隔离的 git worktree |
+| `same-dir`       | 持久服务器，所有 session 共享 cwd                |
 
 ### REPL 内嵌模式（`/remote-control`）
 
@@ -59,6 +59,7 @@ isBridgeEnabled() =
 ```
 
 不满足时的诊断信息：
+
 - 非订阅用户 → 提示需要订阅
 - 缺少 `user:profile` OAuth scope → 提示需要重新登录
 - 无法确定组织 UUID → 提示刷新账户信息
@@ -101,11 +102,11 @@ isBridgeEnabled() =
 
 ### 入站消息
 
-| 类型 | 说明 |
-|------|------|
-| `control_response` | 权限回复 |
-| `control_request` | 服务端控制请求 |
-| `SDKMessage` | 标准消息（只转发 `user` 类型） |
+| 类型               | 说明                           |
+| ------------------ | ------------------------------ |
+| `control_response` | 权限回复                       |
+| `control_request`  | 服务端控制请求                 |
+| `SDKMessage`       | 标准消息（只转发 `user` 类型） |
 
 ### 去重机制
 
@@ -114,13 +115,13 @@ isBridgeEnabled() =
 
 ### 服务端控制请求
 
-| 请求 | 说明 |
-|------|------|
-| `initialize` | 返回能力声明 |
-| `set_model` | 切换模型 |
+| 请求                      | 说明                |
+| ------------------------- | ------------------- |
+| `initialize`              | 返回能力声明        |
+| `set_model`               | 切换模型            |
 | `set_max_thinking_tokens` | 设置思考 token 上限 |
-| `set_permission_mode` | 设置权限模式 |
-| `interrupt` | 中断当前操作 |
+| `set_permission_mode`     | 设置权限模式        |
+| `interrupt`               | 中断当前操作        |
 
 > 必须在 10-14 秒内响应，否则服务端关闭连接
 
@@ -155,13 +156,13 @@ isBridgeEnabled() =
 
 ## 安全机制
 
-| 机制 | 说明 |
-|------|------|
-| **OAuth 令牌** | 主身份凭证，从 keychain 读取，支持自动刷新 |
-| **Worker JWT** | 每 session 的短期令牌（几小时过期） |
-| **Trusted Device Token** | 设备信任令牌 |
-| **401 恢复** | 检测 401 → OAuth 刷新 → 重获凭证 → 重建传输层 |
-| **主动刷新** | JWT 到期前 5 分钟调度刷新 |
+| 机制                     | 说明                                          |
+| ------------------------ | --------------------------------------------- |
+| **OAuth 令牌**           | 主身份凭证，从 keychain 读取，支持自动刷新    |
+| **Worker JWT**           | 每 session 的短期令牌（几小时过期）           |
+| **Trusted Device Token** | 设备信任令牌                                  |
+| **401 恢复**             | 检测 401 → OAuth 刷新 → 重获凭证 → 重建传输层 |
+| **主动刷新**             | JWT 到期前 5 分钟调度刷新                     |
 
 ---
 
@@ -185,12 +186,12 @@ ready → connected → [reconnecting →] connected
                   → failed
 ```
 
-| 状态 | 说明 |
-|------|------|
-| `ready` | 传输层创建成功 |
-| `connected` | 连接建立 + 历史消息 flush 完成 |
-| `reconnecting` | JWT 过期恢复中 |
-| `failed` | 致命错误 |
+| 状态           | 说明                           |
+| -------------- | ------------------------------ |
+| `ready`        | 传输层创建成功                 |
+| `connected`    | 连接建立 + 历史消息 flush 完成 |
+| `reconnecting` | JWT 过期恢复中                 |
+| `failed`       | 致命错误                       |
 
 ---
 
@@ -206,18 +207,18 @@ ready → connected → [reconnecting →] connected
 
 ## 关键源码文件
 
-| 文件 | 职责 |
-|------|------|
-| `src/bridge/bridgeMain.ts` | 独立 bridge 服务器主循环 |
-| `src/bridge/bridgeEnabled.ts` | 功能门控检查 |
-| `src/bridge/bridgeConfig.ts` | OAuth 令牌和 URL 解析 |
-| `src/bridge/bridgeApi.ts` | REST API 客户端 |
-| `src/bridge/replBridge.ts` | REPL 内嵌桥接核心 |
-| `src/bridge/replBridgeTransport.ts` | 传输层抽象（v1/v2） |
-| `src/bridge/bridgeMessaging.ts` | 消息解析、路由、去重 |
-| `src/bridge/initReplBridge.ts` | REPL 初始化包装器 |
-| `src/bridge/sessionRunner.ts` | 子进程 session 生成器 |
-| `src/bridge/bridgePointer.ts` | 崩溃恢复指针 |
-| `src/bridge/workSecret.ts` | 工作密钥解码 |
-| `src/bridge/jwtUtils.ts` | JWT 刷新调度 |
-| `src/bridge/trustedDevice.ts` | 设备信任令牌 |
+| 文件                                | 职责                     |
+| ----------------------------------- | ------------------------ |
+| `src/bridge/bridgeMain.ts`          | 独立 bridge 服务器主循环 |
+| `src/bridge/bridgeEnabled.ts`       | 功能门控检查             |
+| `src/bridge/bridgeConfig.ts`        | OAuth 令牌和 URL 解析    |
+| `src/bridge/bridgeApi.ts`           | REST API 客户端          |
+| `src/bridge/replBridge.ts`          | REPL 内嵌桥接核心        |
+| `src/bridge/replBridgeTransport.ts` | 传输层抽象（v1/v2）      |
+| `src/bridge/bridgeMessaging.ts`     | 消息解析、路由、去重     |
+| `src/bridge/initReplBridge.ts`      | REPL 初始化包装器        |
+| `src/bridge/sessionRunner.ts`       | 子进程 session 生成器    |
+| `src/bridge/bridgePointer.ts`       | 崩溃恢复指针             |
+| `src/bridge/workSecret.ts`          | 工作密钥解码             |
+| `src/bridge/jwtUtils.ts`            | JWT 刷新调度             |
+| `src/bridge/trustedDevice.ts`       | 设备信任令牌             |

@@ -1,5 +1,5 @@
 {
-  "name": "@getpaseo/relay",
+  "name": "@yemu/relay",
   "version": "0.3.1",
   "description": "YeMu AI Novel encrypted daemon relay transport",
   "files": [
@@ -20,12 +20,6 @@
       "node": "./dist/e2ee.js",
       "import": "./src/e2ee.ts",
       "default": "./src/e2ee.ts"
-    },
-    "./cloudflare": {
-      "types": "./dist/cloudflare-adapter.d.ts",
-      "node": "./dist/cloudflare-adapter.js",
-      "import": "./src/cloudflare-adapter.ts",
-      "default": "./src/cloudflare-adapter.ts"
     }
   },
   "publishConfig": {

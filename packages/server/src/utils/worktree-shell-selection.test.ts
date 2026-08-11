@@ -146,11 +146,11 @@ describe("worktree shell selection", () => {
         branchName: "main",
         cleanupOnFailure: false,
         runtimeEnv: {
-          PASEO_SOURCE_CHECKOUT_PATH: worktreePath,
-          PASEO_ROOT_PATH: worktreePath,
-          PASEO_WORKTREE_PATH: worktreePath,
-          PASEO_BRANCH_NAME: "main",
-          PASEO_WORKTREE_PORT: "12345",
+          YEMU_SOURCE_CHECKOUT_PATH: worktreePath,
+          YEMU_ROOT_PATH: worktreePath,
+          YEMU_WORKTREE_PATH: worktreePath,
+          YEMU_BRANCH_NAME: "main",
+          YEMU_WORKTREE_PORT: "12345",
         },
         onEvent: () => {},
       });

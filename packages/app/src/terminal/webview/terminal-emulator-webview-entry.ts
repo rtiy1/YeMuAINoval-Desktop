@@ -1,7 +1,7 @@
 import type { ITheme } from "@xterm/xterm";
 import xtermCss from "@xterm/xterm/css/xterm.css";
-import type { TerminalState } from "@getpaseo/protocol/messages";
-import type { TerminalInputModeState } from "@getpaseo/protocol/terminal-input-mode";
+import type { TerminalState } from "@yemu/protocol/messages";
+import type { TerminalInputModeState } from "@yemu/protocol/terminal-input-mode";
 import type { PendingTerminalModifiers } from "@/utils/terminal-keys";
 import {
   encodeTerminalOutput,
@@ -91,8 +91,8 @@ declare global {
     ReactNativeWebView?: {
       postMessage?: (data: string) => void;
     };
-    __PASEO_TERMINAL_WEBVIEW_RECEIVE__?: (message: InboundMessage) => void;
-    __PASEO_TERMINAL_WEBVIEW_BLUR__?: () => void;
+    __YEMU_TERMINAL_WEBVIEW_RECEIVE__?: (message: InboundMessage) => void;
+    __YEMU_TERMINAL_WEBVIEW_BLUR__?: () => void;
   }
 }
 
@@ -542,6 +542,6 @@ root.appendChild(host);
 document.body.appendChild(root);
 
 const bridge = new TerminalWebViewBridge(root, host);
-window.__PASEO_TERMINAL_WEBVIEW_RECEIVE__ = bridge.receive;
-window.__PASEO_TERMINAL_WEBVIEW_BLUR__ = bridge.blur;
+window.__YEMU_TERMINAL_WEBVIEW_RECEIVE__ = bridge.receive;
+window.__YEMU_TERMINAL_WEBVIEW_BLUR__ = bridge.blur;
 sendToNative({ type: "bridgeReady" });

@@ -18,7 +18,7 @@ describe("server config", () => {
     roots.push(paseoHome);
 
     const desktopConfig = loadConfig(paseoHome, {
-      env: { PASEO_DESKTOP_MANAGED: "1" },
+      env: { YEMU_DESKTOP_MANAGED: "1" },
     });
     const standaloneConfig = loadConfig(paseoHome, { env: {} });
 
@@ -61,7 +61,7 @@ describe("server config", () => {
             packageRoot,
             "app.asar",
             "node_modules",
-            "@getpaseo",
+            "@yemu",
             "server",
             "dist",
             "server",

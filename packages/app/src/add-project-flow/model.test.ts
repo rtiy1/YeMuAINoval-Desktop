@@ -89,8 +89,8 @@ describe("Add Project navigation", () => {
   it("restores the GitHub destination query and active parent when reopening a repository", () => {
     const repository = {
       id: "repo-1",
-      nameWithOwner: "getpaseo/paseo",
-      cloneUrl: "git@github.com:getpaseo/paseo.git",
+      nameWithOwner: "rtiy1/YeMuAINoval-Desktop",
+      cloneUrl: "git@github.com:rtiy1/YeMuAINoval-Desktop.git",
       description: null,
       visibility: "public",
       updatedAt: null,
@@ -149,16 +149,18 @@ describe("Add Project options", () => {
   });
 
   it("offers manual URL and protocol-specific owner/repo clone choices", () => {
-    expect(buildManualGithubRepositoryChoices("git@github.com:getpaseo/paseo.git")).toEqual([
+    expect(
+      buildManualGithubRepositoryChoices("git@github.com:rtiy1/YeMuAINoval-Desktop.git"),
+    ).toEqual([
       expect.objectContaining({
-        id: "manual:git@github.com:getpaseo/paseo.git",
-        nameWithOwner: "getpaseo/paseo",
-        cloneUrl: "git@github.com:getpaseo/paseo.git",
+        id: "manual:git@github.com:rtiy1/YeMuAINoval-Desktop.git",
+        nameWithOwner: "rtiy1/YeMuAINoval-Desktop",
+        cloneUrl: "git@github.com:rtiy1/YeMuAINoval-Desktop.git",
       }),
     ]);
-    expect(buildManualGithubRepositoryChoices("getpaseo/paseo")).toEqual([
-      expect.objectContaining({ cloneProtocol: "https", cloneUrl: "getpaseo/paseo" }),
-      expect.objectContaining({ cloneProtocol: "ssh", cloneUrl: "getpaseo/paseo" }),
+    expect(buildManualGithubRepositoryChoices("rtiy1/YeMuAINoval-Desktop")).toEqual([
+      expect.objectContaining({ cloneProtocol: "https", cloneUrl: "rtiy1/YeMuAINoval-Desktop" }),
+      expect.objectContaining({ cloneProtocol: "ssh", cloneUrl: "rtiy1/YeMuAINoval-Desktop" }),
     ]);
     expect(buildManualGithubRepositoryChoices("paseo")).toEqual([]);
   });

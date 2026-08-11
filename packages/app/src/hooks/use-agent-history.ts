@@ -2,8 +2,8 @@ import type {
   DaemonClient,
   FetchAgentHistoryOptions,
   FetchAgentHistoryPageInfo,
-} from "@getpaseo/client/internal/daemon-client";
-import type { AgentSearchMatch } from "@getpaseo/protocol/messages";
+} from "@yemu/client/internal/daemon-client";
+import type { AgentSearchMatch } from "@yemu/protocol/messages";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useCallback, useMemo, useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";

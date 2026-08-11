@@ -3,7 +3,7 @@
 /**
  * Phase 2: Daemon Command Tests
  *
- * Tests daemon commands with an isolated PASEO_HOME.
+ * Tests daemon commands with an isolated YEMU_HOME.
  *
  * Tests:
  * - daemon --help shows subcommands
@@ -28,7 +28,7 @@ const port = 10000 + Math.floor(Math.random() * 50000);
 const paseoHome = await mkdtemp(join(tmpdir(), "paseo-test-home-"));
 
 function daemonCommand(args: string[]) {
-  return runLocalPaseo(["daemon", ...args], { PASEO_HOME: paseoHome });
+  return runLocalPaseo(["daemon", ...args], { YEMU_HOME: paseoHome });
 }
 
 try {
@@ -164,7 +164,7 @@ try {
       );
       const foreignPairing = await runLocalPaseo(
         ["daemon", "pair", "--home", foreignHome, "--json"],
-        { PASEO_HOME: foreignHome },
+        { YEMU_HOME: foreignHome },
       );
       assert.notStrictEqual(
         foreignPairing.exitCode,

@@ -6,12 +6,12 @@ import { Pressable, Text, View, type PressableStateCallbackType } from "react-na
 import Animated, { runOnJS, useAnimatedReaction } from "react-native-reanimated";
 import { StyleSheet, useUnistyles } from "react-native-unistyles";
 import { Keyboard as KeyboardIcon, KeyboardOff as KeyboardOffIcon } from "lucide-react-native";
-import type { TerminalKeyInput } from "@getpaseo/protocol/terminal-key-input";
-import type { TerminalState } from "@getpaseo/protocol/messages";
+import type { TerminalKeyInput } from "@yemu/protocol/terminal-key-input";
+import type { TerminalState } from "@yemu/protocol/messages";
 import {
   DEFAULT_TERMINAL_INPUT_MODE_STATE,
   type TerminalInputModeState,
-} from "@getpaseo/protocol/terminal-input-mode";
+} from "@yemu/protocol/terminal-input-mode";
 import { useTranslation } from "react-i18next";
 import { useHostRuntimeClient, useHostRuntimeIsConnected } from "@/runtime/host-runtime";
 import { useKeyboardShiftStyle } from "@/hooks/use-keyboard-shift-style";

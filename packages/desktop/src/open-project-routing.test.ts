@@ -39,7 +39,11 @@ describe("open-project-routing", () => {
 
     expect(
       parseOpenProjectPathFromArgv({
-        argv: ["/Applications/YeMu AI Novel.app/Contents/MacOS/YeMu AI Novel", "--version", flagLikeDirectory],
+        argv: [
+          "/Applications/YeMu AI Novel.app/Contents/MacOS/YeMu AI Novel",
+          "--version",
+          flagLikeDirectory,
+        ],
         isDefaultApp: false,
       }),
     ).toBe(flagLikeDirectory);
@@ -57,7 +61,11 @@ describe("open-project-routing", () => {
 
     expect(
       parseOpenProjectPathFromArgv({
-        argv: ["/Applications/YeMu AI Novel.app/Contents/MacOS/YeMu AI Novel", "--open-project", projectPath],
+        argv: [
+          "/Applications/YeMu AI Novel.app/Contents/MacOS/YeMu AI Novel",
+          "--open-project",
+          projectPath,
+        ],
         isDefaultApp: false,
       }),
     ).toBe(projectPath);

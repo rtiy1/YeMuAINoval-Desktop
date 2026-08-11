@@ -62,12 +62,12 @@ export async function startPackagedWebDaemon(input: {
     ...process.env,
     CI: "true",
     NODE_ENV: "development",
-    PASEO_NODE_ENV: "development",
-    PASEO_SERVER_ID: serverId,
-    PASEO_RELAY_ENDPOINT: input.relayEndpoint,
-    PASEO_RELAY_PUBLIC_ENDPOINT: input.relayEndpoint,
-    PASEO_RELAY_USE_TLS: "false",
-    PASEO_RELAY_PUBLIC_USE_TLS: "false",
+    YEMU_NODE_ENV: "development",
+    YEMU_SERVER_ID: serverId,
+    YEMU_RELAY_ENDPOINT: input.relayEndpoint,
+    YEMU_RELAY_PUBLIC_ENDPOINT: input.relayEndpoint,
+    YEMU_RELAY_USE_TLS: "false",
+    YEMU_RELAY_PUBLIC_USE_TLS: "false",
   };
 
   try {

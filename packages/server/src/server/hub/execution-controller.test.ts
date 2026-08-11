@@ -3,7 +3,7 @@ import type {
   AgentSnapshotPayload,
   HubExecutionAgentCreateRequest,
   SessionOutboundMessage,
-} from "@getpaseo/protocol/messages";
+} from "@yemu/protocol/messages";
 
 import type {
   HubExecutionAgents,

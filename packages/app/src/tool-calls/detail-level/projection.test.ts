@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { ToolCallDetail } from "@getpaseo/protocol/agent-types";
+import type { ToolCallDetail } from "@yemu/protocol/agent-types";
 import type { StreamItem, ToolCallItem } from "@/types/stream";
 import {
   prepareToolCallHistory,
@@ -300,7 +300,7 @@ describe("tool call detail-level projection", () => {
         { name: "mcp__paseo__list_worktrees" },
       ),
       toolCall("3", { type: "fetch", url: "https://paseo.sh" }),
-      toolCall("4", { type: "fetch", url: "https://github.com/getpaseo" }),
+      toolCall("4", { type: "fetch", url: "https://github.com/rtiy1" }),
     ];
 
     const result = project({ level: "overview", head: calls });

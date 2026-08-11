@@ -5,9 +5,9 @@ import type { BrowserKeyboardPolicy } from "./features/browser-keyboard/index.js
 // NOT emit any runtime module load other than "electron" — a require() of a local or
 // third-party module throws and aborts the preload before exposeInMainWorld runs, leaving
 // window.paseoDesktop undefined (the 0.1.108 regression, #2103). Keep this literal in sync
-// with PASEO_BROWSER_PROFILE_PARTITION in features/browser-profile.ts; preload-sandbox.test.ts
+// with YEMU_BROWSER_PROFILE_PARTITION in features/browser-profile.ts; preload-sandbox.test.ts
 // guards both the no-local-import rule and this drift. Type-only imports are fine (erased at emit).
-const PASEO_BROWSER_PROFILE_PARTITION = "persist:paseo-browser";
+const YEMU_BROWSER_PROFILE_PARTITION = "persist:paseo-browser";
 
 type EventHandler = (payload: unknown) => void;
 
@@ -104,7 +104,7 @@ contextBridge.exposeInMainWorld("paseoDesktop", {
   browser: {
     setShortcutPolicy: (input: BrowserKeyboardPolicy) =>
       ipcRenderer.invoke("paseo:browser:set-shortcut-policy", input),
-    profilePartition: PASEO_BROWSER_PROFILE_PARTITION,
+    profilePartition: YEMU_BROWSER_PROFILE_PARTITION,
     registerAttachedBrowser: (input: AttachedBrowserRegistration) =>
       ipcRenderer.invoke("paseo:browser:register-attached", input),
     unregisterWorkspaceBrowser: (browserId: string) =>

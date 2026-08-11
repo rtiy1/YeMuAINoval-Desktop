@@ -12,8 +12,7 @@ import {
   type ProviderSnapshotManager,
 } from "../../agent/provider-snapshot-manager.js";
 import type { ProviderSnapshotEntry } from "../../agent/agent-sdk-types.js";
-import type { ProviderUsageService } from "../../../services/quota-fetcher/service.js";
-import { expandProviderSnapshot } from "@getpaseo/protocol/provider-snapshot-codec";
+import { expandProviderSnapshot } from "@yemu/protocol/provider-snapshot-codec";
 
 type SnapshotChangeHandler = (entries: ProviderSnapshotEntry[], cwd: string) => void;
 
@@ -22,7 +21,6 @@ interface MakeOptions {
   supportsCustomModeIcons?: boolean;
   supportsCompactProviderSnapshots?: boolean;
   snapshot?: { [K in keyof ProviderSnapshotManager]?: unknown };
-  usage?: { [K in keyof ProviderUsageService]?: unknown };
   host?: Partial<ProviderCatalogSessionHost>;
 }
 
@@ -66,7 +64,6 @@ function makeSubsystem(options: MakeOptions = {}) {
   const subsystem = new ProviderCatalogSession({
     host,
     providerSnapshotManager,
-    providerUsageService: createStub<ProviderUsageService>(options.usage ?? {}),
     logger: pino({ level: "silent" }),
   });
   function pushSnapshotChange(
@@ -269,23 +266,18 @@ describe("ProviderCatalogSession", () => {
     });
   });
 
-  it("surfaces a usage-list failure as an rpc_error envelope", async () => {
-    const { subsystem, emitted } = makeSubsystem({
-      usage: {
-        listUsage: async () => {
-          throw new Error("quota service down");
-        },
-      },
-    });
+  it("returns an empty usage payload for wire compatibility", async () => {
+    // COMPAT(providerUsage): third-party usage removed in v0.4; the RPC stays.
+    const { subsystem, emitted } = makeSubsystem();
 
     await subsystem.handleProviderUsageListRequest({
       type: "provider.usage.list.request",
       requestId: "u1",
     });
 
-    const err = findByType(emitted, "rpc_error");
-    expect(err?.payload.code).toBe("provider_usage_list_failed");
-    expect(err?.payload.requestId).toBe("u1");
+    const response = findByType(emitted, "provider.usage.list.response");
+    expect(response?.payload.requestId).toBe("u1");
+    expect(response?.payload.providers).toEqual([]);
   });
 
   it("surfaces a feature-list failure inline, not as an rpc_error", async () => {

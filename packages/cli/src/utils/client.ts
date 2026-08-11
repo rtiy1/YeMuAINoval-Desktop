@@ -1,17 +1,14 @@
 import { existsSync, readFileSync } from "node:fs";
-import { loadConfig, resolvePaseoHome } from "@getpaseo/server";
+import { loadConfig, resolvePaseoHome } from "@yemu/server";
 import {
   buildDaemonWebSocketUrl,
   buildRelayWebSocketUrl,
   normalizeHostPort,
   parseConnectionUri,
   shouldUseTlsForDefaultHostedRelay,
-} from "@getpaseo/protocol/daemon-endpoints";
-import {
-  parseConnectionOfferFromUrl,
-  type ConnectionOffer,
-} from "@getpaseo/protocol/connection-offer";
-import { DaemonClient, type WebSocketLike } from "@getpaseo/client/internal/daemon-client";
+} from "@yemu/protocol/daemon-endpoints";
+import { parseConnectionOfferFromUrl, type ConnectionOffer } from "@yemu/protocol/connection-offer";
+import { DaemonClient, type WebSocketLike } from "@yemu/client/internal/daemon-client";
 import path from "node:path";
 import { WebSocket } from "ws";
 import { getOrCreateCliClientId } from "./client-id.js";
@@ -146,7 +143,7 @@ function readPidSocketTarget(paseoHome: string): string | null {
 }
 
 function resolveConfiguredIpcDaemonHost(env: NodeJS.ProcessEnv, paseoHome: string): string | null {
-  const directEnvHost = normalizeDaemonHost(env.PASEO_LISTEN ?? "");
+  const directEnvHost = normalizeDaemonHost(env.YEMU_LISTEN ?? "");
   if (isIpcDaemonHost(directEnvHost)) {
     return directEnvHost;
   }
@@ -185,7 +182,7 @@ export function resolveDefaultDaemonHosts(env: NodeJS.ProcessEnv = process.env):
 }
 
 function resolveDaemonHostCandidates(options?: ConnectOptions): string[] {
-  const explicitHost = options?.host ?? process.env.PASEO_HOST;
+  const explicitHost = options?.host ?? process.env.YEMU_HOST;
   if (explicitHost) {
     return [explicitHost];
   }
@@ -244,7 +241,7 @@ export function resolveDaemonPassword(host: string): string | undefined {
     const fromUri = parseConnectionUri(trimmed).password;
     if (fromUri) return fromUri;
   }
-  const fromEnv = process.env.PASEO_PASSWORD;
+  const fromEnv = process.env.YEMU_PASSWORD;
   return fromEnv && fromEnv.length > 0 ? fromEnv : undefined;
 }
 
@@ -356,7 +353,7 @@ export async function connectToDaemon(options?: ConnectOptions): Promise<DaemonC
   const clientId = await getOrCreateCliClientId();
   const nodeWebSocketFactory = createNodeWebSocketFactory();
 
-  const explicitHost = options?.host ?? process.env.PASEO_HOST;
+  const explicitHost = options?.host ?? process.env.YEMU_HOST;
   const offer = parseHostOfferOrNull(explicitHost);
   if (offer) {
     return connectViaRelayOffer(offer, clientId, timeout, nodeWebSocketFactory);

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { DaemonClient } from "@getpaseo/client/internal/daemon-client";
+import type { DaemonClient } from "@yemu/client/internal/daemon-client";
 import { runArchiveCommandWithDeps } from "./archive.js";
 
 function createFakeDaemonClient(

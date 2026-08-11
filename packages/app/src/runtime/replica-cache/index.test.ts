@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it } from "vitest";
-import type { WorkspaceDescriptorPayload } from "@getpaseo/protocol/messages";
+import type { WorkspaceDescriptorPayload } from "@yemu/protocol/messages";
 import { normalizeAgentSnapshot } from "@/utils/agent-snapshots";
 import {
   normalizeProjectDescriptor,
@@ -109,7 +109,7 @@ function seedSession(): void {
   store.setProjects(SERVER_ID, [
     normalizeProjectDescriptor({
       projectId: "project-1",
-      projectKey: "remote:github.com/getpaseo/paseo",
+      projectKey: "remote:github.com/rtiy1/YeMuAINoval-Desktop",
       projectDisplayName: "YeMu AI Novel",
       projectRootPath: "/repo/paseo",
       projectKind: "git",

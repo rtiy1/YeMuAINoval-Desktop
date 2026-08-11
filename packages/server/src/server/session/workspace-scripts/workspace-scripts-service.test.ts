@@ -54,7 +54,7 @@ function fakeGitService() {
     isGit: true,
     repoRoot: "/tmp/repo",
     currentBranch: "feature/scripts",
-    remoteUrl: "https://github.com/getpaseo/paseo.git",
+    remoteUrl: "https://github.com/rtiy1/YeMuAINoval-Desktop.git",
     hasRemote: true,
   };
 
@@ -313,7 +313,7 @@ describe("start", () => {
     expect(spawnCalls[0]).toMatchObject({
       repoRoot: "/tmp/repo",
       workspaceId: "ws-1",
-      projectSlug: "paseo",
+      projectSlug: "yemuainoval-desktop",
       branchName: "feature/scripts",
       scriptName: "app",
       daemonPort: 6767,

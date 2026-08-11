@@ -155,13 +155,6 @@ describe("translation resources", () => {
     expect(ptBR.modelSelector.modelCountPlural).toBe("{{count}} modelos");
     expect(ru.modelSelector.modelCountPlural).toBe("{{count}} моделей");
     expect(zhCN.modelSelector.modelCountPlural).toBe("{{count}} 个模型");
-    expect(ar.settings.providers.models.many).toBe("{{count}} نماذج");
-    expect(es.settings.providers.models.many).toBe("{{count}} modelos");
-    expect(fr.settings.providers.models.many).toBe("{{count}} modèles");
-    expect(ja.settings.providers.models.many).toBe("{{count}}つのモデル");
-    expect(ptBR.settings.providers.models.many).toBe("{{count}} modelos");
-    expect(ru.settings.providers.models.many).toBe("{{count}} моделей");
-    expect(zhCN.settings.providers.models.many).toBe("{{count}} 个 Model");
   });
 
   it("preserves reviewed Korean status labels", () => {
@@ -222,7 +215,7 @@ describe("translation resources", () => {
     expect(en.composer.github.title).toBe("Attach issue or PR");
     expect(en.composer.github.title_mr).toBe("Attach issue or MR");
     expect(en.composer.github.searchPlaceholder_mr).toBe("Search issues and MRs...");
-    expect(en.agentControls.provider.fallback).toBe("Provider");
+    expect(en.agentControls.profile.title).toBe("Model profile");
     expect(en.agentControls.hints.model).toBe("Change model");
     expect(en.agentControls.hints.mode).toBe("Change mode");
     expect(en.agentControls.features.title).toBe("Features");
@@ -257,9 +250,7 @@ describe("translation resources", () => {
     expect(en.settings.host.connections.title).toBe("Connections");
     expect(en.settings.host.daemon.restart.title).toBe("Restart daemon");
     expect(en.settings.host.orchestration.enableTools.title).toBe("Enable YeMu AI Novel tools");
-    expect(en.settings.providers.title).toBe("Providers");
-    expect(en.settings.providers.models.addModel).toBe("Add model");
-    expect(en.settings.providers.diagnostic.title).toBe("Diagnostic");
+    expect(en.settings.sections.aiModels).toBe("AI Models");
     expect(en.settings.project.worktree.title).toBe("Worktree lifecycle hooks");
     expect(en.settings.project.scripts.actions.add).toBe("Add script");
     expect(en.settings.project.metadata.title).toBe("Metadata generation");
@@ -647,7 +638,9 @@ describe("translation resources", () => {
       "Failed to fetch daemon status: {{message}}",
     );
     expect(en.desktop.daemon.loadFailed).toBe("Unable to load desktop daemon status.");
-    expect(en.desktop.integrations.cli.installFailed).toBe("Unable to install the YeMu AI Novel CLI.");
+    expect(en.desktop.integrations.cli.installFailed).toBe(
+      "Unable to install the YeMu AI Novel CLI.",
+    );
     expect(en.desktop.integrations.skills.installFailed).toBe(
       "Unable to install orchestration skills.",
     );

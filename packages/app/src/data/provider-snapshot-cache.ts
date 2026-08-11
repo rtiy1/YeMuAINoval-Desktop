@@ -1,10 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import type { ProviderSnapshotEntry } from "@getpaseo/protocol/agent-types";
+import type { ProviderSnapshotEntry } from "@yemu/protocol/agent-types";
 import {
   expandProviderSnapshot,
   type CompactProviderSnapshot,
-} from "@getpaseo/protocol/provider-snapshot-codec";
-import { CompactProviderSnapshotSchema } from "@getpaseo/protocol/messages";
+} from "@yemu/protocol/provider-snapshot-codec";
+import { CompactProviderSnapshotSchema } from "@yemu/protocol/messages";
 
 const CACHE_VERSION = 1;
 const CACHE_KEY_PREFIX = "@paseo/provider-snapshot/v1";

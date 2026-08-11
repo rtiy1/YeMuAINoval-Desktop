@@ -1,3 +1,3 @@
 export async function discoverAssistantSessions() {
-  return []
+  return [];
 }

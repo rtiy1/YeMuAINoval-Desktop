@@ -31,15 +31,7 @@ const SECTION_LABELS = {
 
 export type SettingsSection = keyof typeof SECTION_LABELS;
 
-type HostSection =
-  | "projects"
-  | "connections"
-  | "pair-device"
-  | "agents"
-  | "workspaces"
-  | "providers"
-  | "usage"
-  | "host";
+type HostSection = "projects" | "connections" | "pair-device" | "agents" | "workspaces" | "host";
 
 export async function openSettingsSection(page: Page, section: SettingsSection): Promise<void> {
   const sidebar = page.getByTestId("settings-sidebar");
@@ -333,11 +325,6 @@ export async function expectHostActionCards(page: Page, serverId: string): Promi
   await expect(page.getByTestId("host-page-remove-host-button")).toBeVisible();
 }
 
-export async function expectHostProvidersCard(page: Page, serverId: string): Promise<void> {
-  await openSettingsHostSection(page, serverId, "providers");
-  await expect(page.getByTestId("host-page-providers-card")).toBeVisible();
-}
-
 export async function serveJson(page: Page, url: string, body: unknown): Promise<void> {
   await page.route(url, async (route) => {
     await route.fulfill({
@@ -346,30 +333,6 @@ export async function serveJson(page: Page, url: string, body: unknown): Promise
       body: JSON.stringify(body),
     });
   });
-}
-
-export async function openAddProviderArea(page: Page): Promise<void> {
-  await page.getByTestId("host-page-add-provider-card").scrollIntoViewIfNeeded();
-  await expect(page.getByRole("textbox", { name: "Search providers" })).toBeVisible();
-}
-
-export async function findAcpCatalogProvider(page: Page, providerName: string): Promise<void> {
-  await page.getByRole("textbox", { name: "Search providers" }).fill(providerName);
-  await expect(page.getByText(providerName, { exact: true })).toBeVisible();
-}
-
-export async function installAcpCatalogProvider(page: Page, providerName: string): Promise<void> {
-  await findAcpCatalogProvider(page, providerName);
-  await page.getByRole("button", { name: "Add", exact: true }).click();
-}
-
-export async function expectProviderInstalledInSettings(
-  page: Page,
-  providerName: string,
-): Promise<void> {
-  await expect(
-    page.getByRole("button", { name: `${providerName} provider details`, exact: true }),
-  ).toBeVisible();
 }
 
 export async function expectHostNoDaemonLifecycleRow(page: Page): Promise<void> {
@@ -391,8 +354,8 @@ export async function expectRetiredSidebarSectionsAbsent(page: Page): Promise<vo
   await expect(sidebar.getByTestId("settings-host-section-projects")).toBeVisible();
   await expect(sidebar.getByTestId("settings-host-section-agents")).toBeVisible();
   await expect(sidebar.getByTestId("settings-host-section-workspaces")).toBeVisible();
-  await expect(sidebar.getByTestId("settings-host-section-providers")).toBeVisible();
-  await expect(sidebar.getByTestId("settings-host-section-usage")).toBeVisible();
+  await expect(sidebar.getByTestId("settings-host-section-providers")).toHaveCount(0);
+  await expect(sidebar.getByTestId("settings-host-section-usage")).toHaveCount(0);
   await expect(sidebar.getByTestId("settings-host-section-host")).toBeVisible();
 
   // The old per-host entry rows are replaced by the host picker.

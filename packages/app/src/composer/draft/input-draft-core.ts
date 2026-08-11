@@ -28,7 +28,6 @@ export function buildDraftAgentControls(input: {
   return {
     providerDefinitions: formState.providerDefinitions,
     selectedProvider: formState.selectedProvider,
-    onSelectProvider: formState.setProviderFromUser,
     modeOptions: formState.modeOptions,
     selectedMode: formState.selectedMode,
     onSelectMode: formState.setModeFromUser,
@@ -48,7 +47,6 @@ export function buildDraftAgentControls(input: {
     onModelSelectorOpen: formState.refetchProviderModelsIfStale,
     onRetryModelProvider: formState.refreshProviderModels,
     isRetryingModelProvider: formState.isProviderModelsRefreshing,
-    modelSelectorServerId: formState.selectedServerId,
   };
 }
 

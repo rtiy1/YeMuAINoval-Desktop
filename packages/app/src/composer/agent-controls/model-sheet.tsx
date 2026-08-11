@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Keyboard, ScrollView, Text, View, type PressableStateCallbackType } from "react-native";
 import { StyleSheet } from "react-native-unistyles";
-import type { AgentProvider } from "@getpaseo/protocol/agent-types";
+import type { AgentProvider } from "@yemu/protocol/agent-types";
 import { AdaptiveModalSheet } from "@/components/adaptive-modal-sheet";
 import { ComboboxTrigger } from "@/components/ui/combobox-trigger";
 import { getProviderIcon } from "@/components/provider-icons";
@@ -31,7 +31,6 @@ interface CompactModelSheetProps {
   onRetryProvider?: (provider: AgentProvider) => void;
   isRetryingProvider?: boolean;
   disabled?: boolean;
-  serverId?: string | null;
   glyphSize: number;
   children: ReactNode;
 }
@@ -54,7 +53,6 @@ export function CompactModelSheet({
   onRetryProvider,
   isRetryingProvider = false,
   disabled = false,
-  serverId = null,
   glyphSize,
   children,
 }: CompactModelSheetProps) {
@@ -67,7 +65,6 @@ export function CompactModelSheet({
     selectedModel,
     isLoading,
     favoriteKeys,
-    serverId,
   });
   const { prepareToOpen, reset } = browser;
   const ProviderIcon =

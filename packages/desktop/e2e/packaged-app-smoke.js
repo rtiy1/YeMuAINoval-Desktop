@@ -57,7 +57,7 @@ function getCliShimPath(appPath) {
   }
 
   if (process.platform === "win32") {
-    return path.join(appPath, "resources", "bin", "paseo.cmd");
+    return path.join(appPath, "resources", "bin", "yemu.cmd");
   }
 
   return path.join(appPath, "resources", "bin", "paseo");
@@ -131,7 +131,7 @@ function shellQuoteCliArg(value) {
 function getTerminalHookSmokeCommand(marker) {
   if (process.platform === "win32") {
     const script = [
-      "& $env:PASEO_HOOK_CLI hooks codex Stop",
+      "& $env:YEMU_HOOK_CLI hooks codex Stop",
       "if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }",
       `Write-Output '${marker}'`,
     ].join("; ");
@@ -139,7 +139,7 @@ function getTerminalHookSmokeCommand(marker) {
     return `powershell.exe -NoProfile -NonInteractive -EncodedCommand ${encodedScript}`;
   }
 
-  return `"$PASEO_HOOK_CLI" hooks codex Stop && echo ${marker}`;
+  return `"$YEMU_HOOK_CLI" hooks codex Stop && echo ${marker}`;
 }
 
 function getShellCommand(script) {
@@ -162,18 +162,18 @@ function createDefaultDaemonEnv(extraEnv) {
     ...extraEnv,
   };
 
-  delete env.PASEO_HOME;
-  delete env.PASEO_LISTEN;
+  delete env.YEMU_HOME;
+  delete env.YEMU_LISTEN;
   return env;
 }
 
 function createIsolatedDesktopEnv({ home, listen, userData, cdpPort }) {
   return {
     ...process.env,
-    PASEO_HOME: home,
-    PASEO_LISTEN: listen,
-    PASEO_ELECTRON_USER_DATA_DIR: userData,
-    PASEO_ELECTRON_FLAGS: `--remote-debugging-address=127.0.0.1 --remote-debugging-port=${cdpPort}`,
+    YEMU_HOME: home,
+    YEMU_LISTEN: listen,
+    YEMU_ELECTRON_USER_DATA_DIR: userData,
+    YEMU_ELECTRON_FLAGS: `--remote-debugging-address=127.0.0.1 --remote-debugging-port=${cdpPort}`,
   };
 }
 
@@ -313,7 +313,7 @@ function formatLogs({ stdout, stderr, userData, daemonHome }) {
 }
 
 async function writeFailureArtifacts({ page, stdout, stderr, userData, daemonHome, error }) {
-  const artifactDir = process.env.PASEO_DESKTOP_SMOKE_ARTIFACT_DIR?.trim();
+  const artifactDir = process.env.YEMU_DESKTOP_SMOKE_ARTIFACT_DIR?.trim();
   if (!artifactDir) {
     return;
   }
@@ -470,13 +470,13 @@ async function waitForPackagedAppPage(browser, deadline) {
     const page = browser
       .contexts()
       .flatMap((context) => context.pages())
-      .find((candidate) => candidate.url().startsWith("paseo://app/"));
+      .find((candidate) => candidate.url().startsWith("yemu-novel://app/"));
     if (page) {
       return page;
     }
     await delay(250);
   }
-  throw new Error("Timed out waiting for the packaged paseo://app/ renderer");
+  throw new Error("Timed out waiting for the packaged yemu-novel://app/ renderer");
 }
 
 async function assertPackagedRendererLoaded(page, deadline) {

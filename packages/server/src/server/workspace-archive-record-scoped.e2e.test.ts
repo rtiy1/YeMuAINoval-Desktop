@@ -42,11 +42,14 @@ function createGitRepo(): string {
   const tempRoot = makeTempDir("workspace-archive-repo-");
   const repoDir = path.join(tempRoot, "repo");
   execFileSync("git", ["init", "-b", "main", repoDir], { stdio: "pipe" });
-  execFileSync("git", ["config", "user.email", "test@getpaseo.local"], {
+  execFileSync("git", ["config", "user.email", "test@yemu.local"], {
     cwd: repoDir,
     stdio: "pipe",
   });
-  execFileSync("git", ["config", "user.name", "YeMu AI Novel Test"], { cwd: repoDir, stdio: "pipe" });
+  execFileSync("git", ["config", "user.name", "YeMu AI Novel Test"], {
+    cwd: repoDir,
+    stdio: "pipe",
+  });
   execFileSync("git", ["-c", "commit.gpgsign=false", "commit", "--allow-empty", "-m", "initial"], {
     cwd: repoDir,
     stdio: "pipe",
@@ -311,7 +314,7 @@ test.skipIf(process.platform === "win32")(
       JSON.stringify({
         worktree: {
           setup: [
-            `node -e "const fs=require('fs'),path=require('path');const source=process.env.PASEO_SOURCE_CHECKOUT_PATH;const worktree=process.env.PASEO_WORKTREE_PATH;const target=path.join(worktree,'node_modules/react-native-svg/lib/typescript');fs.writeFileSync(path.join(source,'setup-started'),'started');while(!fs.existsSync(path.join(source,'stop-setup'))){try{fs.mkdirSync(target,{recursive:true});fs.writeFileSync(path.join(target,'active'),String(Date.now()))}catch{}}"`,
+            `node -e "const fs=require('fs'),path=require('path');const source=process.env.YEMU_SOURCE_CHECKOUT_PATH;const worktree=process.env.YEMU_WORKTREE_PATH;const target=path.join(worktree,'node_modules/react-native-svg/lib/typescript');fs.writeFileSync(path.join(source,'setup-started'),'started');while(!fs.existsSync(path.join(source,'stop-setup'))){try{fs.mkdirSync(target,{recursive:true});fs.writeFileSync(path.join(target,'active'),String(Date.now()))}catch{}}"`,
           ],
         },
       }),

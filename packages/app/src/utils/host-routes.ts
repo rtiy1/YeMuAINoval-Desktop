@@ -1,5 +1,5 @@
 import { Buffer } from "buffer";
-import { buildAgentDeepLinkRoute } from "@getpaseo/protocol/agent-deep-link";
+import { buildAgentDeepLinkRoute } from "@yemu/protocol/agent-deep-link";
 
 type NullableString = string | null | undefined;
 const BASE64_WORKSPACE_ID_PREFIX = "b64_";
@@ -432,6 +432,18 @@ export function buildOpenProjectRoute() {
   return "/open-project" as const;
 }
 
+export function buildNovelHomeRoute() {
+  return "/novels" as const;
+}
+
+export function buildNovelCreateRoute() {
+  return "/novels/new" as const;
+}
+
+export function buildNovelRoute(projectId: string) {
+  return `/novels/${encodeURIComponent(projectId)}` as const;
+}
+
 interface NewWorkspaceRouteOptions {
   serverId?: string;
   sourceDirectory?: string;
@@ -493,6 +505,7 @@ export const SETTINGS_SECTION_SLUGS = [
   "general",
   "appearance",
   "editor",
+  "aiModels",
   "shortcuts",
   "integrations",
   "notifications",
@@ -513,8 +526,6 @@ export const HOST_SECTION_SLUGS = [
   "pair-device",
   "agents",
   "workspaces",
-  "providers",
-  "usage",
   "terminals",
   "host",
 ] as const;

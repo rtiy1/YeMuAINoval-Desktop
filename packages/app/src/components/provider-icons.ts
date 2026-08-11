@@ -1,6 +1,6 @@
 import { Bot } from "lucide-react-native";
 import type { ComponentType } from "react";
-import { PaseoLogo } from "@/components/icons/paseo-logo";
+import { MCodeLogo } from "@/components/icons/mcode-logo";
 import { resolveProviderIconName } from "@/components/provider-icon-name";
 
 export interface ProviderIconProps {
@@ -11,7 +11,7 @@ export interface ProviderIconProps {
 export type ProviderIconComponent = ComponentType<ProviderIconProps>;
 
 const BUILTIN_PROVIDER_ICONS: Record<string, ProviderIconComponent> = {
-  mcode: PaseoLogo,
+  mcode: MCodeLogo,
 };
 
 export function getProviderIcon(provider: string): ProviderIconComponent {

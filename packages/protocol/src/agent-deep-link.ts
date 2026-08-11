@@ -23,8 +23,13 @@ export function buildAgentDeepLinkRoute(
   return `/h/${encodeURIComponent(serverId)}/agent/${encodeURIComponent(agentId)}`;
 }
 
+const AGENT_DEEP_LINK_SCHEME = "yemu-novel";
+// COMPAT(agentDeepLinkScheme): legacy paseo:// deep links parsed for one cycle,
+// remove after 2026-11-30.
+const LEGACY_AGENT_DEEP_LINK_SCHEME = "paseo";
+
 export function buildAgentDeepLink(target: AgentDeepLinkTarget): string {
-  return `paseo:/${buildAgentDeepLinkRoute(target)}`;
+  return `${AGENT_DEEP_LINK_SCHEME}:/${buildAgentDeepLinkRoute(target)}`;
 }
 
 export function parseAgentDeepLink(input: string): AgentDeepLinkTarget | null {
@@ -36,7 +41,8 @@ export function parseAgentDeepLink(input: string): AgentDeepLinkTarget | null {
   }
 
   if (
-    url.protocol !== "paseo:" ||
+    (url.protocol !== `${AGENT_DEEP_LINK_SCHEME}:` &&
+      url.protocol !== `${LEGACY_AGENT_DEEP_LINK_SCHEME}:`) ||
     url.hostname !== "h" ||
     url.username ||
     url.password ||

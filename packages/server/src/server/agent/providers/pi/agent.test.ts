@@ -989,7 +989,7 @@ describe("PiRpcAgentSession", () => {
     );
 
     expect(notifications).toEqual([
-      'PASEO_SUBMITTED_USER_ENTRY {"entry":{"id":"entry-new","parentId":"entry-old-assistant","text":"new prompt"}}',
+      'YEMU_SUBMITTED_USER_ENTRY {"entry":{"id":"entry-new","parentId":"entry-old-assistant","text":"new prompt"}}',
     ]);
 
     await session.close();

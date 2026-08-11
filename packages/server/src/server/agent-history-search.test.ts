@@ -22,7 +22,7 @@ function candidate(input: {
     },
     project: {
       projectKey: "key",
-      projectName: input.projectName ?? "getpaseo/paseo",
+      projectName: input.projectName ?? "rtiy1/YeMuAINoval-Desktop",
       workspaceName: input.workspaceName ?? null,
       checkout: {
         cwd: "/tmp/repo",
@@ -65,7 +65,7 @@ describe("scoreAgentHistoryCandidate", () => {
 
   it("matches the project name", () => {
     expect(
-      scoreAgentHistoryCandidate("paseo", candidate({ projectName: "getpaseo/paseo" })),
+      scoreAgentHistoryCandidate("paseo", candidate({ projectName: "rtiy1/YeMuAINoval-Desktop" })),
     ).not.toBeNull();
   });
 
@@ -117,8 +117,8 @@ describe("rankAgentHistoryCandidates", () => {
     const ranked = rankAgentHistoryCandidates(
       "paseo",
       [
-        candidate({ title: "unrelated work", projectName: "getpaseo/paseo" }),
-        candidate({ workspaceName: "paseo", projectName: "getpaseo/paseo" }),
+        candidate({ title: "unrelated work", projectName: "rtiy1/YeMuAINoval-Desktop" }),
+        candidate({ workspaceName: "paseo", projectName: "rtiy1/YeMuAINoval-Desktop" }),
       ],
       byUpdatedAtDesc,
     );

@@ -1,7 +1,7 @@
 import type { QueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 
-export const CHANGES_PREFERENCES_STORAGE_KEY = "@paseo:changes-preferences";
+export const CHANGES_PREFERENCES_STORAGE_KEY = "@yemu:changes-preferences";
 export const LEGACY_WRAP_LINES_STORAGE_KEY = "diff-wrap-lines";
 export const CHANGES_PREFERENCES_QUERY_KEY = ["changes-preferences"];
 
@@ -48,7 +48,10 @@ async function loadLegacyWrapLinesPreference(storage: KeyValueStorage): Promise<
 export async function loadChangesPreferencesFromStorage(
   storage: KeyValueStorage,
 ): Promise<ChangesPreferences> {
-  const stored = await storage.getItem(CHANGES_PREFERENCES_STORAGE_KEY);
+  // COMPAT(changesPreferencesKey): legacy key read back once, remove after 2026-11-30.
+  const stored =
+    (await storage.getItem(CHANGES_PREFERENCES_STORAGE_KEY)) ??
+    (await storage.getItem("@paseo:changes-preferences"));
   if (stored) {
     const parsed = changesPreferencesSchema.safeParse(JSON.parse(stored));
     if (parsed.success) {

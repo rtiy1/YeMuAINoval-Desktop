@@ -2,7 +2,7 @@ import { spawnSync, type ChildProcess } from "node:child_process";
 import { existsSync, readFileSync, unlinkSync } from "node:fs";
 import { createRequire } from "node:module";
 import path from "node:path";
-import { loadConfig, resolvePaseoHome, spawnProcess } from "@getpaseo/server";
+import { loadConfig, resolvePaseoHome, spawnProcess } from "@yemu/server";
 import treeKill from "tree-kill";
 import { tryConnectToDaemon } from "../../utils/client.js";
 
@@ -123,7 +123,7 @@ function envWithHome(home?: string): NodeJS.ProcessEnv {
     return process.env;
   }
 
-  return { ...process.env, PASEO_HOME: home };
+  return { ...process.env, YEMU_HOME: home };
 }
 
 function buildRunnerArgs(options: DaemonStartOptions): string[] {
@@ -157,24 +157,24 @@ function buildRunnerArgs(options: DaemonStartOptions): string[] {
 function buildChildEnv(options: DaemonStartOptions): NodeJS.ProcessEnv {
   const childEnv: NodeJS.ProcessEnv = { ...process.env };
   if (options.home) {
-    childEnv.PASEO_HOME = options.home;
+    childEnv.YEMU_HOME = options.home;
   }
   if (options.listen) {
-    childEnv.PASEO_LISTEN = options.listen;
+    childEnv.YEMU_LISTEN = options.listen;
   } else if (options.port) {
-    childEnv.PASEO_LISTEN = `127.0.0.1:${options.port}`;
+    childEnv.YEMU_LISTEN = `127.0.0.1:${options.port}`;
   }
   if (options.hostnames) {
-    childEnv.PASEO_HOSTNAMES = options.hostnames;
+    childEnv.YEMU_HOSTNAMES = options.hostnames;
   }
   if (options.relayUseTls === true) {
-    childEnv.PASEO_RELAY_USE_TLS = "true";
+    childEnv.YEMU_RELAY_USE_TLS = "true";
   }
   if (options.webUi === true) {
-    childEnv.PASEO_WEB_UI_ENABLED = "true";
+    childEnv.YEMU_WEB_UI_ENABLED = "true";
   }
   if (options.webUi === false) {
-    childEnv.PASEO_WEB_UI_ENABLED = "false";
+    childEnv.YEMU_WEB_UI_ENABLED = "false";
   }
   return childEnv;
 }
@@ -184,7 +184,7 @@ function resolveServerRunnerFromDir(currentDir: string): string | null {
   if (!existsSync(packageJsonPath)) return null;
   try {
     const packageJson = JSON.parse(readFileSync(packageJsonPath, "utf-8")) as { name?: string };
-    if (packageJson.name !== "@getpaseo/server") return null;
+    if (packageJson.name !== "@yemu/server") return null;
     const distRunner = path.join(currentDir, "dist", "scripts", "supervisor-entrypoint.js");
     if (existsSync(distRunner)) {
       return distRunner;
@@ -196,7 +196,7 @@ function resolveServerRunnerFromDir(currentDir: string): string | null {
 }
 
 function resolveDaemonRunnerEntry(): string {
-  const serverExportPath = require.resolve("@getpaseo/server");
+  const serverExportPath = require.resolve("@yemu/server");
   let currentDir = path.dirname(serverExportPath);
 
   while (true) {
@@ -212,7 +212,7 @@ function resolveDaemonRunnerEntry(): string {
     currentDir = parentDir;
   }
 
-  throw new Error("Unable to resolve @getpaseo/server package root for daemon runner");
+  throw new Error("Unable to resolve @yemu/server package root for daemon runner");
 }
 
 function pidFilePath(paseoHome: string): string {
@@ -539,14 +539,14 @@ export function resolveLocalDaemonState(options: { home?: string } = {}): LocalD
     ...envWithHome(options.home),
     // Status should reflect local persisted config + pid file, not inherited daemon env overrides.
     // This is CLI-side defensive scrubbing; the daemon RPC is authoritative when available.
-    PASEO_LISTEN: undefined,
-    PASEO_HOSTNAMES: undefined,
-    PASEO_ALLOWED_HOSTS: undefined,
-    PASEO_RELAY_ENABLED: undefined,
-    PASEO_RELAY_ENDPOINT: undefined,
-    PASEO_RELAY_PUBLIC_ENDPOINT: undefined,
-    PASEO_RELAY_USE_TLS: undefined,
-    PASEO_RELAY_PUBLIC_USE_TLS: undefined,
+    YEMU_LISTEN: undefined,
+    YEMU_HOSTNAMES: undefined,
+    YEMU_ALLOWED_HOSTS: undefined,
+    YEMU_RELAY_ENABLED: undefined,
+    YEMU_RELAY_ENDPOINT: undefined,
+    YEMU_RELAY_PUBLIC_ENDPOINT: undefined,
+    YEMU_RELAY_USE_TLS: undefined,
+    YEMU_RELAY_PUBLIC_USE_TLS: undefined,
   };
   const home = resolvePaseoHome(env);
   const config = loadConfig(home, { env });
@@ -560,7 +560,8 @@ export function resolveLocalDaemonState(options: { home?: string } = {}): LocalD
     home,
     listen,
     relayEnabled: config.relayEnabled ?? true,
-    relayEndpoint: config.relayPublicEndpoint ?? config.relayEndpoint ?? "relay.paseo.sh:443",
+    // COMPAT(cloudDefaults): legacy hosted relay no longer exists; remove after 2026-11-30.
+    relayEndpoint: config.relayPublicEndpoint ?? config.relayEndpoint ?? "",
     relayUseTls: config.relayUseTls ?? false,
     relayPublicUseTls: config.relayPublicUseTls ?? config.relayUseTls ?? false,
     logPath,

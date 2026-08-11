@@ -23,7 +23,7 @@ process.title = "YeMu AI Novel Voice";
 type LocalSttEngine = SherpaOfflineRecognizerEngine;
 
 const logger = pino({
-  level: process.env.PASEO_LOG_LEVEL ?? "info",
+  level: process.env.YEMU_LOG_LEVEL ?? "info",
 }).child({ module: "speech", component: "local-worker" });
 
 const sttEngines = new Map<string, LocalSttEngine>();

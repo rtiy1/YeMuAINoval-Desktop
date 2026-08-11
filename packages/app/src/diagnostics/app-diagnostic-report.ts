@@ -1,4 +1,4 @@
-import type { ServerInfoStatusPayload } from "@getpaseo/protocol/messages";
+import type { ServerInfoStatusPayload } from "@yemu/protocol/messages";
 import type { HostRuntimeSnapshot } from "@/runtime/host-runtime";
 import type { HostConnection, HostProfile } from "@/types/host-connection";
 
@@ -111,7 +111,7 @@ export function redactAppDiagnosticReport(report: string, hosts: HostProfile[]):
     redacted = redacted.split(value).join("[redacted]");
   }
   return redacted
-    .replace(/paseo:\/\/\S+/gi, "paseo://[redacted]")
+    .replace(/paseo:\/\/\S+/gi, "yemu-novel://[redacted]")
     .replace(
       /([?&](?:password|token|secret|key|publicKey|daemonPublicKeyB64)=)[^&\s"']+/gi,
       "$1[redacted]",

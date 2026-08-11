@@ -22,7 +22,7 @@ import {
 } from "@/review/state";
 import { generateMessageId } from "@/types/stream";
 import { buildNumberedDiffHunks, type NumberedDiffLine } from "@/utils/diff-layout";
-import type { AgentAttachment } from "@getpaseo/protocol/messages";
+import type { AgentAttachment } from "@yemu/protocol/messages";
 
 export type {
   DiffModeOverride,
@@ -166,11 +166,26 @@ export const useReviewDraftStore = create<ReviewDraftStore>()(
       },
     }),
     {
-      name: "@paseo:review-draft-store",
+      name: "@yemu:review-draft-store",
       version: STORE_VERSION,
       storage: createJSONStorage(() => AsyncStorage),
       partialize: (state) => serializeReviewDraftState(state),
       migrate: async (state) => normalizePersistedState(state),
+      onRehydrateStorage: () => (state) => {
+        // COMPAT(reviewDraftStoreKey): legacy key copied over once, remove after 2026-11-30.
+        void (async () => {
+          try {
+            if (state && Object.keys(state.drafts).length === 0) {
+              const legacyRaw = await AsyncStorage.getItem("@paseo:review-draft-store");
+              if (legacyRaw) {
+                await AsyncStorage.setItem("@yemu:review-draft-store", legacyRaw);
+              }
+            }
+          } catch {
+            // Draft migration must never break store hydration.
+          }
+        })();
+      },
     },
   ),
 );

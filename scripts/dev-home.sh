@@ -30,8 +30,8 @@ has_files() {
   [ -d "$1" ] && [ -n "$(find "$1" -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null)" ]
 }
 
-seed_worktree_paseo_home() {
-  local source_home="${PASEO_DEV_SEED_HOME:-$HOME/.paseo}"
+seed_worktree_yemu_home() {
+  local source_home="${YEMU_DEV_SEED_HOME:-$HOME/.paseo}"
   local target_home="$1"
 
   if [ ! -d "$source_home" ]; then
@@ -44,7 +44,7 @@ seed_worktree_paseo_home() {
     return
   fi
 
-  if [ "${PASEO_DEV_RESET_HOME:-0}" = "1" ]; then
+  if [ "${YEMU_DEV_RESET_HOME:-0}" = "1" ]; then
     rm -rf "$target_home"
   elif has_files "$target_home"; then
     echo "  Seed:    skipped (${target_home} already has data)"
@@ -63,11 +63,11 @@ seed_worktree_paseo_home() {
 }
 
 configure_dev_daemon_config() {
-  if [ -z "${PASEO_LISTEN:-}" ]; then
+  if [ -z "${YEMU_LISTEN:-}" ]; then
     return
   fi
 
-  mkdir -p "$PASEO_HOME"
+  mkdir -p "$YEMU_HOME"
   node -e '
 const fs = require("fs");
 const [path, listen] = [process.argv[1], process.argv[2]];
@@ -79,59 +79,59 @@ cfg.daemon.listen = listen;
 cfg.daemon.cors = cfg.daemon.cors || {};
 cfg.daemon.cors.allowedOrigins = ["*"];
 fs.writeFileSync(path, JSON.stringify(cfg, null, 2));
-' "$PASEO_HOME/config.json" "$PASEO_LISTEN"
+' "$YEMU_HOME/config.json" "$YEMU_LISTEN"
 }
 
 resolve_dev_daemon_endpoint() {
-  if [ -n "${PASEO_DEV_DAEMON_ENDPOINT:-}" ]; then
-    echo "$PASEO_DEV_DAEMON_ENDPOINT"
+  if [ -n "${YEMU_DEV_DAEMON_ENDPOINT:-}" ]; then
+    echo "$YEMU_DEV_DAEMON_ENDPOINT"
     return
   fi
 
-  case "${PASEO_LISTEN:-127.0.0.1:6768}" in
-    0.0.0.0:*) echo "localhost:${PASEO_LISTEN#0.0.0.0:}" ;;
-    127.0.0.1:*) echo "localhost:${PASEO_LISTEN#127.0.0.1:}" ;;
-    *) echo "$PASEO_LISTEN" ;;
+  case "${YEMU_LISTEN:-127.0.0.1:6768}" in
+    0.0.0.0:*) echo "localhost:${YEMU_LISTEN#0.0.0.0:}" ;;
+    127.0.0.1:*) echo "localhost:${YEMU_LISTEN#127.0.0.1:}" ;;
+    *) echo "$YEMU_LISTEN" ;;
   esac
 }
 
-configure_dev_paseo_home() {
-  if [ -n "${PASEO_HOME:-}" ]; then
-    export PASEO_HOME
-    if [ -n "${PASEO_DEV_SEED_HOME:-}" ]; then
-      seed_worktree_paseo_home "$PASEO_HOME"
+configure_dev_yemu_home() {
+  if [ -n "${YEMU_HOME:-}" ]; then
+    export YEMU_HOME
+    if [ -n "${YEMU_DEV_SEED_HOME:-}" ]; then
+      seed_worktree_yemu_home "$YEMU_HOME"
     fi
-    mkdir -p "$PASEO_HOME"
-    if [ "${PASEO_DEV_MANAGED_HOME:-0}" = "1" ] || [ -n "${PASEO_DEV_SEED_HOME:-}" ]; then
+    mkdir -p "$YEMU_HOME"
+    if [ "${YEMU_DEV_MANAGED_HOME:-0}" = "1" ] || [ -n "${YEMU_DEV_SEED_HOME:-}" ]; then
       configure_dev_daemon_config
     fi
     return
   fi
 
-  export PASEO_HOME
+  export YEMU_HOME
   local dev_root
-  dev_root="${PASEO_DEV_ROOT:-$(default_dev_paseo_root)}"
-  PASEO_HOME="$dev_root/.dev/paseo-home"
-  export PASEO_DEV_MANAGED_HOME=1
+  dev_root="${YEMU_DEV_ROOT:-$(default_dev_paseo_root)}"
+  YEMU_HOME="$dev_root/.dev/yemu-home"
+  export YEMU_DEV_MANAGED_HOME=1
 
-  if [ -n "${PASEO_DEV_SEED_HOME:-}" ]; then
-    seed_worktree_paseo_home "$PASEO_HOME"
+  if [ -n "${YEMU_DEV_SEED_HOME:-}" ]; then
+    seed_worktree_yemu_home "$YEMU_HOME"
   fi
 
-  mkdir -p "$PASEO_HOME"
+  mkdir -p "$YEMU_HOME"
   configure_dev_daemon_config
 }
 
 configure_dev_command_env() {
-  if [ -z "${PASEO_LISTEN:-}" ]; then
-    if [ -n "${PASEO_SERVICE_DAEMON_PORT:-}" ]; then
-      export PASEO_LISTEN="0.0.0.0:${PASEO_SERVICE_DAEMON_PORT}"
+  if [ -z "${YEMU_LISTEN:-}" ]; then
+    if [ -n "${YEMU_SERVICE_DAEMON_PORT:-}" ]; then
+      export YEMU_LISTEN="0.0.0.0:${YEMU_SERVICE_DAEMON_PORT}"
     else
-      export PASEO_LISTEN="127.0.0.1:6768"
+      export YEMU_LISTEN="127.0.0.1:6768"
     fi
   fi
 
-  configure_dev_paseo_home
+  configure_dev_yemu_home
 }
 
 if [ "${BASH_SOURCE[0]}" = "$0" ]; then
@@ -140,5 +140,5 @@ if [ "${BASH_SOURCE[0]}" = "$0" ]; then
     exec "$@"
   fi
 
-  configure_dev_paseo_home
+  configure_dev_yemu_home
 fi

@@ -8,7 +8,7 @@ import type {
   BrowserAutomationExecuteResponse,
   BrowserAutomationExecuteRequest,
   BrowserAutomationNetworkLogEntry,
-} from "@getpaseo/protocol/browser-automation/rpc-schemas";
+} from "@yemu/protocol/browser-automation/rpc-schemas";
 import { waitForActionableTarget, type ActionabilityResult } from "./actionability.js";
 import { BrowserSnapshotEngine } from "./snapshot-engine.js";
 import {
@@ -1514,7 +1514,7 @@ function buildEvaluateScript(
   elementExpression: string | undefined,
 ): string {
   return String.raw`(async () => {
-    const __PASEO_BROWSER_EVALUATE__ = true;
+    const __YEMU_BROWSER_EVALUATE__ = true;
     try {
       const userFunction = (0, eval)(${JSON.stringify(`(${functionSource})`)});
       if (typeof userFunction !== 'function') {

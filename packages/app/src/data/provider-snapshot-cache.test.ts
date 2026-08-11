@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
-import type { ProviderSnapshotEntry } from "@getpaseo/protocol/agent-types";
-import { compactProviderSnapshot } from "@getpaseo/protocol/provider-snapshot-codec";
+import type { ProviderSnapshotEntry } from "@yemu/protocol/agent-types";
+import { compactProviderSnapshot } from "@yemu/protocol/provider-snapshot-codec";
 import { createProviderSnapshotCache } from "./provider-snapshot-cache";
 
 function createStorage() {

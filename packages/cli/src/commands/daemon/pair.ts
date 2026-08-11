@@ -6,7 +6,7 @@ import {
   getOrCreateServerId,
   loadConfig,
   resolvePaseoHome,
-} from "@getpaseo/server";
+} from "@yemu/server";
 import { tryConnectToDaemon } from "../../utils/client.js";
 import { resolveLocalDaemonState } from "./local-daemon.js";
 import { addJsonOption } from "../../utils/command-options.js";
@@ -171,7 +171,7 @@ export async function runPairCommand(
   options: PairOptions,
   dependencyOverrides: Partial<PairCommandDependencies> = {},
 ): Promise<void> {
-  if (options.home) process.env.PASEO_HOME = options.home;
+  if (options.home) process.env.YEMU_HOME = options.home;
   const dependencies: PairCommandDependencies = {
     resolveOffer: resolveLocalPairingOffer,
     confirmRelay: confirmRelayPairing,

@@ -39,6 +39,16 @@ export function isLikelyNamespacedToolName(name: string): boolean {
   return false;
 }
 
+// COMPAT(toolNamespace): legacy `paseo` tool namespace detected alongside the
+// current `yemu` one until old sessions are unsupported. Remove after 2026-11-30.
+const YEMU_TOOL_NAMESPACES = ["yemu", "paseo"];
+
+function isYemuNamespace(segment: string): boolean {
+  return YEMU_TOOL_NAMESPACES.some(
+    (ns) => segment === ns || segment.startsWith(`${ns}_`) || segment.startsWith(`${ns}.`),
+  );
+}
+
 export function isPaseoToolName(name: string): boolean {
   const normalized = normalizeToolName(name);
   if (isSpeakToolName(normalized)) {
@@ -46,15 +56,10 @@ export function isPaseoToolName(name: string): boolean {
   }
   if (normalized.includes("__")) {
     const segments = normalized.split("__").filter((s) => s.length > 0);
-    return (
-      segments.length >= 3 &&
-      segments[0] === "mcp" &&
-      (segments[1] === "paseo" || segments[1].startsWith("paseo_"))
-    );
+    return segments.length >= 3 && segments[0] === "mcp" && isYemuNamespace(segments[1] ?? "");
   }
   if (normalized.includes(".")) {
-    const firstSegment = normalized.split(".")[0];
-    return firstSegment === "paseo" || firstSegment.startsWith("paseo_");
+    return isYemuNamespace(normalized.split(".")[0] ?? "");
   }
   return false;
 }
@@ -63,18 +68,14 @@ export function getPaseoToolLeafName(name: string): string | null {
   const normalized = normalizeToolName(name);
   if (normalized.includes("__")) {
     const segments = normalized.split("__").filter((s) => s.length > 0);
-    if (
-      segments.length >= 3 &&
-      segments[0] === "mcp" &&
-      (segments[1] === "paseo" || segments[1].startsWith("paseo_"))
-    ) {
+    if (segments.length >= 3 && segments[0] === "mcp" && isYemuNamespace(segments[1] ?? "")) {
       return segments.slice(2).join("__");
     }
     return null;
   }
   if (normalized.includes(".")) {
     const firstSegment = normalized.split(".")[0];
-    if (firstSegment === "paseo" || firstSegment.startsWith("paseo_")) {
+    if (isYemuNamespace(firstSegment)) {
       return normalized.split(".").slice(1).join(".");
     }
     return null;

@@ -5,8 +5,8 @@ const withAndroidProfileable = require("./plugins/with-android-profileable");
 const withFdroidAutolinking = require("./plugins/with-fdroid-autolinking");
 const { getNativeReleaseVersion } = require("./native-release-version");
 const appVariant = process.env.APP_VARIANT ?? "production";
-const isFdroidBuild = process.env.PASEO_FDROID_BUILD === "1";
-const isProfileBuild = process.env.PASEO_PROFILE_BUILD === "1";
+const isFdroidBuild = process.env.YEMU_FDROID_BUILD === "1";
+const isProfileBuild = process.env.YEMU_PROFILE_BUILD === "1";
 
 const buildProfile = isFdroidBuild
   ? {

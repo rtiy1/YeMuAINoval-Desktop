@@ -123,7 +123,7 @@ export async function startIsolatedHostDaemon(
           "--no-audit",
           "--no-fund",
           "--no-package-lock",
-          `@getpaseo/server@${options.publishedVersion}`,
+          `@yemu/server@${options.publishedVersion}`,
         ],
         { cwd: publishedPackageRoot, stdio: "ignore" },
       );
@@ -153,7 +153,7 @@ export async function startIsolatedHostDaemon(
     );
   }
   const serverDir = publishedPackageRoot
-    ? path.join(publishedPackageRoot, "node_modules", "@getpaseo", "server")
+    ? path.join(publishedPackageRoot, "node_modules", "@yemu", "server")
     : path.resolve(__dirname, "../../../../server");
   const tsxBin = execSync("which tsx").toString().trim();
   const spawnDaemon = async (): Promise<ChildProcess> => {
@@ -162,12 +162,12 @@ export async function startIsolatedHostDaemon(
       env: withDisabledE2ESpeechEnv({
         ...process.env,
         ...options.environment,
-        PASEO_HOME: paseoHome,
-        PASEO_SERVER_ID: serverId,
-        PASEO_LISTEN: `127.0.0.1:${port}`,
-        PASEO_CORS_ORIGINS: `http://localhost:${metroPort}`,
-        PASEO_RELAY_ENABLED: options.mutableRelay ? undefined : "0",
-        PASEO_NODE_ENV: "development",
+        YEMU_HOME: paseoHome,
+        YEMU_SERVER_ID: serverId,
+        YEMU_LISTEN: `127.0.0.1:${port}`,
+        YEMU_CORS_ORIGINS: `http://localhost:${metroPort}`,
+        YEMU_RELAY_ENABLED: options.mutableRelay ? undefined : "0",
+        YEMU_NODE_ENV: "development",
         NODE_ENV: "development",
       }),
       stdio: ["ignore", "ignore", "pipe"],

@@ -162,9 +162,9 @@ describe("resolveWorktreeCreationIntent", () => {
       number: 1790,
       baseRefName: "main",
       headRefName: "daemon-shutdown-diagnostics",
-      headOwnerLogin: "getpaseo",
-      headRepositorySshUrl: "git@github.com:getpaseo/paseo.git",
-      headRepositoryUrl: "https://github.com/getpaseo/paseo",
+      headOwnerLogin: "rtiy1",
+      headRepositorySshUrl: "git@github.com:rtiy1/YeMuAINoval-Desktop.git",
+      headRepositoryUrl: "https://github.com/rtiy1/YeMuAINoval-Desktop",
       isCrossRepository: false,
     });
 

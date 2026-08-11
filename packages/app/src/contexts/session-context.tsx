@@ -25,18 +25,18 @@ import {
   type TimelineDeliveryMode,
   type ViewedTimelineSync,
 } from "@/timeline/viewed-timeline-sync";
-import type { AgentAttachment, SessionOutboundMessage } from "@getpaseo/protocol/messages";
-import { parseServerInfoStatusPayload } from "@getpaseo/protocol/messages";
+import type { AgentAttachment, SessionOutboundMessage } from "@yemu/protocol/messages";
+import { parseServerInfoStatusPayload } from "@yemu/protocol/messages";
 import {
   buildAgentAttentionNotificationPayload,
   type AgentAttentionReason,
   type AgentAttentionNotificationPayload,
   type NotificationPermissionRequest,
-} from "@getpaseo/protocol/agent-attention-notification";
-import type { DaemonClient } from "@getpaseo/client/internal/daemon-client";
-import type { AgentSessionConfig } from "@getpaseo/protocol/agent-types";
-import type { GitSetupOptions } from "@getpaseo/protocol/messages";
-import type { AgentPermissionResponse } from "@getpaseo/protocol/agent-types";
+} from "@yemu/protocol/agent-attention-notification";
+import type { DaemonClient } from "@yemu/client/internal/daemon-client";
+import type { AgentSessionConfig } from "@yemu/protocol/agent-types";
+import type { GitSetupOptions } from "@yemu/protocol/messages";
+import type { AgentPermissionResponse } from "@yemu/protocol/agent-types";
 import { getHostRuntimeStore, useHostRuntimeIsConnected } from "@/runtime/host-runtime";
 import { useVoiceAudioEngineOptional, useVoiceRuntimeOptional } from "@/contexts/voice-context";
 import type { AudioPlaybackSource } from "@/voice/audio-engine-types";

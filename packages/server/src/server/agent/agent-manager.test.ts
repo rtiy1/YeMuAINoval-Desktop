@@ -15,7 +15,7 @@ import {
 } from "./agent-manager.js";
 import { AgentStorage } from "./agent-storage.js";
 import { toAgentPayload } from "./agent-projections.js";
-import { PARENT_AGENT_ID_LABEL } from "@getpaseo/protocol/agent-labels";
+import { PARENT_AGENT_ID_LABEL } from "@yemu/protocol/agent-labels";
 import { formatSystemNotificationPrompt, startAgentRun } from "./agent-prompt.js";
 import { ensureAgentLoaded, ensureUnarchivedAgentLoaded } from "./agent-loading.js";
 import type { StoredAgentRecord } from "./agent-storage.js";
@@ -322,7 +322,7 @@ class EnvProbeAgentClient extends TestAgentClient {
     const script = `
       process.stdout.write(JSON.stringify({
         probe: process.env.CHUNK14_PROBE ?? null,
-        agentId: process.env.PASEO_AGENT_ID ?? null
+        agentId: process.env.YEMU_AGENT_ID ?? null
       }));
     `;
     const child = spawn(process.execPath, ["-e", script], {
@@ -1798,8 +1798,8 @@ test("createAgent passes daemon launch env through the provider launch context",
   expect(client.lastLaunchContext).toEqual({
     agentId: snapshot.id,
     env: {
-      PASEO_AGENT_ID: snapshot.id,
-      PASEO_AGENT_CWD: workdir,
+      YEMU_AGENT_ID: snapshot.id,
+      YEMU_AGENT_CWD: workdir,
     },
   });
 });
@@ -2765,8 +2765,8 @@ test("resumeAgentFromPersistence keeps metadata config, applies overrides, and p
   expect(client.lastResumeLaunchContext).toEqual({
     agentId: resumed.id,
     env: {
-      PASEO_AGENT_ID: resumed.id,
-      PASEO_AGENT_CWD: workdir,
+      YEMU_AGENT_ID: resumed.id,
+      YEMU_AGENT_CWD: workdir,
     },
   });
 });
@@ -2873,8 +2873,8 @@ test("importProviderSession imports the selected session without listing and pub
   expect(client.importLaunchContext).toEqual({
     agentId: imported.id,
     env: {
-      PASEO_AGENT_ID: imported.id,
-      PASEO_AGENT_CWD: workdir,
+      YEMU_AGENT_ID: imported.id,
+      YEMU_AGENT_CWD: workdir,
     },
   });
   expect(imported.lifecycle).toBe("idle");
@@ -2976,8 +2976,8 @@ test("reloadAgentSession passes daemon launch env through the provider launch co
   expect(client.lastCreateLaunchContext).toEqual({
     agentId: snapshot.id,
     env: {
-      PASEO_AGENT_ID: snapshot.id,
-      PASEO_AGENT_CWD: workdir,
+      YEMU_AGENT_ID: snapshot.id,
+      YEMU_AGENT_CWD: workdir,
     },
   });
 
@@ -2988,8 +2988,8 @@ test("reloadAgentSession passes daemon launch env through the provider launch co
   expect(client.lastResumeLaunchContext).toEqual({
     agentId: snapshot.id,
     env: {
-      PASEO_AGENT_ID: snapshot.id,
-      PASEO_AGENT_CWD: workdir,
+      YEMU_AGENT_ID: snapshot.id,
+      YEMU_AGENT_CWD: workdir,
     },
   });
 });

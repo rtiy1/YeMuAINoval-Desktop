@@ -29,17 +29,17 @@ describe("path equivalence", () => {
   });
 
   test("checks POSIX root containment without prefix false positives", () => {
-    expect(isPathInsideRoot("/opt/paseo", "/opt/paseo/node_modules/@getpaseo/server")).toBe(true);
+    expect(isPathInsideRoot("/opt/paseo", "/opt/paseo/node_modules/@yemu/server")).toBe(true);
     expect(isPathInsideRoot("/opt/paseo", "/opt/paseo-other")).toBe(false);
   });
 
   test("checks Windows root containment case-insensitively", () => {
     expect(
-      isPathInsideRoot("C:\\YeMu AI Novel\\node_modules", "c:/paseo/node_modules/@getpaseo/server"),
+      isPathInsideRoot("C:\\YeMu AI Novel\\node_modules", "c:/paseo/node_modules/@yemu/server"),
     ).toBe(true);
-    expect(isPathInsideRoot("C:\\YeMu AI Novel\\node_modules", "C:\\YeMu AI Novel\\node_modules-other")).toBe(
-      false,
-    );
+    expect(
+      isPathInsideRoot("C:\\YeMu AI Novel\\node_modules", "C:\\YeMu AI Novel\\node_modules-other"),
+    ).toBe(false);
   });
 
   test("preserves the casing of Windows relative suffixes", () => {

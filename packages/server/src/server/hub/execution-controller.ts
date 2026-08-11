@@ -4,7 +4,7 @@ import type {
   HubExecutionAgentCreateRequest,
   HubExecutionControlRequest,
   SessionOutboundMessage,
-} from "@getpaseo/protocol/messages";
+} from "@yemu/protocol/messages";
 import {
   ProviderOptionsValidationError,
   ToolPolicyUnsupportedError,

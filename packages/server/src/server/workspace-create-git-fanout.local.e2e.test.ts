@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import { afterEach, expect, test } from "vitest";
-import type { WorkspaceDescriptorPayload } from "@getpaseo/protocol/messages";
+import type { WorkspaceDescriptorPayload } from "@yemu/protocol/messages";
 
 import { DaemonClient } from "./test-utils/daemon-client.js";
 import { createTestPaseoDaemon, type TestPaseoDaemon } from "./test-utils/paseo-daemon.js";
@@ -21,7 +21,7 @@ import { resolveGitProcessPolicy } from "../utils/git-process-scheduler.js";
 
 const SIBLING_COUNT = 100;
 const CREATED_AT = "2026-08-07T00:00:00.000Z";
-const originalMaxProcessesPerSecond = process.env.PASEO_GIT_MAX_PROCESSES_PER_SECOND;
+const originalMaxProcessesPerSecond = process.env.YEMU_GIT_MAX_PROCESSES_PER_SECOND;
 
 let daemon: TestPaseoDaemon | null = null;
 let client: DaemonClient | null = null;
@@ -36,9 +36,9 @@ afterEach(async () => {
     rmSync(path, { recursive: true, force: true });
   }
   if (originalMaxProcessesPerSecond === undefined) {
-    delete process.env.PASEO_GIT_MAX_PROCESSES_PER_SECOND;
+    delete process.env.YEMU_GIT_MAX_PROCESSES_PER_SECOND;
   } else {
-    process.env.PASEO_GIT_MAX_PROCESSES_PER_SECOND = originalMaxProcessesPerSecond;
+    process.env.YEMU_GIT_MAX_PROCESSES_PER_SECOND = originalMaxProcessesPerSecond;
   }
   configureGitProcessPolicy(resolveGitProcessPolicy({ env: process.env }));
 });
@@ -644,7 +644,7 @@ test("workspace archive is admitted while 52 sibling observations hydrate", asyn
 }, 180_000);
 
 test("workspace create is admitted while 100 sibling observations hydrate", async () => {
-  process.env.PASEO_GIT_MAX_PROCESSES_PER_SECOND = "64";
+  process.env.YEMU_GIT_MAX_PROCESSES_PER_SECOND = "64";
   configureGitProcessPolicy({ maxProcessConcurrency: 8, maxProcessesPerSecond: 64 });
   const fixture = seedFixture();
   daemon = await createTestPaseoDaemon({

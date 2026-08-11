@@ -30,8 +30,10 @@ describe("cli-install-path", () => {
       resolveCliInstallSourcePath({
         platform: "win32",
         isPackaged: true,
-        executablePath: "C:\\Users\\user\\AppData\\Local\\Programs\\YeMu AI Novel\\YeMu AI Novel.exe",
-        shimPath: "C:\\Users\\user\\AppData\\Local\\Programs\\YeMu AI Novel\\resources\\bin\\paseo.cmd",
+        executablePath:
+          "C:\\Users\\user\\AppData\\Local\\Programs\\YeMu AI Novel\\YeMu AI Novel.exe",
+        shimPath:
+          "C:\\Users\\user\\AppData\\Local\\Programs\\YeMu AI Novel\\resources\\bin\\paseo.cmd",
       }),
     ).toBe("C:\\Users\\user\\AppData\\Local\\Programs\\YeMu AI Novel\\resources\\bin\\paseo.cmd");
 

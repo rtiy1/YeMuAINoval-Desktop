@@ -16,7 +16,9 @@ export type RelayRole = "server" | "client";
 export type RelayProtocolVersion = "1" | "2";
 
 export const CURRENT_RELAY_PROTOCOL_VERSION: RelayProtocolVersion = "2";
-export const DEFAULT_RELAY_ENDPOINT = "relay.paseo.sh:443";
+// COMPAT(relayDefaultEndpoint): YeMu ships no hosted relay; an endpoint must be
+// configured explicitly. Remove the constant entirely after 2026-11-30.
+export const DEFAULT_RELAY_ENDPOINT = "";
 
 export function normalizeRelayProtocolVersion(
   value: unknown,

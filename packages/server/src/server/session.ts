@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import { lstat, mkdir, mkdtemp, rename, rm, stat } from "node:fs/promises";
 import { basename, resolve, sep } from "path";
 import { homedir } from "node:os";
-import { CLIENT_CAPS, type ClientCapability } from "@getpaseo/protocol/client-capabilities";
+import { CLIENT_CAPS, type ClientCapability } from "@yemu/protocol/client-capabilities";
 import {
   serializeAgentStreamEvent,
   type AgentSnapshotPayload,
@@ -27,8 +27,8 @@ import type {
   TerminalWorkspaceContributionChangedEvent,
 } from "../terminal/terminal-manager.js";
 import { TerminalSessionController } from "../terminal/terminal-session-controller.js";
-import type { TerminalActivity } from "@getpaseo/protocol/terminal-activity";
-import type { BinaryFrame } from "@getpaseo/protocol/binary-frames/index";
+import type { TerminalActivity } from "@yemu/protocol/terminal-activity";
+import type { BinaryFrame } from "@yemu/protocol/binary-frames/index";
 import { CursorError } from "./pagination/cursor.js";
 import { SortablePager, type SortSpec } from "./pagination/sortable-pager.js";
 import { describeAgentHistoryMatches, rankAgentHistoryCandidates } from "./agent-history-search.js";
@@ -62,9 +62,9 @@ import {
 import type { DaemonConfigStore } from "./daemon-config-store.js";
 import { loadPersistedConfig } from "./persisted-config.js";
 import { releaseWorkspaceServicePortPlan } from "./workspace-service-port-registry.js";
-import { getErrorMessage, getErrorMessageOr } from "@getpaseo/protocol/error-utils";
-import { getAgentStatusPriority } from "@getpaseo/protocol/agent-state-bucket";
-import { getParentAgentIdFromLabels } from "@getpaseo/protocol/agent-labels";
+import { getErrorMessage, getErrorMessageOr } from "@yemu/protocol/error-utils";
+import { getAgentStatusPriority } from "@yemu/protocol/agent-state-bucket";
+import { getParentAgentIdFromLabels } from "@yemu/protocol/agent-labels";
 import type { WorkspaceGitRuntimeSnapshot, WorkspaceGitService } from "./workspace-git-service.js";
 import type { ProjectUpdate } from "./workspace-reconciliation-service.js";
 import {
@@ -161,6 +161,9 @@ import {
 } from "./session/checkout/git-metadata-generator.js";
 import { ChatScheduleLoopSession } from "./session/chat/chat-schedule-loop-session.js";
 import { ProviderCatalogSession } from "./session/provider/provider-catalog-session.js";
+import { AiModelsSession } from "./session/ai-models/ai-models-session.js";
+import { NovelService } from "./novel/novel-service.js";
+import { NovelSession } from "./session/novel/novel-session.js";
 import { WorkspaceFilesSession } from "./session/files/workspace-files-session.js";
 import { AgentConfigSession } from "./session/agent-config/agent-config-session.js";
 import { ProjectConfigSession } from "./session/project-config/project-config-session.js";
@@ -215,7 +218,7 @@ import {
   type GitHubService,
 } from "../services/github-service.js";
 import type { ForgeService } from "../services/forge-service.js";
-import type { ProviderUsageService } from "../services/quota-fetcher/service.js";
+import type { AiModelService } from "./ai-models/ai-model-service.js";
 import {
   summarizeFetchWorkspacesEntries,
   workspaceIdsOnCheckout,
@@ -248,7 +251,7 @@ function resolveWorkspaceSetupRuntime(
   return runtime ?? new WorkspaceSetupRuntime();
 }
 import { WorktreeRequestError, toWorktreeWireError } from "./worktree-errors.js";
-import { parseGitRemoteLocation } from "@getpaseo/protocol/git-remote";
+import { parseGitRemoteLocation } from "@yemu/protocol/git-remote";
 import {
   createProjectDirectory,
   ProjectDirectoryRequestError,
@@ -468,7 +471,7 @@ export interface SessionOptions {
   tts: Resolvable<TextToSpeechProvider | null>;
   terminalManager: TerminalManager | null;
   providerSnapshotManager: ProviderSnapshotManager;
-  providerUsageService: ProviderUsageService;
+  aiModelService?: AiModelService;
   hubExecutionAgents?: HubExecutionAgents;
   hubRelationships?: HubRelationshipManagement;
   serviceProxy?: ServiceProxySubsystem;
@@ -673,6 +676,8 @@ export class Session {
   private readonly checkoutSession: CheckoutSession;
   private readonly chatScheduleLoopSession: ChatScheduleLoopSession;
   private readonly providerCatalogSession: ProviderCatalogSession;
+  private readonly aiModelsSession: AiModelsSession | null;
+  private readonly novelSession: NovelSession | null;
   private readonly workspaceFilesSession: WorkspaceFilesSession;
   private readonly agentConfigSession: AgentConfigSession;
   private readonly projectConfigSession: ProjectConfigSession;
@@ -718,7 +723,7 @@ export class Session {
       tts,
       terminalManager,
       providerSnapshotManager,
-      providerUsageService,
+      aiModelService,
       serviceProxy,
       scriptRuntimeStore,
       workspaceSetupSnapshots,
@@ -865,7 +870,31 @@ export class Session {
         listDraftFeatures: (config) => this.agentManager.listDraftFeatures(config),
       },
       providerSnapshotManager,
-      providerUsageService,
+      logger: this.sessionLogger,
+    });
+    this.aiModelsSession = new AiModelsSession({
+      host: {
+        emit: (msg) => this.emit(msg),
+      },
+      service: aiModelService,
+      logger: this.sessionLogger,
+    });
+    this.novelSession = new NovelSession({
+      host: {
+        emit: (msg) => this.emit(msg),
+      },
+      service: new NovelService({
+        listProjectRoots: async () => {
+          const projects = await this.projectRegistry.list();
+          return projects.map((entry) => ({
+            projectId: entry.projectId,
+            rootPath: entry.rootPath,
+          }));
+        },
+        projectRootOf: async (projectId) =>
+          (await this.projectRegistry.get(projectId))?.rootPath ?? null,
+        logger: this.sessionLogger,
+      }),
       logger: this.sessionLogger,
     });
     this.agentConfigSession = new AgentConfigSession({
@@ -1853,6 +1882,8 @@ export class Session {
       this.dispatchWorkspaceAndProjectMessage(msg) ??
       this.dispatchWorkspaceFileMessage(msg, source) ??
       this.dispatchProviderMessage(msg) ??
+      this.dispatchAiModelsMessage(msg) ??
+      this.dispatchNovelMessage(msg) ??
       this.dispatchTerminalMessage(msg) ??
       this.dispatchChatScheduleLoopMessage(msg) ??
       this.dispatchMiscMessage(msg);
@@ -2234,6 +2265,87 @@ export class Session {
         return this.providerCatalogSession.handleProviderDiagnosticRequest(msg);
       case "provider.usage.list.request":
         return this.providerCatalogSession.handleProviderUsageListRequest(msg);
+      default:
+        return undefined;
+    }
+  }
+
+  private resolveAiModelProfileEnv(
+    config: AgentSessionConfig,
+    baseEnv: Record<string, string> | undefined,
+  ): Record<string, string> | undefined {
+    const profileId = config.aiModelProfileId;
+    if (!profileId) {
+      return baseEnv;
+    }
+    const profileEnv = this.aiModelsSession?.resolveProfileEnv(profileId);
+    if (!profileEnv) {
+      throw new Error(`AI model profile '${profileId}' not found or has no credential`);
+    }
+    return { ...profileEnv, ...baseEnv };
+  }
+
+  private dispatchAiModelsMessage(msg: SessionInboundMessage): Promise<void> | undefined {
+    if (!this.aiModelsSession) {
+      return undefined;
+    }
+    switch (msg.type) {
+      case "ai.models.list.request":
+        return this.aiModelsSession.handleListRequest(msg);
+      case "ai.models.upsert.request":
+        return this.aiModelsSession.handleUpsertRequest(msg);
+      case "ai.models.remove.request":
+        return this.aiModelsSession.handleRemoveRequest(msg);
+      case "ai.models.test.request":
+        return this.aiModelsSession.handleTestRequest(msg);
+      case "ai.credentials.set.request":
+        return this.aiModelsSession.handleCredentialSetRequest(msg);
+      case "ai.credentials.remove.request":
+        return this.aiModelsSession.handleCredentialRemoveRequest(msg);
+      default:
+        return undefined;
+    }
+  }
+
+  private dispatchNovelMessage(msg: SessionInboundMessage): Promise<void> | undefined {
+    if (!this.novelSession) {
+      return undefined;
+    }
+    switch (msg.type) {
+      case "novel.list.request":
+        return this.novelSession.handleListRequest(msg);
+      case "novel.get.request":
+        return this.novelSession.handleGetRequest(msg);
+      case "novel.create.request":
+        return this.novelSession.handleCreateRequest(msg);
+      case "novel.update_metadata.request":
+        return this.novelSession.handleUpdateMetadataRequest(msg);
+      case "novel.add_volume.request":
+        return this.novelSession.handleAddVolumeRequest(msg);
+      case "novel.add_chapter.request":
+        return this.novelSession.handleAddChapterRequest(msg);
+      case "novel.read_chapter.request":
+        return this.novelSession.handleReadChapterRequest(msg);
+      case "novel.write_chapter.request":
+        return this.novelSession.handleWriteChapterRequest(msg);
+      case "novel.list_entities.request":
+        return this.novelSession.handleListEntitiesRequest(msg);
+      case "novel.upsert_entity.request":
+        return this.novelSession.handleUpsertEntityRequest(msg);
+      case "novel.remove_entity.request":
+        return this.novelSession.handleRemoveEntityRequest(msg);
+      case "novel.snapshot.create.request":
+        return this.novelSession.handleSnapshotCreateRequest(msg);
+      case "novel.snapshot.list.request":
+        return this.novelSession.handleSnapshotListRequest(msg);
+      case "novel.snapshot.restore.request":
+        return this.novelSession.handleSnapshotRestoreRequest(msg);
+      case "novel.relationships.get.request":
+        return this.novelSession.handleRelationshipsGetRequest(msg);
+      case "novel.graph_layout.get.request":
+        return this.novelSession.handleGraphLayoutGetRequest(msg);
+      case "novel.graph_layout.set.request":
+        return this.novelSession.handleGraphLayoutSetRequest(msg);
       default:
         return undefined;
     }
@@ -3206,7 +3318,7 @@ export class Session {
           attachments,
           git,
           labels: resolvedIntent.intent.labels,
-          env,
+          env: this.resolveAiModelProfileEnv(resolvedIntent.config, env),
           provisionalTitle,
           firstAgentContext,
           buildSessionConfig: (sessionConfig, gitOptions, legacyWorktreeName, ctx) =>

@@ -16,8 +16,8 @@ import {
 import { BottomSheetFlatList } from "@gorhom/bottom-sheet";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { StyleSheet, withUnistyles } from "react-native-unistyles";
-import { AlertTriangle, Check, ChevronRight, Search, Settings, Star } from "lucide-react-native";
-import type { AgentProvider } from "@getpaseo/protocol/agent-types";
+import { AlertTriangle, Check, ChevronRight, Search, Star } from "lucide-react-native";
+import type { AgentProvider } from "@yemu/protocol/agent-types";
 import type { SheetHeader } from "@/components/adaptive-modal-sheet";
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
@@ -33,8 +33,6 @@ import {
   type ProviderSelectionModelRow,
   type ProviderSelectorProvider,
 } from "@/provider-selection/provider-selection";
-import { useProviderSettingsStore } from "@/stores/provider-settings-store";
-import { useCurrentOverlayLayer } from "@/lib/overlay-root";
 import { ICON_SIZE, type Theme } from "@/styles/theme";
 import {
   resolveInitialModelBrowserView,
@@ -51,38 +49,7 @@ const ThemedCheck = withUnistyles(Check);
 const ThemedChevronRight = withUnistyles(ChevronRight);
 const ThemedLoadingSpinner = withUnistyles(LoadingSpinner);
 const ThemedSearch = withUnistyles(Search);
-const ThemedSettings = withUnistyles(Settings);
 const ThemedStar = withUnistyles(Star);
-
-function ProviderSettingsAction({
-  accessibilityLabel,
-  provider,
-  serverId,
-}: {
-  accessibilityLabel: string;
-  provider: string;
-  serverId: string | null;
-}) {
-  const overlayParentLayer = useCurrentOverlayLayer();
-  const handlePress = useCallback(() => {
-    if (!serverId) return;
-    useProviderSettingsStore.getState().open({ serverId, provider, overlayParentLayer });
-  }, [overlayParentLayer, provider, serverId]);
-
-  return (
-    <Pressable
-      onPress={handlePress}
-      disabled={!serverId}
-      hitSlop={8}
-      style={iconButtonStyle}
-      accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel}
-      testID={`selector-header-settings-${provider}`}
-    >
-      <HeaderSettingsIcon disabled={!serverId} />
-    </Pressable>
-  );
-}
 
 const IndependentScrollGestureContext = createContext<ReturnType<typeof Gesture.Native> | null>(
   null,
@@ -90,10 +57,6 @@ const IndependentScrollGestureContext = createContext<ReturnType<typeof Gesture.
 
 const foregroundMutedMapping = (theme: Theme) => ({
   color: theme.colors.foregroundMuted,
-});
-
-const headerSettingsMapping = (disabled: boolean) => (theme: Theme) => ({
-  color: disabled ? theme.colors.border : theme.colors.foregroundMuted,
 });
 
 const favoriteStarMapping =
@@ -115,7 +78,6 @@ interface ModelBrowserInput {
   selectedModel: string;
   isLoading: boolean;
   favoriteKeys: Set<string>;
-  serverId?: string | null;
 }
 
 export interface ModelBrowserState {
@@ -172,11 +134,6 @@ export function ModelProviderGlyph({
   return <Icon size={size} color={color} />;
 }
 
-function HeaderSettingsIcon({ disabled }: { disabled: boolean }) {
-  const uniProps = useMemo(() => headerSettingsMapping(disabled), [disabled]);
-  return <ThemedSettings size={ICON_SIZE.sm} uniProps={uniProps} />;
-}
-
 function FavoriteStar({ isFavorite, hovered }: { isFavorite: boolean; hovered: boolean }) {
   const uniProps = useMemo(() => favoriteStarMapping(isFavorite, hovered), [hovered, isFavorite]);
   return <ThemedStar size={ICON_SIZE.md} uniProps={uniProps} />;
@@ -190,14 +147,6 @@ function favoriteButtonStyle({
     styles.favoriteButton,
     Boolean(hovered) && styles.favoriteButtonHovered,
     pressed && styles.favoriteButtonPressed,
-  ];
-}
-
-function iconButtonStyle({ hovered, pressed }: PressableStateCallbackType & { hovered?: boolean }) {
-  return [
-    styles.rowIconButton,
-    Boolean(hovered) && styles.rowIconButtonHovered,
-    pressed && styles.rowIconButtonPressed,
   ];
 }
 
@@ -228,7 +177,6 @@ export function useModelBrowser({
   selectedModel,
   isLoading,
   favoriteKeys,
-  serverId = null,
 }: ModelBrowserInput): ModelBrowserState {
   const { t } = useTranslation();
   const [view, setView] = useState<ModelBrowserView>({ kind: "all" });
@@ -279,15 +227,6 @@ export function useModelBrowser({
         <ModelProviderGlyph provider={view.providerId} size={ICON_SIZE.md} tone="foreground" />
       ),
       back: singleProviderView ? undefined : { onPress: handleBackToAll },
-      actions: (
-        <ProviderSettingsAction
-          serverId={serverId}
-          provider={view.providerId}
-          accessibilityLabel={t("modelSelector.openProviderSettings", {
-            provider: view.providerLabel,
-          })}
-        />
-      ),
       search: {
         onChange: handleSearchQueryChange,
         resetKey: `${view.providerId}:${searchResetKey}`,
@@ -296,15 +235,7 @@ export function useModelBrowser({
         testID: "model-search-input",
       },
     };
-  }, [
-    handleBackToAll,
-    handleSearchQueryChange,
-    searchResetKey,
-    serverId,
-    singleProviderView,
-    t,
-    view,
-  ]);
+  }, [handleBackToAll, handleSearchQueryChange, searchResetKey, singleProviderView, t, view]);
 
   const selectedModelLabel = useMemo(
     () =>
@@ -1131,21 +1062,8 @@ const styles = StyleSheet.create((theme) => ({
     flexShrink: 1,
     minWidth: 0,
   },
-  rowIconButton: {
-    width: 24,
-    height: 24,
-    borderRadius: theme.borderRadius.full,
-    alignItems: "center",
-    justifyContent: "center",
-  },
   rowSpinner: {
     transform: [{ scale: 0.7 }],
-  },
-  rowIconButtonHovered: {
-    backgroundColor: theme.colors.surface2,
-  },
-  rowIconButtonPressed: {
-    backgroundColor: theme.colors.surface1,
   },
   emptyState: {
     paddingVertical: theme.spacing[4],

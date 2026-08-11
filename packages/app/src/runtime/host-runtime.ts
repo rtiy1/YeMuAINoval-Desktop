@@ -5,7 +5,7 @@ import {
   DaemonClient,
   type ConnectionState,
   type FetchAgentsOptions,
-} from "@getpaseo/client/internal/daemon-client";
+} from "@yemu/client/internal/daemon-client";
 import {
   connectionFromListen,
   normalizeStoredHostProfile,
@@ -23,7 +23,7 @@ import {
   shouldUseTlsForDefaultHostedRelay,
 } from "@/utils/daemon-endpoints";
 import { resolveAppVersion } from "@/utils/app-version";
-import { ConnectionOfferSchema, type ConnectionOffer } from "@getpaseo/protocol/connection-offer";
+import { ConnectionOfferSchema, type ConnectionOffer } from "@yemu/protocol/connection-offer";
 import { shouldUseDesktopDaemon } from "@/desktop/daemon/desktop-daemon";
 import { isWeb } from "@/constants/platform";
 import { connectToDaemon } from "@/utils/test-daemon-connection";
@@ -38,8 +38,8 @@ import {
   createDesktopLocalDaemonTransportFactory,
 } from "@/desktop/daemon/desktop-daemon-transport";
 import { getDesktopHost } from "@/desktop/host";
-import { CLIENT_CAPS } from "@getpaseo/protocol/client-capabilities";
-import { BROWSER_AUTOMATION_COMMAND_NAMES } from "@getpaseo/protocol/browser-automation/rpc-schemas";
+import { CLIENT_CAPS } from "@yemu/protocol/client-capabilities";
+import { BROWSER_AUTOMATION_COMMAND_NAMES } from "@yemu/protocol/browser-automation/rpc-schemas";
 import { useSessionStore } from "@/stores/session-store";
 import { useWorkspaceSetupStore } from "@/stores/workspace-setup-store";
 import { invalidateCheckoutGitQueriesForServer } from "@/git/query-keys";
@@ -1276,11 +1276,11 @@ export class HostRuntimeController {
   }
 }
 
-const REGISTRY_STORAGE_KEY = "@paseo:daemon-registry";
+const REGISTRY_STORAGE_KEY = "@yemu:daemon-registry";
 const LOCALHOST_FALLBACK_ENDPOINT = "localhost:6767";
 const DEFAULT_LOCALHOST_BOOTSTRAP_TIMEOUT_MS = 2500;
-const E2E_STORAGE_KEY = "@paseo:e2e";
-const INITIAL_DAEMON_CONNECTION_HINT_GLOBAL_KEY = "__PASEO_INITIAL_DAEMON_CONNECTION__";
+const E2E_STORAGE_KEY = "@yemu:e2e";
+const INITIAL_DAEMON_CONNECTION_HINT_GLOBAL_KEY = "__YEMU_INITIAL_DAEMON_CONNECTION__";
 
 export interface InitialDaemonConnectionHint {
   listen: string;
@@ -1412,7 +1412,9 @@ export class HostRuntimeStore {
 
     let isE2E: string | null = null;
     try {
-      isE2E = await this.storage.getItem(E2E_STORAGE_KEY);
+      // COMPAT(hostRegistryKeys): legacy @paseo:* keys read back once, remove after 2026-11-30.
+      isE2E =
+        (await this.storage.getItem(E2E_STORAGE_KEY)) ?? (await this.storage.getItem("@paseo:e2e"));
     } catch {
       return;
     }
@@ -1445,7 +1447,10 @@ export class HostRuntimeStore {
     let shouldPersistHosts = false;
     let profiles: HostProfile[] = [];
     try {
-      const stored = await this.storage.getItem(REGISTRY_STORAGE_KEY);
+      const stored =
+        (await this.storage.getItem(REGISTRY_STORAGE_KEY)) ??
+        // COMPAT(hostRegistryKeys): legacy key read back once, remove after 2026-11-30.
+        (await this.storage.getItem("@paseo:daemon-registry"));
       if (stored) {
         const parsed = JSON.parse(stored) as unknown;
         if (Array.isArray(parsed)) {
