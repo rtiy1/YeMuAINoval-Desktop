@@ -223,4 +223,36 @@ exports.default = async function afterPack(context) {
   }
 
   console.log('✅ Symlink cleanup completed');
+
+  adHocSignIfUncertified(appPath);
 };
+
+/**
+ * When no Developer ID certificate is present, electron-builder skips
+ * signing entirely. macOS then reports the app as "damaged" and refuses to
+ * open it. An ad-hoc signature (-s -) fixes that: Gatekeeper only asks the
+ * user to confirm opening an unidentified developer app instead.
+ */
+function adHocSignIfUncertified(appPath) {
+  const { execSync } = require('child_process');
+  const hasDeveloperIdentity = Boolean(
+    process.env.CSC_LINK || process.env.APPLE_DEVELOPER_ID
+  );
+  if (hasDeveloperIdentity) {
+    return;
+  }
+  try {
+    console.log('🪪 Ad-hoc signing app bundle (no Developer ID certificate)...');
+    execSync(
+      `codesign --force --deep --sign - --options runtime "${appPath}"`,
+      { stdio: 'inherit' }
+    );
+    const output = execSync(
+      `codesign -dv "${appPath}" 2>&1 | head -5`,
+      { encoding: 'utf8' }
+    );
+    console.log(output);
+  } catch (error) {
+    console.warn(`Ad-hoc signing failed (app may be reported as damaged): ${error}`);
+  }
+}
