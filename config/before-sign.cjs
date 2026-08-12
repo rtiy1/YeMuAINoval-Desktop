@@ -22,6 +22,11 @@ exports.default = async function afterPack(context) {
     '🧹 Cleaning invalid symlinks and cache directories before signing...'
   );
 
+  // Sign first: the symlink cleanup below may return early when optional
+  // prebuilt resources are absent, and an unsigned bundle is reported as
+  // "damaged" by macOS.
+  adHocSignIfUncertified(appPath);
+
   const resourcesPath = path.join(appPath, 'Contents', 'Resources');
   const prebuiltPath = path.join(resourcesPath, 'prebuilt');
 
@@ -223,8 +228,6 @@ exports.default = async function afterPack(context) {
   }
 
   console.log('✅ Symlink cleanup completed');
-
-  adHocSignIfUncertified(appPath);
 };
 
 /**
