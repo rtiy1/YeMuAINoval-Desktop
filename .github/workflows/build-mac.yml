@@ -28,6 +28,9 @@ jobs:
 
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
+        with:
+          # Match the version used to generate packages/mcode/bun.lock.
+          bun-version: 1.3.5
 
       - name: Install root dependencies (npm)
         run: npm ci
@@ -37,10 +40,10 @@ jobs:
         # an isolated copy so packages/mcode/node_modules is self-contained for
         # the packaged app (resources/mcode has no parent node_modules).
         run: |
-          rm -rf /tmp/mcode-build
+          rm -rf /tmp/mcode-build packages/mcode/node_modules
           cp -R packages/mcode /tmp/mcode-build
           cd /tmp/mcode-build && bun install
-          cp -R /tmp/mcode-build/node_modules packages/mcode/node_modules
+          cp -RL /tmp/mcode-build/node_modules packages/mcode/node_modules
 
       - name: Ensure mcode runtime dependencies
         # The isolated install is authoritative; backfill anything the lockfile
