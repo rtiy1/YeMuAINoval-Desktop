@@ -1,14 +1,16 @@
 // Local stub for @stackframe/react (YeMu desktop: local auto-login, Stack
 // Auth is never exercised). Exists only to satisfy the Eigent-derived UI.
-'use strict';
-
-const React = require('react');
+import React from 'react';
 
 function passthrough(props) {
   return props.children || null;
 }
 
 function useStackApp() {
+  return null;
+}
+
+function useUser() {
   return null;
 }
 
@@ -30,13 +32,19 @@ class StackClientApp {
   }
 }
 
-module.exports = {
-  StackProvider: passthrough,
-  StackTheme: passthrough,
+const StackProvider = passthrough;
+const StackTheme = passthrough;
+const useSignIn = () => ({ signIn: () => Promise.reject(new Error('unavailable')) });
+const useSignUp = () => ({ signUp: () => Promise.reject(new Error('unavailable')) });
+const useUpdateUser = () => ({ update: () => Promise.resolve(null) });
+
+export {
+  StackProvider,
+  StackTheme,
   useStackApp,
+  useUser,
+  useSignIn,
+  useSignUp,
+  useUpdateUser,
   StackClientApp,
-  useUser: () => null,
-  useSignIn: () => ({ signIn: () => Promise.reject(new Error('unavailable')) }),
-  useSignUp: () => ({ signUp: () => Promise.reject(new Error('unavailable')) }),
-  useUpdateUser: () => ({ update: () => Promise.resolve(null) }),
 };
