@@ -220,7 +220,7 @@ export async function startBackend(
     : path.join(app.getAppPath(), 'bridge', 'bin', 'bridge.cjs');
 
   // Forward a user-configured proxy to the bridge (and its mcode children).
-  const proxyUrl = readGlobalEnvKey('HTTP_PROXY') || process.env.HTTP_PROXY;
+  const proxyUrl = process.env.HTTP_PROXY || process.env.http_proxy;
   const proxyEnv = proxyUrl
     ? {
         HTTP_PROXY: proxyUrl,
