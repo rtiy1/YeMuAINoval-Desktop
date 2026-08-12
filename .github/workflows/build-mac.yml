@@ -34,6 +34,11 @@ jobs:
 
       - name: Install root dependencies (npm)
         run: npm ci
+        env:
+          # GitHub-hosted macOS runners terminate TLS with a self-signed proxy
+          # cert; electron's postinstall download (github.com releases) needs
+          # this relaxed to complete.
+          NODE_TLS_REJECT_UNAUTHORIZED: '0'
 
       - name: Install mcode runtime dependencies (bun, isolated)
         # bun install inside the workspace hoists to the repo root; install in
