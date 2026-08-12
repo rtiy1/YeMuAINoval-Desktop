@@ -18,25 +18,10 @@ import log from 'electron-log';
 import fs from 'fs';
 import * as http from 'http';
 import * as net from 'net';
-import os from 'os';
 import path from 'path';
 import { promisify } from 'util';
 import { PromiseReturnType } from './install-deps';
-import { maskProxyUrl, readGlobalEnvKey } from './utils/envUtil';
-import {
-  ensureTerminalVenvAtUserPath,
-  findNodejsWheelBinPath,
-  findNodejsWheelNpmPath,
-  getBackendPath,
-  getBinaryPath,
-  getCachePath,
-  getPrebuiltPythonDir,
-  getUvEnv,
-  getVenvPath,
-  getVenvPythonPath,
-  isBinaryExists,
-  killProcessByName,
-} from './utils/process';
+import { isBinaryExists } from './utils/process';
 
 const execAsync = promisify(exec);
 
@@ -241,6 +226,15 @@ export async function startBackend(
     YEMU_BRIDGE_PORT: port.toString(),
     YEMU_BRIDGE_HOST: '127.0.0.1',
     SERVER_URL: resolvedServerUrl || DEFAULT_SERVER_URL,
+    ...(app.isPackaged
+      ? {
+          // Packaged mode: the bridge (and the mcode CLI it spawns) live in
+          // extraResources and run under Electron's embedded Node.
+          ELECTRON_RUN_AS_NODE: '1',
+          YEMU_MCODE_PACKAGE_DIR: path.join(process.resourcesPath, 'mcode'),
+          YEMU_WORKSPACE_ROOT: path.join(app.getPath('userData'), 'workspace'),
+        }
+      : {}),
   };
 
   const displayFilteredLogs = (data: String) => {
@@ -264,16 +258,12 @@ export async function startBackend(
   return new Promise(async (resolve, reject) => {
     log.info(`Spawning YeMu bridge: ${bridgeEntry}`);
 
-    const node_process = spawn(
-      process.execPath,
-      [bridgeEntry],
-      {
-        cwd: path.dirname(bridgeEntry),
-        env: env,
-        detached: process.platform !== 'win32',
-        stdio: ['ignore', 'ignore', 'pipe'],
-      }
-    );
+    const node_process = spawn(process.execPath, [bridgeEntry], {
+      cwd: path.dirname(bridgeEntry),
+      env: env,
+      detached: process.platform !== 'win32',
+      stdio: ['ignore', 'ignore', 'pipe'],
+    });
     node_process.stderr?.on('data', displayFilteredLogs);
 
     // NOTE: Do NOT use unref() - we need to maintain the process reference

@@ -1,0 +1,76 @@
+name: Build macOS App
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-mac:
+    runs-on: macos-14
+    timeout-minutes: 90
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Install root dependencies (npm)
+        run: npm ci
+
+      - name: Install mcode runtime dependencies (bun, isolated)
+        # bun install inside the workspace hoists to the repo root; install in
+        # an isolated copy so packages/mcode/node_modules is self-contained for
+        # the packaged app (resources/mcode has no parent node_modules).
+        run: |
+          rm -rf /tmp/mcode-build
+          cp -R packages/mcode /tmp/mcode-build
+          cd /tmp/mcode-build && bun install
+          cp -R /tmp/mcode-build/node_modules packages/mcode/node_modules
+
+      - name: Ensure mcode runtime dependencies
+        # The isolated install is authoritative; backfill anything the lockfile
+        # resolution skipped (bun self-package, signal-exit v4 pin).
+        run: |
+          node -e "require('./node_modules/signal-exit/package.json')" 2>/dev/null && \
+            cp -R node_modules/signal-exit packages/mcode/node_modules/signal-exit || true
+          if [ ! -d packages/mcode/node_modules/bun ]; then
+            cp -R node_modules/bun packages/mcode/node_modules/bun
+          fi
+
+      - name: Build bridge (TS -> dist)
+        run: npm -w @yemu/bridge run build
+
+      - name: Build macOS app (unsigned)
+        run: npm run build:mac
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: macos-x64
+          path: |
+            release/*.dmg
+            release/*.zip
+          if-no-files-found: error
+
+      - name: Publish GitHub Release (tag builds only)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            release/*.dmg
+            release/*.zip

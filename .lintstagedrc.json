@@ -2,10 +2,8 @@
   "*.{ts,tsx}": [
     "eslint --fix --no-warn-ignored",
     "node scripts/check-design-token-usage.mjs",
-    "prettier --write",
-    "node licenses/update_license.js"
+    "prettier --write"
   ],
   "*.{js,jsx}": ["eslint --fix --no-warn-ignored", "prettier --write"],
-  "*.{json,css}": ["prettier --write"],
-  "*.py": ["node licenses/update_license.js"]
+  "*.{json,css}": ["prettier --write"]
 }

@@ -24,9 +24,16 @@
       "filter": ["bin/**/*", "dist/**/*", "package.json"]
     },
     {
-      "from": "backend",
-      "to": "backend",
-      "filter": ["**/*", "!.venv/**/*", "!workspace/.initial_env/**/*"]
+      "from": "packages/mcode",
+      "to": "mcode",
+      "filter": [
+        "bin/**/*",
+        "src/**/*",
+        "vendor/**/*",
+        "package.json",
+        "bun.lock",
+        "node_modules/**/*"
+      ]
     },
     {
       "from": "resources/prebuilt",

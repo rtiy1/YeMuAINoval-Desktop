@@ -1,10 +1,34 @@
-import type { Logger } from "pino";
-import { getMCodeCommand } from "@yemu/mcode/runtime";
+import { createRequire } from 'node:module';
+import { join } from 'node:path';
+import type { Logger } from 'pino';
 
-import type { AgentLaunchContext, AgentSessionConfig } from "../agent-sdk-types.js";
-import type { ProviderRuntimeSettings } from "../provider-launch-config.js";
-import { createProviderEnv } from "../provider-launch-config.js";
-import { JsonlRpcProcess, type JsonlRpcExit } from "../jsonl-rpc-process.js";
+import type {
+  AgentLaunchContext,
+  AgentSessionConfig,
+} from '../agent-sdk-types.js';
+import { JsonlRpcProcess, type JsonlRpcExit } from '../jsonl-rpc-process.js';
+import type { ProviderRuntimeSettings } from '../provider-launch-config.js';
+import { createProviderEnv } from '../provider-launch-config.js';
+
+const require = createRequire(import.meta.url);
+
+export interface MCodeRuntimeModule {
+  getMCodeCommand(): [string, ...string[]];
+}
+
+/**
+ * Resolve the mcode runtime module without a static dependency:
+ * - Dev / npm workspace: `@yemu/mcode/runtime` via node_modules.
+ * - Packaged desktop app: `YEMU_MCODE_PACKAGE_DIR` points at the mcode
+ *   package copied into extraResources (no node_modules available there).
+ */
+export function resolveMCodeRuntimeModule(): MCodeRuntimeModule {
+  const packagedDir = process.env.YEMU_MCODE_PACKAGE_DIR;
+  if (packagedDir) {
+    return require(join(packagedDir, 'runtime.cjs')) as MCodeRuntimeModule;
+  }
+  return require('@yemu/mcode/runtime') as MCodeRuntimeModule;
+}
 
 export interface MCodeRuntimeSession {
   onMessage(callback: (message: Record<string, unknown>) => void): () => void;
@@ -45,23 +69,23 @@ export class MCodeRuntime {
         }) as Record<string, string>,
       },
       logger: this.options.logger,
-      diagnosticName: "MCode",
+      diagnosticName: 'MCode',
     });
     return {
       onMessage: (callback) => process.onMessage(callback),
       onExit: (callback) => process.onExit(callback),
       send: (message) => process.send(message),
-      close: () => process.close(new Error("MCode session is closed")),
+      close: () => process.close(new Error('MCode session is closed')),
     };
   }
 
   resolveCommand(): [string, ...string[]] {
     const configured = this.options.runtimeSettings?.command;
-    if (configured?.mode === "replace") {
+    if (configured?.mode === 'replace') {
       return configured.argv as [string, ...string[]];
     }
-    const base = getMCodeCommand();
-    if (configured?.mode === "append") {
+    const base = resolveMCodeRuntimeModule().getMCodeCommand();
+    if (configured?.mode === 'append') {
       return [base[0], ...base.slice(1), ...(configured.args ?? [])];
     }
     return base;
@@ -79,58 +103,67 @@ export function buildMCodeLaunch(input: BuildMCodeLaunchInput): {
   const configured = input.runtimeSettings?.command;
   let command: string;
   let args: string[];
-  if (configured?.mode === "replace") {
+  if (configured?.mode === 'replace') {
     [command, ...args] = configured.argv;
   } else {
-    const base = getMCodeCommand();
+    const base = resolveMCodeRuntimeModule().getMCodeCommand();
     [command, ...args] = base;
-    if (configured?.mode === "append") {
+    if (configured?.mode === 'append') {
       args.push(...(configured.args ?? []));
     }
   }
 
   args.push(
-    "--print",
-    "--input-format",
-    "stream-json",
-    "--output-format",
-    "stream-json",
-    "--verbose",
-    "--include-partial-messages",
-    "--replay-user-messages",
+    '--print',
+    '--input-format',
+    'stream-json',
+    '--output-format',
+    'stream-json',
+    '--verbose',
+    '--include-partial-messages',
+    '--replay-user-messages'
   );
 
   if (input.resumeSessionId) {
-    args.push("--resume", input.resumeSessionId);
+    args.push('--resume', input.resumeSessionId);
   } else {
-    args.push("--session-id", input.sessionId);
+    args.push('--session-id', input.sessionId);
   }
   if (!input.persistSession) {
-    args.push("--no-session-persistence");
+    args.push('--no-session-persistence');
   }
   if (input.config.modeId) {
-    args.push("--permission-mode", input.config.modeId);
+    args.push('--permission-mode', input.config.modeId);
   }
   if (input.config.model) {
-    args.push("--model", input.config.model);
+    args.push('--model', input.config.model);
   }
-  if (input.config.thinkingOptionId === "off") {
-    args.push("--thinking", "disabled");
+  if (input.config.thinkingOptionId === 'off') {
+    args.push('--thinking', 'disabled');
   } else if (input.config.thinkingOptionId) {
-    args.push("--effort", input.config.thinkingOptionId);
+    args.push('--effort', input.config.thinkingOptionId);
   }
   if (input.config.title) {
-    args.push("--name", input.config.title);
+    args.push('--name', input.config.title);
   }
 
-  const systemPrompt = [input.config.systemPrompt, input.config.daemonAppendSystemPrompt]
+  const systemPrompt = [
+    input.config.systemPrompt,
+    input.config.daemonAppendSystemPrompt,
+  ]
     .filter((value): value is string => Boolean(value?.trim()))
-    .join("\n\n");
+    .join('\n\n');
   if (systemPrompt) {
-    args.push("--append-system-prompt", systemPrompt);
+    args.push('--append-system-prompt', systemPrompt);
   }
-  if (input.config.mcpServers && Object.keys(input.config.mcpServers).length > 0) {
-    args.push("--mcp-config", JSON.stringify({ mcpServers: input.config.mcpServers }));
+  if (
+    input.config.mcpServers &&
+    Object.keys(input.config.mcpServers).length > 0
+  ) {
+    args.push(
+      '--mcp-config',
+      JSON.stringify({ mcpServers: input.config.mcpServers })
+    );
   }
 
   return { command, args };
