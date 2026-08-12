@@ -1,0 +1,31 @@
+{
+  "name": "@yemu/bridge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "MCode-powered brain for the YeMu client. Implements the Eigent Brain REST+SSE contract on top of the mcode CLI runtime.",
+  "license": "Apache-2.0",
+  "bin": {
+    "yemu-bridge": "./bin/bridge.cjs"
+  },
+  "scripts": {
+    "dev": "node ./bin/bridge.cjs",
+    "start": "node ./bin/bridge.cjs",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc -p tsconfig.build.json"
+  },
+  "dependencies": {
+    "@yemu/mcode": "0.1.0",
+    "pino": "^9.0.0",
+    "which": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/which": "^3.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.6.0"
+  },
+  "engines": {
+    "node": ">=24.0.0"
+  }
+}

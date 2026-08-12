@@ -94,7 +94,7 @@
     "react-reconciler": "*",
     "semver": "*",
     "shell-quote": "*",
-    "signal-exit": "*",
+    "signal-exit": "4.1.0",
     "stack-utils": "*",
     "strip-ansi": "*",
     "supports-hyperlinks": "*",
