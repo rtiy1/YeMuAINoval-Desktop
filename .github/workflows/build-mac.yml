@@ -40,27 +40,11 @@ jobs:
           # this relaxed to complete.
           NODE_TLS_REJECT_UNAUTHORIZED: '0'
 
-      - name: Install mcode runtime dependencies (bun, isolated)
-        # bun install inside the workspace hoists to the repo root; install in
-        # an isolated copy so packages/mcode/node_modules is self-contained for
-        # the packaged app (resources/mcode has no parent node_modules).
-        run: |
-          rm -rf /tmp/mcode-build packages/mcode/node_modules
-          cp -R packages/mcode /tmp/mcode-build
-          cd /tmp/mcode-build && bun install
-          mkdir -p packages/mcode/node_modules
-          tar -C /tmp/mcode-build/node_modules -cf - . \
-            | tar -C packages/mcode/node_modules -xf -
-
-      - name: Ensure mcode runtime dependencies
-        # The isolated install is authoritative; backfill anything the lockfile
-        # resolution skipped (bun self-package, signal-exit v4 pin).
-        run: |
-          node -e "require('./node_modules/signal-exit/package.json')" 2>/dev/null && \
-            cp -R node_modules/signal-exit packages/mcode/node_modules/signal-exit || true
-          if [ ! -d packages/mcode/node_modules/bun ]; then
-            cp -R node_modules/bun packages/mcode/node_modules/bun
-          fi
+      - name: Prepare mcode runtime dependencies
+        # bun install inside the npm workspace hoists to the repo root; the
+        # script installs in an isolated copy so packages/mcode/node_modules
+        # is self-contained for the packaged app.
+        run: bash scripts/prepare-mcode.sh
 
       - name: Build bridge (TS -> dist)
         run: npm -w @yemu/bridge run build
