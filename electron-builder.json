@@ -88,6 +88,7 @@
     "hardenedRuntime": true,
     "gatekeeperAssess": false,
     "notarize": false,
+    "identity": "-",
     "signIgnore": [
       ".*\\.py$",
       ".*\\.pyc$",
