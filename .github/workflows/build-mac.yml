@@ -43,7 +43,9 @@ jobs:
           rm -rf /tmp/mcode-build packages/mcode/node_modules
           cp -R packages/mcode /tmp/mcode-build
           cd /tmp/mcode-build && bun install
-          cp -RL /tmp/mcode-build/node_modules packages/mcode/node_modules
+          mkdir -p packages/mcode/node_modules
+          tar -C /tmp/mcode-build/node_modules -cf - . \
+            | tar -C packages/mcode/node_modules -xf -
 
       - name: Ensure mcode runtime dependencies
         # The isolated install is authoritative; backfill anything the lockfile
