@@ -1,0 +1,8 @@
+{
+  "name": "@stackframe/react",
+  "version": "0.0.0-local",
+  "description": "Local stub for @stackframe/react. YeMu desktop uses local auto-login; Stack Auth is never exercised, these exports exist only to satisfy imports in the Eigent-derived UI.",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "license": "Apache-2.0"
+}
