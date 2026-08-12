@@ -59,8 +59,9 @@ const LANGUAGE_OPTIONS = [
 
 const THEME_PRESETS = [
   {
+    // Keep the legacy id: it is persisted in user settings as the selected theme.
     id: 'eigent',
-    label: 'Eigent',
+    label: 'YeMuAINoval',
     lightAccent: '#1d1d1d',
     darkAccent: '#ede1db',
   },

@@ -349,7 +349,7 @@ export default function Login() {
           const url = await host?.ipcRenderer?.invoke('get-auth-callback-url');
           if (url) cbUrl = url;
         } catch {
-          // Fallback to eigent:// protocol
+          // Fallback to yemuainoval:// protocol
         }
       }
       setCallbackUrl(cbUrl);

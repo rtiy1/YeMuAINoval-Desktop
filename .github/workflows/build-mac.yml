@@ -23,7 +23,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
 
       - name: Setup Bun
@@ -39,12 +39,6 @@ jobs:
           # cert; electron's postinstall download (github.com releases) needs
           # this relaxed to complete.
           NODE_TLS_REJECT_UNAUTHORIZED: '0'
-
-      - name: Prepare mcode runtime dependencies
-        # bun install inside the npm workspace hoists to the repo root; the
-        # script installs in an isolated copy so packages/mcode/node_modules
-        # is self-contained for the packaged app.
-        run: bash scripts/prepare-mcode.sh
 
       - name: Build bridge (TS -> dist)
         run: npm -w @yemu/bridge run build
@@ -62,12 +56,16 @@ jobs:
           path: |
             release/*.dmg
             release/*.zip
+            release/*.yml
           if-no-files-found: error
 
       - name: Publish GitHub Release (tag builds only)
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
+          # *.yml: electron-updater feed metadata (latest-mac.yml) — required
+          # for the in-app auto updater to discover new versions.
           files: |
             release/*.dmg
             release/*.zip
+            release/*.yml

@@ -19,12 +19,6 @@ import type {
   UpdateInfo,
 } from 'electron-updater';
 import { createRequire } from 'node:module';
-import {
-  DEFAULT_CDN_RELEASE_BASE_URL,
-  getGitHubReleaseChannel,
-  getUpdatePlatformDirectory,
-  GitHubReleaseCdnProvider,
-} from './githubReleaseCdnProvider';
 
 const { autoUpdater } = createRequire(import.meta.url)('electron-updater');
 
@@ -62,30 +56,15 @@ export function update(win: Electron.BrowserWindow) {
   console.log('Current version:', autoUpdater.currentVersion.version);
   console.log('Update config path:', autoUpdater.getUpdateConfigPath?.());
   console.log('User data path (where config lives):', app.getPath('userData'));
-  const platformDir = getUpdatePlatformDirectory(
-    process.platform,
-    process.arch
-  );
 
-  if (!platformDir) {
-    console.warn(
-      `[AutoUpdater] Updates are not configured for ${process.platform}/${process.arch}`
-    );
-    return;
-  }
-
-  const cdnBaseUrl =
-    process.env.EIGENT_UPDATER_CDN_BASE_URL || DEFAULT_CDN_RELEASE_BASE_URL;
-  const channel = getGitHubReleaseChannel(process.platform, process.arch);
+  // Standard GitHub Releases feed on this fork's repo. The upstream Eigent
+  // CDN provider (githubReleaseCdnProvider.ts) is intentionally unused: it
+  // downloads artifacts from cdn.eigent.ai, which does not mirror this fork.
   const feed = {
-    provider: 'custom' as const,
-    updateProvider: GitHubReleaseCdnProvider,
-    owner: 'eigent-ai',
-    repo: 'eigent',
+    provider: 'github' as const,
+    owner: 'rtiy1',
+    repo: 'YeMuAINoval-Desktop',
     releaseType: 'release' as const,
-    channel,
-    cdnBaseUrl,
-    platformDir,
   };
 
   autoUpdater.setFeedURL(feed);

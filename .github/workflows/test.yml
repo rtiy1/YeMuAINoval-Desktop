@@ -24,23 +24,10 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Install frontend dependencies
         run: npm install --ignore-scripts
-
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
-        with:
-          enable-cache: true
-
-      - name: Set up Python
-        run: uv python install 3.11
-
-      - name: Install backend dependencies
-        run: |
-          cd backend
-          uv sync
 
       - name: Run web + local brain smoke
         run: bash scripts/smoke-web-local-brain.sh
@@ -56,7 +43,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Install frontend dependencies
         run: npm install --ignore-scripts
@@ -68,30 +55,23 @@ jobs:
         run: bash scripts/check-electron-access.sh
 
       - name: Design tokens (engine + no hard-coded colors in UI)
-        run: npm run check:design-tokens
+        run: npm run check:design-token-usage
 
-  pytest:
-    name: Run Python Tests
+  bridge:
+    name: Run Bridge Type Check
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v5
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          enable-cache: true
-
-      - name: Set up Python
-        run: uv python install 3.11
+          node-version: 24
 
       - name: Install dependencies
-        run: |
-          cd backend
-          uv sync
+        run: npm install --ignore-scripts
 
-      - name: Run unit tests
-        run: |
-          cd backend
-          uv run pytest tests/app -v
+      - name: Run bridge type check
+        run: npm -w @yemu/bridge run typecheck

@@ -50,6 +50,7 @@ import {
   PromiseReturnType,
 } from './install-deps';
 import { setRoundedCorners } from './native/macos-window';
+import { registerNovelLibraryIpcHandlers } from './novelLibrary';
 import {
   completeCodexOAuthCallback,
   getCodexResolverEnv,
@@ -128,8 +129,7 @@ type BackendStartOptions = {
 };
 
 type BackendStartResult =
-  | { success: true; port: number }
-  | { success: false; error: string };
+  { success: true; port: number } | { success: false; error: string };
 
 function formatErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : String(error);
@@ -548,16 +548,18 @@ if (!app.requestSingleInstanceLock()) {
 // ==================== protocol config ====================
 const setupProtocolHandlers = () => {
   if (process.env.NODE_ENV === 'development') {
-    const isDefault = app.isDefaultProtocolClient('eigent', process.execPath, [
-      path.resolve(process.argv[1]),
-    ]);
+    const isDefault = app.isDefaultProtocolClient(
+      'yemuainoval',
+      process.execPath,
+      [path.resolve(process.argv[1])]
+    );
     if (!isDefault) {
-      app.setAsDefaultProtocolClient('eigent', process.execPath, [
+      app.setAsDefaultProtocolClient('yemuainoval', process.execPath, [
         path.resolve(process.argv[1]),
       ]);
     }
   } else {
-    app.setAsDefaultProtocolClient('eigent');
+    app.setAsDefaultProtocolClient('yemuainoval');
   }
 };
 
@@ -655,8 +657,8 @@ function processQueuedProtocolUrls() {
 }
 
 // ==================== auth callback server ====================
-// Local HTTP server for receiving auth callbacks from external login (eigent.ai)
-// Works in both dev and production mode, avoids eigent:// protocol issues in dev
+// Local HTTP server for receiving auth callbacks from external login
+// Works in both dev and production mode, avoids yemuainoval:// protocol issues in dev
 let authCallbackServer: http.Server | null = null;
 let authCallbackPort: number | null = null;
 
@@ -684,7 +686,7 @@ async function startAuthCallbackServer() {
         </style></head>
         <body><div class="container">
           <h1>Login Successful</h1>
-          <p>You can close this tab and return to Eigent.</p>
+          <p>You can close this tab and return to YeMuAINoval.</p>
         </div></body></html>
       `);
 
@@ -714,7 +716,7 @@ const setupSingleInstanceLock = () => {
   // to register the event handlers.
   app.on('second-instance', (event, argv) => {
     log.info('second-instance', argv);
-    const url = argv.find((arg) => arg.startsWith('eigent://'));
+    const url = argv.find((arg) => arg.startsWith('yemuainoval://'));
     if (url) handleProtocolUrl(url);
     if (win) win.show();
   });
@@ -787,6 +789,7 @@ const checkManagerInstance = (manager: any, name: string) => {
 function registerIpcHandlers() {
   registerCodexSubscriptionAuthIpcHandlers(ipcMain);
   registerTerminalIpcHandlers();
+  registerNovelLibraryIpcHandlers();
 
   // ==================== auth callback ====================
   ipcMain.handle('get-auth-callback-url', async () => {
@@ -1331,8 +1334,8 @@ function registerIpcHandlers() {
         const platform = process.platform;
         const arch = process.arch;
         const bugReportText = [
-          'Eigent bug report',
-          '=================',
+          'YeMuAINoval bug report',
+          '======================',
           '',
           `App version: ${appVersion}`,
           `OS: ${platform} (${arch})`,
@@ -2564,7 +2567,7 @@ async function createWindowInternal() {
   // Platform-specific window configuration
   // Windows: native frame and solid background. macOS/Linux: frameless; macOS corner radius via native hook.
   win = new BrowserWindow({
-    title: 'Eigent',
+    title: 'YeMuAINoval',
     width: 1280,
     height: 960,
     minWidth: 1100,

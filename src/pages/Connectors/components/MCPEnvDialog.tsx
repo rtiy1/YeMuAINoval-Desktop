@@ -111,9 +111,6 @@ export const MCPEnvDialog: FC<MCPEnvDialogProps> = ({
   const [showKeys, setShowKeys] = useState<{ [key: string]: boolean }>({});
   const [isValidating, setIsValidating] = useState<boolean>(false);
   const { t } = useTranslation();
-  useEffect(() => {
-    initializeEnvValues(activeMcp);
-  }, [activeMcp]);
 
   const initializeEnvValues = (mcp: any) => {
     if (mcp?.install_command?.env) {
@@ -137,6 +134,10 @@ export const MCPEnvDialog: FC<MCPEnvDialogProps> = ({
       setEnvValues(initialValues);
     }
   };
+
+  useEffect(() => {
+    initializeEnvValues(activeMcp);
+  }, [activeMcp]);
 
   const getCategoryIcon = (categoryName?: string) => {
     if (!categoryName)
@@ -308,8 +309,8 @@ export const MCPEnvDialog: FC<MCPEnvDialogProps> = ({
             })}
           />
 
-          <div className="gap-3 p-md flex flex-col">
-            <div className="gap-md flex items-center">
+          <div className="flex flex-col gap-3 p-md">
+            <div className="flex items-center gap-md">
               {getCategoryIcon(activeMcp?.category?.name)}
               <div>
                 <div className="text-base font-bold leading-9 text-ds-text-brand-default-default">
@@ -329,7 +330,7 @@ export const MCPEnvDialog: FC<MCPEnvDialogProps> = ({
                           verticalAlign: 'middle',
                         }}
                       />
-                      <span className="text-xs font-medium leading-normal line-clamp-1 items-center justify-center self-stretch overflow-hidden break-words text-ellipsis">
+                      <span className="line-clamp-1 items-center justify-center self-stretch overflow-hidden text-ellipsis break-words text-xs font-medium leading-normal">
                         {getGithubRepoName(activeMcp?.home_page)}
                       </span>
                     </div>
@@ -337,7 +338,7 @@ export const MCPEnvDialog: FC<MCPEnvDialogProps> = ({
                 </div>
               </div>
             </div>
-            <div className="gap-md flex flex-col">
+            <div className="flex flex-col gap-md">
               {Object.keys(activeMcp?.install_command?.env || {}).map((key) => {
                 const getNoteContent = () => {
                   let noteContent = envValues[key]?.tip || '';

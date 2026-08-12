@@ -1,7 +1,7 @@
 {
   "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  "productName": "Eigent",
-  "appId": "com.eigent.app",
+  "productName": "YeMuAINoval",
+  "appId": "com.yemu.ainoval",
   "asar": true,
   "asarUnpack": ["node_modules/node-pty/**"],
   "directories": {
@@ -21,41 +21,22 @@
     {
       "from": "bridge",
       "to": "bridge",
-      "filter": ["bin/**/*", "dist/**/*", "package.json"]
+      "filter": ["bin/**/*", "dist/**/*", "node_modules/**/*", "package.json"]
     },
     {
       "from": "packages/mcode",
       "to": "mcode",
       "filter": [
         "bin/**/*",
+        "runtime.cjs",
+        "runtime.d.ts",
         "src/**/*",
         "vendor/**/*",
+        "shims/**/*",
+        "image-processor.node",
         "package.json",
         "bun.lock",
         "node_modules/**/*"
-      ]
-    },
-    {
-      "from": "resources/prebuilt",
-      "to": "prebuilt",
-      "filter": [
-        "**/*",
-        "!cache/**/*",
-        "!**/.npm-cache/**/*",
-        "!uv_python/**/*.pyc",
-        "!uv_python/**/__pycache__",
-        "!terminal_venv/**/*.pyc",
-        "!terminal_venv/**/__pycache__",
-        "!**/__pycache__/**",
-        "!**/*.pyc",
-        "!**/*.pyo",
-        "!venv/**/__pycache__/**",
-        "!venv/**/*.pyc",
-
-        "!venv/lib/python*/site-packages/yt_dlp/**",
-        "!venv/lib/python*/site-packages/yt_dlp-*.dist-info/**",
-        "!uv_python/**/site-packages/setuptools/**",
-        "!uv_python/**/site-packages/wheel/**"
       ]
     },
     {
@@ -65,15 +46,15 @@
   ],
   "protocols": [
     {
-      "name": "Eigent OAuth",
-      "schemes": ["eigent"]
+      "name": "YeMuAINoval OAuth",
+      "schemes": ["yemuainoval"]
     }
   ],
   "publish": [
     {
       "provider": "github",
-      "owner": "eigent-ai",
-      "repo": "eigent",
+      "owner": "rtiy1",
+      "repo": "YeMuAINoval-Desktop",
       "releaseType": "release"
     }
   ],
@@ -111,8 +92,8 @@
     "extendInfo": {
       "CFBundleURLTypes": [
         {
-          "CFBundleURLName": "com.eigent.app",
-          "CFBundleURLSchemes": ["eigent"]
+          "CFBundleURLName": "com.yemu.ainoval",
+          "CFBundleURLSchemes": ["yemuainoval"]
         }
       ]
     }

@@ -55,6 +55,22 @@ export const checkAndInstallDepsOnUpdate = async ({
   const currentVersion = app.getVersion();
   let savedVersion = '';
 
+  // YeMu ships a Node/Bun bridge instead of the legacy Python backend. Keep
+  // the old installer as a fallback for builds that do not contain bridge.
+  const bridgeEntry = app.isPackaged
+    ? path.join(process.resourcesPath, 'bridge', 'bin', 'bridge.cjs')
+    : path.join(app.getAppPath(), 'bridge', 'bin', 'bridge.cjs');
+  if (fs.existsSync(bridgeEntry)) {
+    fs.writeFileSync(versionFile, currentVersion);
+    log.info(
+      '[DEPS INSTALL] YeMu bridge detected; skipping legacy Python dependencies'
+    );
+    return {
+      message: 'Using bundled YeMu bridge dependencies',
+      success: true,
+    };
+  }
+
   // Check if prebuilt dependencies are available
   const hasPrebuiltDeps = (): boolean => {
     if (!app.isPackaged) {

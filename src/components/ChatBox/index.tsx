@@ -954,7 +954,9 @@ export default function ChatBox(): JSX.Element {
     }
   };
 
-  handleSendRef.current = handleSend;
+  useEffect(() => {
+    handleSendRef.current = handleSend;
+  });
 
   // Reactive queuedMessages for the active project
   const queuedMessages = useMemo(() => {

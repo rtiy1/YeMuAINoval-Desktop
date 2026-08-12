@@ -3,9 +3,9 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 TMP_DIR="$(mktemp -d)"
-BACKEND_LOG="${TMP_DIR}/backend.log"
+BRIDGE_LOG="${TMP_DIR}/bridge.log"
 FRONTEND_LOG="${TMP_DIR}/frontend.log"
-BACKEND_PID=""
+BRIDGE_PID=""
 FRONTEND_PID=""
 
 BRAIN_HOST="${BRAIN_HOST:-127.0.0.1}"
@@ -13,20 +13,30 @@ BRAIN_PORT="${BRAIN_PORT:-5001}"
 WEB_HOST="${WEB_HOST:-127.0.0.1}"
 WEB_PORT="${WEB_PORT:-5173}"
 
+stop_process_tree() {
+  local pid="$1"
+  local child
+
+  if ! kill -0 "${pid}" >/dev/null 2>&1; then
+    return
+  fi
+
+  while read -r child; do
+    [[ -n "${child}" ]] && stop_process_tree "${child}"
+  done < <(pgrep -P "${pid}" || true)
+
+  kill "${pid}" >/dev/null 2>&1 || true
+  wait "${pid}" 2>/dev/null || true
+}
+
 cleanup() {
   local exit_code=$?
-  if [[ -n "${FRONTEND_PID}" ]] && kill -0 "${FRONTEND_PID}" >/dev/null 2>&1; then
-    kill "${FRONTEND_PID}" >/dev/null 2>&1 || true
-    wait "${FRONTEND_PID}" 2>/dev/null || true
-  fi
-  if [[ -n "${BACKEND_PID}" ]] && kill -0 "${BACKEND_PID}" >/dev/null 2>&1; then
-    kill "${BACKEND_PID}" >/dev/null 2>&1 || true
-    wait "${BACKEND_PID}" 2>/dev/null || true
-  fi
+  [[ -n "${FRONTEND_PID}" ]] && stop_process_tree "${FRONTEND_PID}"
+  [[ -n "${BRIDGE_PID}" ]] && stop_process_tree "${BRIDGE_PID}"
   if [[ ${exit_code} -ne 0 ]]; then
     echo
-    echo "[smoke] backend log:"
-    cat "${BACKEND_LOG}" || true
+    echo "[smoke] bridge log:"
+    cat "${BRIDGE_LOG}" || true
     echo
     echo "[smoke] frontend log:"
     cat "${FRONTEND_LOG}" || true
@@ -63,50 +73,43 @@ assert_html_doc() {
   fi
 }
 
-echo "[smoke] starting backend on ${BRAIN_HOST}:${BRAIN_PORT}"
+echo "[smoke] starting local bridge on ${BRAIN_HOST}:${BRAIN_PORT}"
 (
-  cd "${ROOT_DIR}/backend"
-  EIGENT_BRAIN_HOST="${BRAIN_HOST}" \
-  EIGENT_BRAIN_PORT="${BRAIN_PORT}" \
-  EIGENT_DEBUG="false" \
-  uv run python main.py >"${BACKEND_LOG}" 2>&1
+  cd "${ROOT_DIR}"
+  exec env YEMU_BRIDGE_HOST="${BRAIN_HOST}" \
+  YEMU_BRIDGE_PORT="${BRAIN_PORT}" \
+  node "${ROOT_DIR}/bridge/bin/bridge.cjs" >"${BRIDGE_LOG}" 2>&1
 ) &
-BACKEND_PID=$!
+BRIDGE_PID=$!
 
-wait_http "http://${BRAIN_HOST}:${BRAIN_PORT}/health" "backend health"
+wait_http "http://${BRAIN_HOST}:${BRAIN_PORT}/health" "bridge health"
 
-echo "[smoke] checking session header + health detail"
-curl --silent --show-error \
-  --header "X-Channel: web" \
-  --dump-header "${TMP_DIR}/health_headers.txt" \
-  --output "${TMP_DIR}/health.json" \
-  "http://${BRAIN_HOST}:${BRAIN_PORT}/health"
+curl --silent --show-error --fail \
+  --request POST \
+  --output "${TMP_DIR}/login.json" \
+  "http://${BRAIN_HOST}:${BRAIN_PORT}/api/v1/user/auto-login"
 
-if ! grep -qi '^x-session-id:' "${TMP_DIR}/health_headers.txt"; then
-  echo "[smoke] missing X-Session-ID header in /health response" >&2
+if ! grep -q '"user_id":1' "${TMP_DIR}/login.json"; then
+  echo "[smoke] local auto-login response is invalid" >&2
   exit 1
 fi
 
-curl --silent --show-error \
-  --header "X-Channel: web" \
-  --output "${TMP_DIR}/health_detail.json" \
-  "http://${BRAIN_HOST}:${BRAIN_PORT}/health?detail=true"
+curl --silent --show-error --fail \
+  --output "${TMP_DIR}/capabilities.json" \
+  "http://${BRAIN_HOST}:${BRAIN_PORT}/workspace/capabilities"
 
-python3 - "${TMP_DIR}/health_detail.json" <<'PY'
-import json
-import sys
-from pathlib import Path
-
-payload = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
-assert isinstance(payload, dict), "health detail payload must be object"
-assert "capabilities" in payload, "health detail missing capabilities"
-assert isinstance(payload["capabilities"], dict), "capabilities must be object"
-PY
+if ! grep -q '"binding_enabled":true' "${TMP_DIR}/capabilities.json"; then
+  echo "[smoke] workspace capabilities response is invalid" >&2
+  exit 1
+fi
 
 echo "[smoke] starting web frontend on ${WEB_HOST}:${WEB_PORT}"
 (
   cd "${ROOT_DIR}"
-  npm run dev:web -- --host "${WEB_HOST}" --port "${WEB_PORT}" >"${FRONTEND_LOG}" 2>&1
+  exec node "${ROOT_DIR}/node_modules/vite/bin/vite.js" \
+    --config vite.config.web.ts \
+    --host "${WEB_HOST}" \
+    --port "${WEB_PORT}" >"${FRONTEND_LOG}" 2>&1
 ) &
 FRONTEND_PID=$!
 

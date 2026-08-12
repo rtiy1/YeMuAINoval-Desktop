@@ -38,6 +38,12 @@ const reactConfig = {
     'react-hooks/static-components': 'off',
     // Disable set-state-in-effect as it's too strict for legitimate use cases
     'react-hooks/set-state-in-effect': 'off',
+    // React 18 is not compiled with the React Compiler. These rules reject
+    // intentional ref-backed event handlers and time-based UI calculations.
+    'react-hooks/refs': 'off',
+    'react-hooks/purity': 'off',
+    'react-hooks/immutability': 'off',
+    'react-hooks/preserve-manual-memoization': 'off',
   },
 };
 
@@ -48,8 +54,13 @@ export default [
       // Dependencies
       'node_modules/**',
       'package/@stackframe/**',
+      // The restored mcode package is validated by its Bun runtime smoke test;
+      // it is not part of the root ESLint project and exceeds the root parser
+      // heap when traversed together with the desktop app.
+      'packages/mcode/**',
       // Build outputs
       'dist/**',
+      'dist-web/**',
       'dist-electron/**',
       '**/dist/**',
       'build/**',

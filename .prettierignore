@@ -4,9 +4,13 @@ package/@stackframe/
 
 # Build outputs
 dist/
+dist-web/
 dist-electron/
 build/
 release/
+
+# Restored runtime package has its own source formatting conventions.
+packages/mcode/
 
 # Cache
 .cache/

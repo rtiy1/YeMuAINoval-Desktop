@@ -20,13 +20,11 @@ import * as http from 'http';
 import * as net from 'net';
 import path from 'path';
 import { promisify } from 'util';
-import { PromiseReturnType } from './install-deps';
-import { isBinaryExists } from './utils/process';
 
 const execAsync = promisify(exec);
 
 const DEFAULT_SERVER_URL = 'https://dev.eigent.ai';
-// Starts after the backend process is spawned; uv/Python dependency repair runs before this.
+// Starts after the bridge process is spawned.
 const BACKEND_READY_TIMEOUT_MS = 5 * 60 * 1000;
 const BACKEND_HEALTH_CHECK_INTERVAL_MS = 1000;
 const BACKEND_HEALTH_REQUEST_TIMEOUT_MS = 1000;
@@ -82,19 +80,22 @@ export function getMainWindow(): BrowserWindow | null {
 }
 
 export async function checkToolInstalled() {
-  return new Promise<PromiseReturnType>(async (resolve, _reject) => {
-    if (!(await isBinaryExists('uv'))) {
-      resolve({ success: false, message: "uv doesn't exist" });
-      return;
-    }
+  const bridgeEntry = app.isPackaged
+    ? path.join(process.resourcesPath, 'bridge', 'bin', 'bridge.cjs')
+    : path.join(app.getAppPath(), 'bridge', 'bin', 'bridge.cjs');
+  const bridgeRoot = path.dirname(path.dirname(bridgeEntry));
+  const compiledEntry = path.join(bridgeRoot, 'dist', 'brain', 'entry.js');
+  const sourceEntry = path.join(bridgeRoot, 'src', 'brain', 'entry.ts');
+  const hasBridgeRuntime = app.isPackaged
+    ? fs.existsSync(compiledEntry)
+    : fs.existsSync(compiledEntry) || fs.existsSync(sourceEntry);
 
-    if (!(await isBinaryExists('bun'))) {
-      resolve({ success: false, message: "Bun doesn't exist" });
-      return;
-    }
-
-    resolve({ success: true, message: 'Tools exist already' });
-  });
+  return hasBridgeRuntime
+    ? { success: true, message: 'YeMu bridge is available' }
+    : {
+        success: false,
+        message: `YeMu bridge runtime not found at ${bridgeRoot}`,
+      };
 }
 
 // export async function installDependencies() {
@@ -235,6 +236,10 @@ export async function startBackend(
     ...process.env,
     ...proxyEnv,
     ...extraEnv,
+    // In development process.execPath is the Electron binary, not Node.
+    // This flag makes the child execute the bridge entrypoint as Node in both
+    // development and packaged builds.
+    ELECTRON_RUN_AS_NODE: '1',
     YEMU_BRIDGE_PORT: port.toString(),
     YEMU_BRIDGE_HOST: '127.0.0.1',
     SERVER_URL: resolvedServerUrl || DEFAULT_SERVER_URL,
@@ -242,7 +247,6 @@ export async function startBackend(
       ? {
           // Packaged mode: the bridge (and the mcode CLI it spawns) live in
           // extraResources and run under Electron's embedded Node.
-          ELECTRON_RUN_AS_NODE: '1',
           YEMU_MCODE_PACKAGE_DIR: path.join(process.resourcesPath, 'mcode'),
           YEMU_WORKSPACE_ROOT: path.join(app.getPath('userData'), 'workspace'),
         }

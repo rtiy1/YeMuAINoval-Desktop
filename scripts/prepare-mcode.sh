@@ -7,12 +7,31 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MCODE="$ROOT/packages/mcode"
 
+BUN_BIN="${BUN_BIN:-}"
+if [[ -z "${BUN_BIN}" ]]; then
+  for candidate in \
+    "${ROOT}/node_modules/bun/bin/bun" \
+    "${ROOT}/node_modules/bun/bin/bun.exe"; do
+    if [[ -x "${candidate}" ]]; then
+      BUN_BIN="${candidate}"
+      break
+    fi
+  done
+fi
+if [[ -z "${BUN_BIN}" ]]; then
+  BUN_BIN="$(command -v bun || true)"
+fi
+if [[ -z "${BUN_BIN}" ]]; then
+  echo "bun is required to prepare packages/mcode" >&2
+  exit 1
+fi
+
 BUILD_DIR="$(mktemp -d)"
 trap 'rm -rf "$BUILD_DIR"' EXIT
 
 cp -R "$MCODE" "$BUILD_DIR/mcode"
 cd "$BUILD_DIR/mcode"
-bun install
+"$BUN_BIN" install
 cd "$ROOT"
 
 rm -rf "$MCODE/node_modules"

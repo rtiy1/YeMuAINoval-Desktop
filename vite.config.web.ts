@@ -45,7 +45,7 @@ export default defineConfig(({ mode }) => {
     build: {
       outDir: 'dist-web',
       emptyOutDir: true,
-      sourcemap: true,
+      sourcemap: Boolean(process.env.VSCODE_DEBUG),
     },
     server: {
       port: Number(process.env.PORT) || 5173,

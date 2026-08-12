@@ -17,6 +17,7 @@ import chat from './chat.json';
 import connectors from './connectors.json';
 import dashboard from './dashboard.json';
 import layout from './layout.json';
+import novel from './novel.json';
 import setting from './setting.json';
 import triggers from './triggers.json';
 import update from './update.json';
@@ -31,4 +32,5 @@ export default {
   setting,
   update,
   triggers,
+  novel,
 };

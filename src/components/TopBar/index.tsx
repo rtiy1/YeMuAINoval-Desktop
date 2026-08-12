@@ -519,6 +519,23 @@ function HeaderWin() {
               defaultValue: 'Back to workspace',
             })}
           </Button>
+        ) : isHomeRoute ? (
+          // Novel workbench (home): brand mark only — the sidebar fold,
+          // Home/Spaces hub and space switcher belong to the legacy agent
+          // workspace (/agent-workspace) and stay hidden here.
+          <div className="flex min-h-[28px] items-center gap-1.5 px-2 text-label-sm font-bold text-ds-text-neutral-default-default">
+            <img
+              src={
+                appearance === 'dark' ? eigentAppIconWhite : eigentAppIconBlack
+              }
+              alt=""
+              className="h-5 w-5 select-none"
+              width={16}
+              height={16}
+              draggable={false}
+            />
+            {t('novel.workbench-title')}
+          </div>
         ) : (
           <>
             {/* Left panel: fold / expand the project sidebar */}

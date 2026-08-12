@@ -422,9 +422,12 @@ export default function Workspace({
     [chatStore, host]
   );
 
-  const onEditWorkerFromMenu = useCallback((agent: Agent) => {
-    setEditingWorkerAgent(agent);
-  }, []);
+  const onEditWorkerFromMenu = useCallback(
+    (agent: Agent) => {
+      setEditingWorkerAgent(agent);
+    },
+    [setEditingWorkerAgent]
+  );
 
   const onDuplicateUserAgent = useCallback(
     (agent: Agent) => {

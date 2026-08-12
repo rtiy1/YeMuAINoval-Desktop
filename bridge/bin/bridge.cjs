@@ -1,13 +1,11 @@
 #!/usr/bin/env node
 // YeMu bridge launcher: runs the TypeScript brain under Node.
 // Dev: tsx (hot reload not needed, plain run). Prod: compiled dist.
-import { spawnSync } from 'node:child_process';
-import { createRequire } from 'node:module';
-import { existsSync, resolve, dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+const { spawnSync } = require('node:child_process');
+const { existsSync } = require('node:fs');
+const { resolve, dirname, join } = require('node:path');
 
-const require = createRequire(import.meta.url);
-const here = dirname(fileURLToPath(import.meta.url));
+const here = __dirname;
 const bridgeRoot = join(here, '..');
 const args = process.argv.slice(2);
 

@@ -22,8 +22,8 @@ const EnvOauthInfoMap = {
 const getElectronAPI = () => createHost().electronAPI;
 
 export class OAuth {
-  public client_name: string = 'Eigent';
-  public client_uri: string = 'https://eigent.ai/';
+  public client_name: string = 'YeMuAINoval';
+  public client_uri: string = 'https://github.com/rtiy1/YeMuAINoval-Desktop';
   public redirect_uris: string[] = [];
 
   public url: string = '';

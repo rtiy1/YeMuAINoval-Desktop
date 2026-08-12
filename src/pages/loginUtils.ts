@@ -12,7 +12,7 @@
 // limitations under the License.
 // ========= Copyright 2025-2026 @ Eigent.ai All Rights Reserved. =========
 
-export const DESKTOP_LOGIN_CALLBACK_URL = 'eigent://auth/callback';
+export const DESKTOP_LOGIN_CALLBACK_URL = 'yemuainoval://auth/callback';
 const DEFAULT_SITE_URL = 'https://www.eigent.ai';
 const SITE_URL = import.meta.env.VITE_SITE_URL || DEFAULT_SITE_URL;
 

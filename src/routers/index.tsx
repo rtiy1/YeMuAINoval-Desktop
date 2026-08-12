@@ -22,6 +22,7 @@ import Layout from '@/components/Layout';
 // Lazy load page components
 const Login = lazy(() => import('@/pages/Login'));
 const Signup = lazy(() => import('@/pages/SignUp'));
+const Novel = lazy(() => import('@/pages/Novel'));
 const Workspace = lazy(() => import('@/pages/Workspace'));
 const History = lazy(() => import('@/pages/History'));
 const NotFound = lazy(() => import('@/pages/NotFound'));
@@ -162,7 +163,10 @@ const AppRoutes = () => (
     ) : null}
     <Route element={<ProtectedRoute />}>
       <Route element={<Layout />}>
-        <Route path="/" element={<Workspace />} />
+        {/* Novel workbench is the home surface; the legacy agent workspace
+            stays reachable at /agent-workspace (entry points hidden). */}
+        <Route path="/" element={<Novel />} />
+        <Route path="/agent-workspace" element={<Workspace />} />
         <Route path="/history" element={<History />} />
         <Route
           path="/setting"

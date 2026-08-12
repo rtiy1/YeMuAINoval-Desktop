@@ -24,7 +24,9 @@
     "dev:web": "npm run clean-cache && vite --config vite.config.web.ts",
     "bridge": "node ./bridge/bin/bridge.cjs",
     "bridge:dev": "tsx ./bridge/src/brain/entry.ts",
-    "prebuild:compile": "npm -w @yemu/bridge run build && tsc -p tsconfig.build.json && vite build",
+    "prepare:bridge": "bash scripts/prepare-bridge.sh",
+    "prepare:mcode": "bash scripts/prepare-mcode.sh",
+    "prebuild:compile": "npm -w @yemu/bridge run build && npm run prepare:bridge && npm run prepare:mcode && tsc -p tsconfig.build.json && vite build",
     "prebuild": "npm run prebuild:compile",
     "build": "npm run prebuild && electron-builder --publish never",
     "build:mac": "npm run prebuild && electron-builder --mac --publish never",
@@ -170,6 +172,6 @@
     "vitest": "^2.1.5"
   },
   "engines": {
-    "node": ">=18.0.0 <23.0.0"
+    "node": ">=24.0.0"
   }
 }
