@@ -1,0 +1,84 @@
+.app-sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  background: var(--yemu-bg-elevated);
+  border-right: 1px solid var(--yemu-border);
+  display: flex;
+  flex-direction: column;
+  padding: 12px 8px;
+  transition: width 0.2s ease;
+  overflow: hidden;
+}
+
+.app-sidebar--collapsed {
+  width: var(--sidebar-collapsed-width);
+}
+
+.app-sidebar-toggle {
+  align-self: flex-end;
+  margin-bottom: 8px;
+}
+
+.app-sidebar-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+}
+
+.app-sidebar-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-top: 1px solid var(--yemu-border);
+  padding-top: 8px;
+}
+
+.app-sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--yemu-text-muted);
+  cursor: pointer;
+  font-size: 14px;
+  width: 100%;
+  text-align: left;
+  transition: all 0.12s ease;
+  white-space: nowrap;
+}
+
+.app-sidebar-item:hover:not(.app-sidebar-item--disabled) {
+  background: var(--yemu-bg-surface);
+  color: var(--yemu-text);
+}
+
+.app-sidebar-item--active {
+  background: var(--yemu-accent-soft);
+  color: var(--yemu-accent);
+}
+
+.app-sidebar-item--disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.app-main {
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.app-assistant-open-btn {
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  z-index: 10;
+  border: 1px solid var(--yemu-border);
+  background: var(--yemu-bg-elevated);
+}

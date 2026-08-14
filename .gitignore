@@ -1,0 +1,33 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# build output
+dist/
+build/
+*.tsbuildinfo
+
+# data
+data/
+*.sqlite
+*.sqlite-journal
+*.db
+
+# env
+.env
+.env.local
+
+# logs
+logs/
+*.log
+
+# os
+.DS_Store
+Thumbs.db
+
+# editor
+.vscode/
+.idea/
+
+# vite
+.vite/

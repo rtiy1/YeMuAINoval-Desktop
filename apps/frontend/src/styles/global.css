@@ -1,0 +1,273 @@
+:root,
+:root[data-theme='night'] {
+  /* 夜幕深色（默认）— 护眼深色，紫色调强调 */
+  --yemu-bg: #1a1b1e;
+  --yemu-bg-elevated: #232428;
+  --yemu-bg-surface: #2a2b30;
+  --yemu-border: #35363c;
+  --yemu-text: #e4e4e7;
+  --yemu-text-muted: #8b8c93;
+  --yemu-text-dim: #61626a;
+  --yemu-accent: #7c6ef0;
+  --yemu-accent-soft: rgba(124, 110, 240, 0.15);
+  --yemu-success: #4ade80;
+  --yemu-warning: #fbbf24;
+  --yemu-error: #f87171;
+  --yemu-shadow: rgba(0, 0, 0, 0.5);
+  --yemu-overlay: rgba(0, 0, 0, 0.5);
+  --yemu-accent-contrast: #ffffff;
+}
+
+:root[data-theme='dark'] {
+  /* 经典深色 — 高对比黑色背景，蓝色强调 */
+  --yemu-bg: #0d0d0f;
+  --yemu-bg-elevated: #161618;
+  --yemu-bg-surface: #1e1e22;
+  --yemu-border: #2a2a30;
+  --yemu-text: #f0f0f5;
+  --yemu-text-muted: #8a8a96;
+  --yemu-text-dim: #5a5a66;
+  --yemu-accent: #3b82f6;
+  --yemu-accent-soft: rgba(59, 130, 246, 0.15);
+  --yemu-success: #4ade80;
+  --yemu-warning: #fbbf24;
+  --yemu-error: #f87171;
+  --yemu-shadow: rgba(0, 0, 0, 0.6);
+  --yemu-overlay: rgba(0, 0, 0, 0.6);
+  --yemu-accent-contrast: #ffffff;
+}
+
+:root[data-theme='sepia'] {
+  /* 暖色护眼 — 棕调暖色背景，适合长时间阅读 */
+  --yemu-bg: #2a2018;
+  --yemu-bg-elevated: #352a1f;
+  --yemu-bg-surface: #3d3024;
+  --yemu-border: #4a3d30;
+  --yemu-text: #e8dcc8;
+  --yemu-text-muted: #a89880;
+  --yemu-text-dim: #7a6a55;
+  --yemu-accent: #d4a373;
+  --yemu-accent-soft: rgba(212, 163, 115, 0.15);
+  --yemu-success: #88b066;
+  --yemu-warning: #e0a040;
+  --yemu-error: #d07060;
+  --yemu-shadow: rgba(0, 0, 0, 0.4);
+  --yemu-overlay: rgba(0, 0, 0, 0.4);
+  --yemu-accent-contrast: #1a1410;
+}
+
+:root {
+  /* 布局尺寸（与主题无关） */
+  --sidebar-width: 240px;
+  --sidebar-collapsed-width: 56px;
+  --assistant-width: 480px;
+  --editor-max-width: 720px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background: var(--yemu-bg);
+  color: var(--yemu-text);
+  font-family: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans CJK SC', -apple-system,
+    BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-size: 14px;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow: hidden;
+}
+
+/* 滚动条 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--yemu-border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--yemu-text-dim);
+}
+
+/* 三栏布局根 */
+.app-layout {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* 编辑器沉浸居中 */
+.editor-container {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--yemu-bg);
+}
+
+.editor-scroll {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+  padding: 48px 24px 120px;
+}
+
+.editor-content {
+  width: 100%;
+  max-width: var(--editor-max-width);
+}
+
+/* TipTap 编辑器样式 */
+.ProseMirror {
+  outline: none;
+  min-height: 60vh;
+  color: var(--yemu-text);
+  font-size: 16px;
+  line-height: 1.9;
+}
+
+.ProseMirror p {
+  margin-bottom: 0.8em;
+  text-indent: 2em;
+}
+
+.ProseMirror:focus {
+  outline: none;
+}
+
+.ProseMirror .is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--yemu-text-dim);
+  pointer-events: none;
+  position: absolute;
+}
+
+/* 通用按钮 */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid var(--yemu-border);
+  background: var(--yemu-bg-elevated);
+  color: var(--yemu-text);
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.15s ease;
+}
+
+.btn:hover {
+  background: var(--yemu-bg-surface);
+  border-color: var(--yemu-accent);
+}
+
+.btn-primary {
+  background: var(--yemu-accent);
+  border-color: var(--yemu-accent);
+  color: var(--yemu-accent-contrast);
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+  background: var(--yemu-accent);
+}
+
+.btn-icon {
+  padding: 6px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--yemu-text-muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.btn-icon:hover {
+  background: var(--yemu-bg-surface);
+  color: var(--yemu-text);
+}
+
+/* 卡片 */
+.card {
+  background: var(--yemu-bg-elevated);
+  border: 1px solid var(--yemu-border);
+  border-radius: 10px;
+  padding: 20px;
+  transition: border-color 0.15s ease;
+}
+
+.card:hover {
+  border-color: var(--yemu-accent);
+}
+
+/* 输入框 */
+.input {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--yemu-border);
+  background: var(--yemu-bg);
+  color: var(--yemu-text);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.input:focus {
+  border-color: var(--yemu-accent);
+}
+
+textarea.input {
+  resize: vertical;
+  min-height: 80px;
+  line-height: 1.6;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--yemu-text-dim);
+  height: 100%;
+  padding: 48px;
+  text-align: center;
+}
+
+.empty-state-icon {
+  opacity: 0.4;
+}
+
+/* 加载动画 */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.loading {
+  animation: pulse 1.5s ease-in-out infinite;
+}

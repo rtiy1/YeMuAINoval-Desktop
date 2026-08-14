@@ -1,0 +1,22 @@
+{
+  "name": "yemu-ai-novel-desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "夜幕 AI 小说桌面版 — 基于 MCode 的沉浸式写作工作台",
+  "type": "module",
+  "packageManager": "pnpm@11.21.0",
+  "scripts": {
+    "dev": "pnpm --filter @yemu/backend dev & pnpm --filter @yemu/frontend dev",
+    "dev:backend": "pnpm --filter @yemu/backend dev",
+    "dev:frontend": "pnpm --filter @yemu/frontend dev",
+    "dev:desktop": "pnpm --filter @yemu/desktop dev",
+    "build": "pnpm --filter @yemu/frontend build && pnpm --filter @yemu/backend build",
+    "type-check": "pnpm -r type-check"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": ["esbuild", "better-sqlite3", "bun"]
+  }
+}

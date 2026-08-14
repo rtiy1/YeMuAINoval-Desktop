@@ -1,0 +1,22 @@
+{
+  "name": "@yemu/desktop",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "夜幕 AI 小说桌面版 — Electron 外壳",
+  "main": "dist/main.js",
+  "scripts": {
+    "dev": "tsc -p tsconfig.json && electron .",
+    "build": "tsc -p tsconfig.json",
+    "type-check": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "electron-updater": "^6.3.9"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "electron": "^33.4.0",
+    "electron-builder": "^26.15.3",
+    "typescript": "^5.8.2"
+  }
+}

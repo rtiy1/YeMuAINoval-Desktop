@@ -1,0 +1,675 @@
+/* ============================================================
+ * AssistantPanel — 沉浸式 AI 对话界面布局
+ * ============================================================ */
+
+.assistant-panel {
+  width: var(--assistant-width);
+  flex-shrink: 0;
+  background: var(--yemu-bg-elevated);
+  border-left: 1px solid var(--yemu-border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ---- 头部 ---- */
+.assistant-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--yemu-border);
+  flex-shrink: 0;
+}
+
+.assistant-title {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--yemu-text);
+}
+
+.assistant-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--yemu-success);
+  animation: live-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes live-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+/* ---- 消息流 ---- */
+.assistant-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  position: relative;
+  z-index: 1;
+}
+
+.assistant-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--yemu-text-dim);
+  text-align: center;
+}
+
+.assistant-empty p {
+  font-size: 14px;
+  color: var(--yemu-text-muted);
+  margin-top: 8px;
+}
+
+.assistant-empty span { font-size: 12px; }
+
+/* ---- 用户消息气泡 ---- */
+.user-bubble {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  margin: 6px 0;
+}
+
+.user-bubble-content {
+  max-width: 88%;
+  background: var(--yemu-bg-surface);
+  border-radius: 16px;
+  border-top-right-radius: 6px;
+  padding: 10px 14px;
+  min-width: 0;
+}
+
+.user-bubble-content p {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--yemu-text);
+  overflow-wrap: anywhere;
+}
+
+/* ---- 助手消息 ---- */
+.assistant-message {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.assistant-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 11px;
+  background: var(--yemu-accent-soft);
+  color: var(--yemu-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.assistant-message-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.assistant-markdown {
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--yemu-text);
+  overflow-wrap: anywhere;
+}
+
+.assistant-markdown p { margin-bottom: 0.5em; }
+.assistant-markdown p:last-child { margin-bottom: 0; }
+
+.assistant-markdown code {
+  background: var(--yemu-bg-surface);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+.assistant-markdown pre {
+  background: var(--yemu-bg);
+  border: 1px solid var(--yemu-border);
+  border-radius: 8px;
+  padding: 12px;
+  overflow-x: auto;
+  margin: 8px 0;
+}
+
+.assistant-markdown pre code { background: transparent; padding: 0; }
+
+.assistant-markdown ul, .assistant-markdown ol {
+  margin: 0.5em 0;
+  padding-left: 1.4em;
+}
+
+.assistant-markdown h1, .assistant-markdown h2, .assistant-markdown h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0.8em 0 0.4em;
+}
+
+/* ---- 思考中动画 ---- */
+.assistant-thinking {
+  display: flex;
+  gap: 4px;
+  padding: 4px 0;
+}
+
+.thinking-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--yemu-text-dim);
+  animation: thinking-bounce 1.4s ease-in-out infinite;
+}
+
+.thinking-dot:nth-child(2) { animation-delay: 0.2s; }
+.thinking-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes thinking-bounce {
+  0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-3px); }
+}
+
+/* ---- 流式光标 ---- */
+.streaming-cursor {
+  display: inline-block;
+  color: var(--yemu-accent);
+  animation: cursor-blink 1s step-end infinite;
+  margin-left: 1px;
+}
+
+@keyframes cursor-blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* ---- Turn footer ---- */
+.turn-footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  height: 22px;
+  margin-top: 2px;
+}
+
+.turn-footer-copy {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border: none;
+  background: transparent;
+  color: var(--yemu-text-dim);
+  cursor: pointer;
+  border-radius: 4px;
+  margin-left: -4px;
+  transition: all 0.12s ease;
+}
+
+.turn-footer-copy:hover {
+  background: var(--yemu-bg-surface);
+  color: var(--yemu-text);
+}
+
+.turn-footer-duration {
+  font-size: 12px;
+  color: var(--yemu-text-dim);
+}
+
+/* ---- 工具调用组 ---- */
+.tool-group {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  margin: 2px -10px;
+}
+
+.tool-group--expanded {
+  border-color: var(--yemu-border);
+  background: var(--yemu-bg);
+}
+
+.tool-group-header {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 5px 8px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: var(--yemu-text-muted);
+  font-size: 13px;
+  text-align: left;
+  border-radius: 8px;
+}
+
+.tool-group-header:hover { color: var(--yemu-text); }
+
+.tool-group-icon {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.tool-group-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tool-group-details {
+  padding: 4px 8px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.tool-call-item {
+  padding: 6px 8px;
+  background: var(--yemu-bg-elevated);
+  border-radius: 6px;
+  border: 1px solid var(--yemu-border);
+}
+
+.tool-call-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--yemu-accent);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.tool-call-input {
+  font-size: 11px;
+  color: var(--yemu-text-muted);
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+  margin: 0;
+  max-height: 120px;
+  overflow-y: auto;
+}
+
+/* ============================================================
+ * Composer 输入区（）
+ * ============================================================ */
+
+.composer {
+  padding: 10px 13px 12px;
+  border-top: 1px solid var(--yemu-border);
+  flex-shrink: 0;
+  position: relative;
+  z-index: 50;
+}
+
+.composer-input-wrapper {
+  border: 1px solid var(--yemu-border);
+  border-radius: 16px;
+  padding: 8px 10px 6px;
+  background: var(--yemu-bg);
+  transition: border-color 200ms ease-in-out;
+}
+
+.composer-input-wrapper:focus-within {
+  border-color: var(--yemu-accent);
+}
+
+.composer-textarea {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: var(--yemu-text);
+  font-size: 13px;
+  line-height: 1.6;
+  font-family: inherit;
+  resize: none;
+  outline: none;
+  min-height: 20px;
+  max-height: 160px;
+}
+
+.composer-textarea::placeholder { color: var(--yemu-text-dim); }
+
+.composer-button-row {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+/* 左侧控件组（: provider → model → thinking → mode → features） */
+.composer-left-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 2px;
+  min-width: 0;
+  flex-shrink: 1;
+  overflow: hidden;
+}
+
+.composer-right-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+/* 控件触发器（ AgentControlTrigger） */
+.composer-control-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.composer-control {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 8px;
+  border: none;
+  background: transparent;
+  color: var(--yemu-text-muted);
+  cursor: pointer;
+  border-radius: 14px;
+  font-size: 12px;
+  transition: all 0.12s ease;
+  white-space: nowrap;
+}
+
+.composer-control:hover {
+  background: var(--yemu-bg-surface);
+  color: var(--yemu-text);
+}
+
+.composer-control--open {
+  background: var(--yemu-bg-surface);
+  color: var(--yemu-text);
+}
+
+.composer-control-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.composer-control-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.composer-control-caret {
+  flex-shrink: 0;
+  opacity: 0.6;
+}
+
+/* 纯图标徽章（features 齿轮） */
+.composer-icon-badge {
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: transparent;
+  color: var(--yemu-text-muted);
+  cursor: pointer;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all 0.12s ease;
+}
+
+.composer-icon-badge:hover {
+  background: var(--yemu-bg-surface);
+  color: var(--yemu-text);
+}
+
+/* 下拉菜单（ Combobox）— position:fixed 避免层叠上下文裁剪 */
+.composer-dropdown-fixed {
+  position: fixed;
+  min-width: 160px;
+  max-height: 280px;
+  overflow-y: auto;
+  background: var(--yemu-bg-elevated);
+  border: 1px solid var(--yemu-border);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px var(--yemu-shadow);
+  z-index: 99999;
+  padding: 4px;
+}
+
+.composer-dropdown {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 0;
+  min-width: 160px;
+  max-height: 280px;
+  overflow-y: auto;
+  background: var(--yemu-bg-elevated);
+  border: 1px solid var(--yemu-border);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px var(--yemu-shadow);
+  z-index: 1000;
+  padding: 4px;
+}
+
+.composer-dropdown-item {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 7px 10px;
+  border: none;
+  background: transparent;
+  color: var(--yemu-text-muted);
+  cursor: pointer;
+  border-radius: 6px;
+  font-size: 13px;
+  text-align: left;
+  transition: all 0.1s ease;
+}
+
+.composer-dropdown-item:hover {
+  background: var(--yemu-bg-surface);
+  color: var(--yemu-text);
+}
+
+.composer-dropdown-item--selected {
+  background: var(--yemu-accent-soft);
+  color: var(--yemu-accent);
+}
+
+/* 发送按钮：28×28 圆形 accent（） */
+.composer-send {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  background: var(--yemu-accent);
+  color: white;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.12s ease;
+  flex-shrink: 0;
+}
+
+.composer-send:hover:not(:disabled) { opacity: 0.88; }
+.composer-send:disabled { opacity: 0.35; cursor: not-allowed; }
+
+.composer-send--stop {
+  background: var(--yemu-error);
+}
+
+.composer-send--stop:hover { opacity: 0.88; }
+
+/* ============================================================
+ * 斜杠命令菜单
+ * ============================================================ */
+
+.slash-menu {
+  position: absolute;
+  bottom: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 280px;
+  overflow-y: auto;
+  background: var(--yemu-bg-elevated);
+  border: 1px solid var(--yemu-border);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px var(--yemu-shadow);
+  z-index: 300;
+  padding: 4px;
+}
+
+.slash-menu-header {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--yemu-text-dim);
+  padding: 4px 8px;
+}
+
+.slash-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  color: var(--yemu-text);
+  cursor: pointer;
+  border-radius: 6px;
+  text-align: left;
+  transition: background 0.1s ease;
+}
+
+.slash-menu-item:hover,
+.slash-menu-item--selected {
+  background: var(--yemu-bg-surface);
+}
+
+.slash-menu-item--selected {
+  background: var(--yemu-accent-soft);
+}
+
+.slash-menu-item-label {
+  font-size: 13px;
+  font-weight: 500;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  color: var(--yemu-accent);
+  flex-shrink: 0;
+  min-width: 100px;
+}
+
+.slash-menu-item-desc {
+  font-size: 12px;
+  color: var(--yemu-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.slash-menu-item-badge {
+  font-size: 10px;
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--yemu-accent-soft);
+  color: var(--yemu-accent);
+  flex-shrink: 0;
+}
+
+/* ============================================================
+ * 上下文窗口圆环（ ContextWindowMeter）
+ * ============================================================ */
+
+.context-ring-wrap {
+  position: relative;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.context-ring-wrap svg {
+  display: block;
+}
+
+.context-ring-tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  right: 0;
+  min-width: 180px;
+  background: var(--yemu-bg-elevated);
+  border: 1px solid var(--yemu-border);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px var(--yemu-shadow);
+  padding: 10px 12px;
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.context-ring-tooltip-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--yemu-text);
+}
+
+.context-ring-tooltip-text {
+  font-size: 12px;
+  color: var(--yemu-text);
+  line-height: 1.5;
+}
+
+.context-ring-tooltip-detail {
+  font-size: 11px;
+  color: var(--yemu-text-muted);
+  line-height: 1.5;
+}

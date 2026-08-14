@@ -1,0 +1,7 @@
+{
+  "name": "mcode-agent-sdk",
+  "version": "0.0.0-restored",
+  "private": true,
+  "type": "module",
+  "types": "./index.d.ts"
+}
